@@ -1,19 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
-using PMS.Domain.Entities.project;
-
-namespace PMS.Domain.Entities.HumanResource.team;
-
-public class Team
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Domain.Entities.Project;
+namespace Domain.Entities.HumanResource.Team
 {
-    [Key]
-    public int Id { get; set; }
+    public class Team
+    {
+        [Key]
+        public int Id { get; set; }
 
-    [MaxLength(100)]
-    [Required]
-    public string Name { get; set; }
+        [MaxLength(100)]
+        [Required]
+        public string Name { get; set; }
 
 
-    public List<TeamMember> TeamMembers { get; set; }
+        public List<TeamMember> TeamMembers { get; set; }
 
-    public ProjectTaskExecutiveAgent ProjectTaskExecutiveAgent { get; set; }
+        public ProjectTaskExecutiveAgent ProjectTaskExecutiveAgent { get; set; }
+    }
 }
