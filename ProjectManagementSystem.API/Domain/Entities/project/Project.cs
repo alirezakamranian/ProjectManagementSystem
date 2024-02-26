@@ -1,31 +1,35 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace PMS.Domain.Entities.project;
-
-public class Project
+namespace Domain.Entities.Project
 {
-    [Key]
-    public int Id { get; set; }
+    public class Project
+    {
+        [Key]
+        public int Id { get; set; }
 
-    [MaxLength(100)]
-    [Required]
-    public string Name { get; set; }
+        [MaxLength(100)]
+        [Required]
+        public string Name { get; set; }
 
-    [MaxLength(500)]
-    public string Description { get; set; }
+        [MaxLength(500)]
+        public string Description { get; set; }
 
-    [Required] 
-    public DateTime StartDate { get; set; }
+        [Required]
+        public DateTime StartDate { get; set; }
 
-    [Required]
-    public DateTime DeadLine { get; set; }
+        [Required]
+        public DateTime DeadLine { get; set; }
 
-    public string Status { get; set; }
+        public string Status { get; set; }
 
 
-    public List<ProjectTask> ProjectTasks { get; set; }
+        public List<ProjectTask> ProjectTasks { get; set; }
 
-    public ProjectManagement ProjectManagement { get; set; }
+        public ProjectManagement ProjectManagement { get; set; }
+    }
 }
