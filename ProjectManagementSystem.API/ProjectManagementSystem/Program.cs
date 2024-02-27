@@ -1,3 +1,5 @@
+using Application.Services.EmployeeService;
+using Domain.Services;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +13,9 @@ builder.Services.AddControllers();
 //DbContext
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+
+//Services
+builder.Services.AddTransient<IEmployeeService,EmployeeService>();
 
 //Swagger
 builder.Services.AddEndpointsApiExplorer();
