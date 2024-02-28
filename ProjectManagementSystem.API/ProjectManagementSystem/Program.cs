@@ -2,30 +2,29 @@ using Application.Services.EmployeeService;
 using Domain.Services;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using ProjectManagementSystem.ServiceExtension;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //                                                                  Services Configuration
 
 //Controllers
-builder.Services.AddControllers();
+builder.Services.ConfigureMvc();
 
 //DbContext
-builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+builder.Services.ConfigureDbContext(builder);
 
-//Services
-builder.Services.AddTransient<IEmployeeService,EmployeeService>();
+//InternalServices
+builder.Services.ConfigureEmployeeService();
 
 //Swagger
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.ConfigureSwagger();
+
+
+
 
 
 var app = builder.Build();
-
-
-
 //                                                                  HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
