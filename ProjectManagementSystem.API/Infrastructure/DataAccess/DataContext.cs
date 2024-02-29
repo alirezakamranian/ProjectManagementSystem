@@ -11,16 +11,7 @@ namespace Infrastructure.DataAccess
 {
     public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
     {
-        //Project entities
-        public DbSet<Project> Projects { get; set; }
-        public DbSet<ProjectManagement> ProjectManagements { get; set; }
-        public DbSet<ProjectTask> ProjectTasks { get; set; }
-        public DbSet<ProjectTaskExecutiveAgent> ProjectTaskExecutiveAgents { get; set; }
-
-        //HumanResources entities
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Team> Teams { get; set; }
-        public DbSet<TeamMember> TeamMembers { get; set; }
+        
 
     }
 }

@@ -1,4 +1,4 @@
-using Application.Services.EmployeeService;
+
 using Domain.Services;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +13,6 @@ builder.Services.ConfigureMvc();
 
 //DbContext
 builder.Services.ConfigureDbContext(builder);
-
-//InternalServices
-builder.Services.ConfigureEmployeeService();
 
 //Swagger
 builder.Services.ConfigureSwagger();

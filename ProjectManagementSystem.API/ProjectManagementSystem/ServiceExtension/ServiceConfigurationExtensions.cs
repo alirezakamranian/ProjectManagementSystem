@@ -20,8 +20,6 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }
-        //EmployeeService
-        public static void ConfigureEmployeeService(this IServiceCollection services) =>
-            services.AddTransient<IEmployeeService, EmployeeService>();
+       
     }
 }
