@@ -1,5 +1,4 @@
 
-using Domain.Services;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using ProjectManagementSystem.ServiceExtension;
@@ -17,7 +16,8 @@ builder.Services.ConfigureDbContext(builder);
 //Swagger
 builder.Services.ConfigureSwagger();
 
-
+//InternalServices
+builder.Services.ConfigureAuthenticationservice();
 
 
 

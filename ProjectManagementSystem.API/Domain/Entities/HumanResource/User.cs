@@ -17,10 +17,6 @@ namespace Domain.Entities.HumanResource
         [Required]
         public string Name { get; set; }
 
-        [MaxLength(50)]
-        [Required]
-        public string UserName { get; set; }
-
         [Required]
         public string Email { get; set; }
 

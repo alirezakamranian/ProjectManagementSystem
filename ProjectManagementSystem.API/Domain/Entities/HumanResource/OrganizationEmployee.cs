@@ -20,16 +20,16 @@ namespace Domain.Entities.HumanResource
         //UserRel
         public int UserId { get; set; }
 
-        [ForeignKey(nameof(UserId))]
+        [ForeignKey("UserId")]
         public User User { get; set; }
 
         //OrgRel
         public int OrganizationId { get; set; }
 
-        [ForeignKey(nameof(OrganizationId))]
+        [ForeignKey("OrganizationId")]
         public Organization Organization { get; set; }
 
-        //ProjMemberRel
+        //  ProjMemberRel
         public List<ProjectMember> projectMembers { get; set; }
     }
 }

@@ -1,8 +1,9 @@
-﻿using Application.Services.EmployeeService;
-using Domain.Services;
+﻿
+using Application.Services;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
+using Domain.Services;
 namespace ProjectManagementSystem.ServiceExtension
 {
     public static class ServiceConfigurationExtensions
@@ -20,6 +21,11 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }
-       
+
+        //AuthService
+        public static void ConfigureAuthenticationservice(this IServiceCollection services)
+        {
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
+        }
     }
 }

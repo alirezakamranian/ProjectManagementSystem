@@ -20,7 +20,7 @@ namespace Domain.Entities.Project.ProjectTask
         [MaxLength(700)]
         public string Description { get; set; }
 
-        public string Order { get; set; }
+        public string Priority { get; set; }
 
         //ProjectTaskListRel
         public int ProjectTaskListId { get; set; }
