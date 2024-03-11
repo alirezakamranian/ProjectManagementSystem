@@ -18,18 +18,18 @@ namespace Domain.Entities.HumanResource
         public string Role { get; set; }
 
         //UserRel
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
-        [ForeignKey(nameof(UserId))]
-        public User User { get; set; }
+        [ForeignKey("UserId")]
+        public ApplicationUser User { get; set; }
 
         //OrgRel
         public int OrganizationId { get; set; }
 
-        [ForeignKey(nameof(OrganizationId))]
+        [ForeignKey("OrganizationId")]
         public Organization Organization { get; set; }
 
-        //ProjMemberRel
+        //  ProjMemberRel
         public List<ProjectMember> projectMembers { get; set; }
     }
 }

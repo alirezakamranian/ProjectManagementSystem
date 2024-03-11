@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Project.ProjectMemberTask;
+using Domain.Entities.Project.ProjectTask;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,6 +19,7 @@ namespace Domain.Entities.HumanResource
         [Required]
         public string Role { get; set; }
 
+
         //ProjectRel
         public int ProjectId { get; set; }
 
@@ -30,9 +32,11 @@ namespace Domain.Entities.HumanResource
         [ForeignKey("OrganizationEmployeeId")]
         public OrganizationEmployee OrganizationEmployee { get; set; }
 
+
         //ProjMemberTaskListRel
-        public int MemberTaskListsId { get; set; }
-        [ForeignKey(nameof(MemberTaskListsId))]
         public List<ProjectMemberTaskList> MemberTaskLists { get; set; }
+
+        //ProjTaskExecAgetRel
+        public List<ProjectTaskExecutiveAgent> projectTaskExecutiveAgents{ get; set; }
     }
 }

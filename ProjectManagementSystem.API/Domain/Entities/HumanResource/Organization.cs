@@ -26,8 +26,8 @@ namespace Domain.Entities.HumanResource
         public List<OrganizationEmployee> OrganizationEmployees { get; set; }
 
         //UserRel
-        public int OwnerId { get; set; }
+        public string OwnerId { get; set; }
         [ForeignKey(nameof(OwnerId))]
-        public User Owner { get; set; }
+        public ApplicationUser Owner { get; set; }
     }
 }

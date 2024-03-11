@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Entities.HumanResource;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -23,5 +24,11 @@ namespace Domain.Entities.Project.ProjectTask
 
         [ForeignKey(nameof(ProjectTaskId))]
         public ProjectTask ProjectTask { get; set; }
+
+        //ProjMemberRel
+        public int ProjectMemberId { get; set; }
+
+        [ForeignKey("ProjectMemberId")]
+        public ProjectMember ProjectMember { get; set; }
     }
 }

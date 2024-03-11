@@ -19,7 +19,7 @@ namespace Domain.Entities.Project.ProjectMemberTask
         public string Name { get; set; }
 
         [Required]
-        public string Order { get; set; }
+        public string Priority { get; set; }
 
         //ProjMemberRel
         public int ProjectMemberId { get; set; }

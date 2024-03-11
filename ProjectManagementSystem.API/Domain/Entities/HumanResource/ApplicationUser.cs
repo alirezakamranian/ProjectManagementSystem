@@ -1,32 +1,17 @@
 ﻿using Domain.Entities.Common;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Domain.Entities.HumanResource
 {
-    public class User
+    public class ApplicationUser:IdentityUser
     {
-        [Key]
-        public int Id { get; set; }
-
-        [MaxLength(50)]
-        [Required]
-        public string Name { get; set; }
-
-        [MaxLength(50)]
-        [Required]
-        public string UserName { get; set; }
-
-        [Required]
-        public string Email { get; set; }
-
-        [Required]
-        public string Password { get; set; }
-
         //OrgRel
         public List<Organization> Organizations { get; set; }
 

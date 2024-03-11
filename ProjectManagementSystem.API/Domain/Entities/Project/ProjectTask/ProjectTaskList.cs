@@ -18,7 +18,7 @@ namespace Domain.Entities.Project.ProjectTask
         public string Name { get; set; }
 
         [Required]
-        public string Order { get; set; }
+        public string Priority { get; set; }
 
         //ProjTaskRel
         public List<ProjectTask> projectTasks { get; set; }
