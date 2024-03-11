@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.ServiceResponse.User.Auth
+namespace Domain.Models.ServiceResponses.User.Auth
 {
     public class SignUpServiceResponse
     {

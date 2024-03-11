@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Dtos.Auth.Request
+namespace Domain.Models.Dtos.Auth.Response
 {
-    public class SignInRequest
+    public class SignInResponse
     {
+        public string Name { get; set; }
         public string Email { get; set; }
-
-        public string Password { get; set; }
+        public string Token { get; set; }
     }
 }

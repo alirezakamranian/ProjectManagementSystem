@@ -1,5 +1,5 @@
-﻿using Domain.Dtos.Auth.Request;
-using Domain.ServiceResponse.User.Auth;
+﻿using Domain.Models.Dtos.Auth.Request;
+using Domain.Models.ServiceResponses.User.Auth;
 using System;
 using System.Collections.Generic;
 using System.Linq;

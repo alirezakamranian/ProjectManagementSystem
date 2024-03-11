@@ -6,7 +6,6 @@ using ProjectManagementSystem.ServiceExtension;
 var builder = WebApplication.CreateBuilder(args);
 
 //                                                                  Services Configuration
-
 //Controllers
 builder.Services.ConfigureMvc();
 
@@ -16,8 +15,12 @@ builder.Services.ConfigureDbContext(builder);
 //Swagger
 builder.Services.ConfigureSwagger();
 
+//Auth
+builder.Services.ConfigureAuth(builder);
+
 //InternalServices
 builder.Services.ConfigureAuthenticationservice();
+
 
 
 
@@ -30,6 +33,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

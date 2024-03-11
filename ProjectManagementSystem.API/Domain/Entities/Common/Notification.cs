@@ -25,9 +25,9 @@ namespace Domain.Entities.Common
         public string Type { get; set; }
 
         //UserRel
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         [ForeignKey(nameof(UserId))]
-        public User User { get; set; }
+        public ApplicationUser User { get; set; }
     }
 }

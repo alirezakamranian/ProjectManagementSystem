@@ -9,12 +9,12 @@ using Domain.Entities.Project.ProjectTask;
 using Domain.Entities.Project.ProjectMemberTask;
 using Domain.Entities.Project;
 using Domain.Entities.Common;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 namespace Infrastructure.DataAccess
 {
-    public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
+    public class DataContext(DbContextOptions<DataContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
         //HumanResource
-        public DbSet<User> Users { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationEmployee> OrganizationEmployees { get; set; }
         public DbSet<ProjectMember> ProjectMembers { get; set; }
@@ -32,10 +32,11 @@ namespace Infrastructure.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
+            //foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            //{
+            //    relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            //}
+            base.OnModelCreating(modelBuilder);
         }
 
     }

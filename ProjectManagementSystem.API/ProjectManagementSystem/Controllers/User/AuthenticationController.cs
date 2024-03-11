@@ -1,9 +1,9 @@
-﻿using Domain.Dtos.Auth.Request;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Domain.Services;
 using Application.Services;
 using Microsoft.IdentityModel.Tokens;
+using Domain.Models.Dtos.Auth.Request;
 namespace ProjectManagementSystem.Controllers.User
 {
     [Route("api/user/auth")]
@@ -46,7 +46,7 @@ namespace ProjectManagementSystem.Controllers.User
                 return StatusCode(500, respone.Message);
 
 
-            return Ok(respone);
+            return Ok(respone.UserData);
 
         }
     }
