@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.Dtos.Auth.Response
 {
-    public class SignInResponse
+    public class SignUpResponse
     {
-        public string Token { get; set; }
+        public string Status { get; set; }
+        public string Message { get; set; }
     }
 }

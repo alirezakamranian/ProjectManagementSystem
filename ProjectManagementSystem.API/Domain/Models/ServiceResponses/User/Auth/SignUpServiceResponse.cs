@@ -15,4 +15,11 @@ namespace Domain.Models.ServiceResponses.User.Auth
             Message = message;
         }
     }
+    public static class SignUpServiceResponseMessages
+    {
+        public const string Success = "Success";
+        public const string EmailExists = "EmailExists";
+        public const string CreationFaild = "CreationFaild";
+        public const string InternalError = "InternalError";
+    }
 }

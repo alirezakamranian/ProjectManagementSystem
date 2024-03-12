@@ -1,11 +1,11 @@
 
 using Infrastructure.DataAccess;
-using Microsoft.EntityFrameworkCore;
 using ProjectManagementSystem.ServiceExtension;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //                                                                  Services Configuration
+
 //Controllers
 builder.Services.ConfigureMvc();
 

@@ -17,4 +17,10 @@ namespace Domain.Models.ServiceResponses.User.Auth
             Message = message.ToString();
         }
     }
+    public static class SignInServiceResponseMessages
+    {
+        public const string Success = "Success";
+        public const string InvalidUserCredentials = "InvalidUserCredentials";
+        public const string InternalError = "InternalError";
+    }
 }
