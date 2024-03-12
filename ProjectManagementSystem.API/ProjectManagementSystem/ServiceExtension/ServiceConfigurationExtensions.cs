@@ -2,7 +2,6 @@
 using Application.Services;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer;
 using Domain.Services;
 using Domain.Entities.HumanResource;
 using Microsoft.AspNetCore.Identity;
@@ -20,8 +19,6 @@ namespace ProjectManagementSystem.ServiceExtension
         public static void ConfigureDbContext(this IServiceCollection services, WebApplicationBuilder builder) =>
             services.AddDbContext<DataContext>(options => 
             options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
-
-
         //Swagger
         public static void ConfigureSwagger(this IServiceCollection services)
         {
@@ -60,7 +57,7 @@ namespace ProjectManagementSystem.ServiceExtension
         //AuthService
         public static void ConfigureAuthenticationservice(this IServiceCollection services)
         {
-            // services.AddTransient<IAuthenticationService, AuthenticationService>();
+             services.AddTransient<IAuthenticationService, AuthenticationService>();
         }
     }
 }

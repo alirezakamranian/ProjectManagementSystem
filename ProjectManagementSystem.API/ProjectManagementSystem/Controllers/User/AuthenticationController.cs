@@ -4,50 +4,84 @@ using Domain.Services;
 using Application.Services;
 using Microsoft.IdentityModel.Tokens;
 using Domain.Models.Dtos.Auth.Request;
+using Domain.Models.Dtos.Auth.Response;
+using Domain.Entities.HumanResource;
+using Microsoft.AspNetCore.Identity;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity.Data;
+using System.Text;
+using Domain.Models.ServiceResponses.User.Auth;
 namespace ProjectManagementSystem.Controllers.User
 {
     [Route("api/user/auth")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController(IAuthenticationService authenticationService) : ControllerBase
     {
-        IAuthenticationService _authenticationService;
-        public AuthenticationController(IAuthenticationService authenticationService)
+        IAuthenticationService _authenticationService = authenticationService;
+
+
+        [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> Register([FromBody] SignUpRequest request)
         {
-            _authenticationService = authenticationService;
+           var serviceResponse =await _authenticationService.SignUpUser(request);
+
+            if (serviceResponse.Message == SignUpServiceResponseMessages.EmailExists)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                    new SignUpResponse
+                    {
+                        Status = serviceResponse.Message,
+                        Message = "User already exists!"
+                    });
+
+            if (serviceResponse.Message == SignUpServiceResponseMessages.CreationFaild)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                    new SignUpResponse
+                    {
+                        Status = serviceResponse.Message,
+                        Message = "User creation failed! Please check user details and try again."
+                    });
+
+            if (serviceResponse.Message == SignUpServiceResponseMessages.InternalError)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new SignUpResponse
+                    {
+                        Status = serviceResponse.Message,
+                        Message = "InternulServerError!"
+                    });
+
+            return Ok(new SignUpResponse
+            {
+                Status = serviceResponse.Message,
+                Message = "User created successfully!"
+            });
         }
 
-        [HttpPost("sign-up")]
-        public async Task<IActionResult> SignUp(SignUpRequest signUpRequest)
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody] SignInRequest request)
         {
-             var respone = await _authenticationService.SignUpUser(signUpRequest);
+            var serviceResponse=await _authenticationService.SignInUser(request);
 
-            if(respone.Message== "UserAlredyExists")
-                return BadRequest(respone.Message);
+            if (serviceResponse.Message == SignInServiceResponseMessages.InvalidUserCredentials)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                     new SignUpResponse
+                     {
+                         Status = serviceResponse.Message,
+                         Message = "User Not Exists!"
+                     });
 
-            if(respone.Message== "InternalServerError")
-                return StatusCode(500, respone.Message);
+            if (serviceResponse.Message == SignInServiceResponseMessages.InternalError)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                     new SignUpResponse
+                     {
+                         Status = serviceResponse.Message,
+                         Message = "InternulServerError!"
+                     });
 
-            return Ok(respone.Message);
-            
-        }
-
-        [HttpPost("sign-in")]
-        public async Task<IActionResult> SignIn(SignInRequest signInRequest)
-        {
-            if (signInRequest.Password.IsNullOrEmpty() || signInRequest.Email.IsNullOrEmpty())
-                return BadRequest("InvalidUserData");
-
-           var respone= await _authenticationService.SignInUser(signInRequest);
-            
-            if(respone.Message== "InvalidUserData")
-                return BadRequest("InvalidUserData");
-
-            else if(respone.Message== "InternalServerError")
-                return StatusCode(500, respone.Message);
-
-
-            return Ok(respone.UserData);
-
+            return Ok(serviceResponse);
         }
     }
 }
