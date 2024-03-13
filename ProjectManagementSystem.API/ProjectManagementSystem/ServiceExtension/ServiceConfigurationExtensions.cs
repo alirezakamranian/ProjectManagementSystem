@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Domain.Services.InternalServices;
+using Application.Services.InternalServices;
 namespace ProjectManagementSystem.ServiceExtension
 {
     public static class ServiceConfigurationExtensions
@@ -58,6 +60,11 @@ namespace ProjectManagementSystem.ServiceExtension
         public static void ConfigureAuthenticationservice(this IServiceCollection services)
         {
              services.AddTransient<IAuthenticationService, AuthenticationService>();
+        }
+        //TokenGenerator
+        public static void ConfigureTokenGenerator(this IServiceCollection services)
+        {
+            services.AddTransient<ITokenGenerator, TokenGenerator>();
         }
     }
 }

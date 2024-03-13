@@ -12,5 +12,6 @@ namespace Domain.Services
     {
         public Task<SignUpServiceResponse> SignUpUser(SignUpRequest request);
         public Task<SignInServiceResponse> SignInUser(SignInRequest request);
+        public Task<RefreshTokenServiceResponse> RefreshToken(RefreshTokenRequest request);
     }
 }

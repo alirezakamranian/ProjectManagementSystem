@@ -7,13 +7,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.User.Auth
 {
-    public class SignUpServiceResponse
+    public class SignUpServiceResponse(string message)
     {
-        public string Message { get; set; }
-        public SignUpServiceResponse(string message)
-        {
-            Message = message;
-        }
+        public string Message { get; set; } = message;
     }
     public static class SignUpServiceResponseMessages
     {
