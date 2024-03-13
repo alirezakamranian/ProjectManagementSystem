@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.User.Auth
 {
-    public class SignInServiceResponse(string message)
+    public class RefreshTokenServiceResponse(string message)
     {
-        public string Message { get; set; } = message.ToString();
+        public string Message { get; set; } = message;
         public string Token { get; set; }
-        public string RefrshToken { get; set; }
     }
-    public static class SignInServiceResponseMessages
+    public static class RefreshTokenServiceResponseMessages
     {
         public const string Success = "Success";
-        public const string InvalidUserCredentials = "InvalidUserCredentials";
+        public const string ProcessFaild = "ProcessFaild";
         public const string InternalError = "InternalError";
     }
 }
+

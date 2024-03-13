@@ -16,15 +16,17 @@ using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
+using Domain.Services.InternalServices;
+using Application.Services.InternalServices;
 namespace Application.Services
 {
     public class AuthenticationService(UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
-        IConfiguration configuration) : IAuthenticationService
+        ITokenGenerator tokenGenerator) : IAuthenticationService
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly RoleManager<IdentityRole> _roleManager = roleManager;
-        private readonly IConfiguration _configuration = configuration;
+        private readonly ITokenGenerator _tokenGenerator = tokenGenerator;
 
 
         public async Task<SignUpServiceResponse> SignUpUser(SignUpRequest request)
@@ -68,7 +70,8 @@ namespace Application.Services
 
                     var authClaims = new List<Claim>
                     {
-                    new Claim(ClaimTypes.Name, user.UserName),
+                        new("Name", user.UserName),
+                        new("Email", user.Email)
                     };
 
                     foreach (var userRole in userRoles)
@@ -76,19 +79,10 @@ namespace Application.Services
                         authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                     }
 
-                    var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthOptions:Key"]));
-
-                    var token = new JwtSecurityToken(
-                        issuer: _configuration["AuthOptions:IssuerAudience"],
-                        audience: _configuration["AuthOptions:IssuerAudience"],
-                        expires: DateTime.Now.AddHours(3),
-                        claims: authClaims,
-                        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                        );
-
                     return new SignInServiceResponse(SignInServiceResponseMessages.Success)
                     {
-                        UserData = new SignInResponse() { Token = new JwtSecurityTokenHandler().WriteToken(token) }
+                            Token = new JwtSecurityTokenHandler().WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddHours(1), authClaims)),
+                            RefrshToken = new JwtSecurityTokenHandler().WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddMonths(1), authClaims))   
                     };
                 }
 
@@ -98,6 +92,42 @@ namespace Application.Services
             {
                 return new SignInServiceResponse(SignInServiceResponseMessages.InternalError);
             }
+        }
+
+        public async Task<RefreshTokenServiceResponse> RefreshToken(RefreshTokenRequest request)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(request.Email);
+
+                if (user != null)
+                {
+                    var userRoles = await _userManager.GetRolesAsync(user);
+
+                    var authClaims = new List<Claim>
+                    {
+                         new("Name", user.UserName),
+                         new("Email", user.Email)
+                    };
+
+                    foreach (var userRole in userRoles)
+                    {
+                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                    }
+
+                    return new RefreshTokenServiceResponse(RefreshTokenServiceResponseMessages.Success)
+                    {
+                        Token = new JwtSecurityTokenHandler()
+                        .WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddHours(1), authClaims))
+                    };
+                }
+                return new RefreshTokenServiceResponse(RefreshTokenServiceResponseMessages.ProcessFaild);
+            }
+            catch
+            {
+                return new RefreshTokenServiceResponse(RefreshTokenServiceResponseMessages.InternalError);
+            }
+
         }
     }
 }

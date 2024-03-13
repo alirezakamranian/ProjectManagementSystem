@@ -1,24 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Domain.Services;
-using Application.Services;
-using Microsoft.IdentityModel.Tokens;
 using Domain.Models.Dtos.Auth.Request;
 using Domain.Models.Dtos.Auth.Response;
-using Domain.Entities.HumanResource;
-using Microsoft.AspNetCore.Identity;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity.Data;
-using System.Text;
 using Domain.Models.ServiceResponses.User.Auth;
+using Microsoft.AspNetCore.Authorization;
 namespace ProjectManagementSystem.Controllers.User
 {
     [Route("api/user/auth")]
     [ApiController]
     public class AuthenticationController(IAuthenticationService authenticationService) : ControllerBase
     {
-        IAuthenticationService _authenticationService = authenticationService;
+       private readonly IAuthenticationService _authenticationService = authenticationService;
 
 
         [HttpPost]
@@ -67,7 +60,7 @@ namespace ProjectManagementSystem.Controllers.User
 
             if (serviceResponse.Message == SignInServiceResponseMessages.InvalidUserCredentials)
                 return StatusCode(StatusCodes.Status400BadRequest,
-                     new SignUpResponse
+                     new SignInResponse
                      {
                          Status = serviceResponse.Message,
                          Message = "User Not Exists!"
@@ -75,13 +68,53 @@ namespace ProjectManagementSystem.Controllers.User
 
             if (serviceResponse.Message == SignInServiceResponseMessages.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                     new SignUpResponse
+                     new SignInResponse
                      {
                          Status = serviceResponse.Message,
                          Message = "InternulServerError!"
                      });
 
-            return Ok(serviceResponse);
+            return Ok(new SignInResponse
+            {
+                Status= serviceResponse.Message,
+                Message= "User Login successfully!",
+                Token=serviceResponse.Token,
+                RefrshToken=serviceResponse.RefrshToken
+            });
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        [Route("refresh")]
+        public async Task<IActionResult> Refresh()
+        {
+            var email = HttpContext.User.Claims.FirstOrDefault(c=>c.Type=="Email");
+
+            var serviceResponse = await _authenticationService.RefreshToken(new RefreshTokenRequest(email.Value));
+
+            if (serviceResponse.Message == RefreshTokenServiceResponseMessages.ProcessFaild)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                     new RefreshTokenResponse
+                     {
+                         Status = serviceResponse.Message,
+                         Message = "RefreshingFaild"
+                     });
+
+            if (serviceResponse.Message == RefreshTokenServiceResponseMessages.InternalError)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                     new RefreshTokenResponse
+                     {
+                         Status = serviceResponse.Message,
+                         Message = "InternulServerError!"
+                     });
+
+            return Ok(new RefreshTokenResponse
+            {
+                Status= serviceResponse.Message,
+                Message= "Refresh Token successfully!",
+                Token = serviceResponse.Token
+            });
         }
     }
 }
