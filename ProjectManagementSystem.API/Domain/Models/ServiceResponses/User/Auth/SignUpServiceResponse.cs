@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.User.Auth
 {
-    public class SignUpServiceResponse(string message)
+    public class SignUpServiceResponse(string status)
     {
-        public string Message { get; set; } = message;
+        public string Message { get; set; }
+        public string Status { get; set; } = status;
     }
-    public static class SignUpServiceResponseMessages
+    public static class SignUpServiceResponseStatus
     {
         public const string Success = "Success";
         public const string EmailExists = "EmailExists";
