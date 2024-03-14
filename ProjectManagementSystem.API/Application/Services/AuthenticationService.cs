@@ -36,25 +36,36 @@ namespace Application.Services
                 var emailExists = await _userManager.FindByEmailAsync(request.Email);
 
                 if (emailExists != null)
-                    return new SignUpServiceResponse(SignUpServiceResponseMessages.EmailExists);
+                    return new SignUpServiceResponse(SignUpServiceResponseStatus.EmailExists);
 
                 ApplicationUser user = new()
                 {
                     Email = request.Email,
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = request.Name
+                    FullName = request.FullName,
+                    UserName=request.Email
                 };
 
                 var result = await _userManager.CreateAsync(user, request.Password);
-
+                
                 if (!result.Succeeded)
-                    return new SignUpServiceResponse(SignUpServiceResponseMessages.CreationFaild);
-
-                return new SignUpServiceResponse(SignUpServiceResponseMessages.Success);
+                {
+                    string errors="";
+                    foreach (var error in result.Errors)
+                    {
+                        errors += $"  {error.Description}";
+                    }
+                    return new SignUpServiceResponse(SignUpServiceResponseStatus.CreationFaild)
+                    {
+                        Message = errors
+                    };
+                }
+                   
+                return new SignUpServiceResponse(SignUpServiceResponseStatus.Success);
             }
             catch
             {
-                return new SignUpServiceResponse(SignUpServiceResponseMessages.InternalError);
+                return new SignUpServiceResponse(SignUpServiceResponseStatus.InternalError);
             }
         }
 
@@ -70,7 +81,7 @@ namespace Application.Services
 
                     var authClaims = new List<Claim>
                     {
-                        new("Name", user.UserName),
+                        new("Name", user.FullName),
                         new("Email", user.Email)
                     };
 
@@ -107,7 +118,7 @@ namespace Application.Services
                     var authClaims = new List<Claim>
                     {
                          new("Name", user.UserName),
-                         new("Email", user.Email)
+                         new("Email", user.Email.ToLower())
                     };
 
                     foreach (var userRole in userRoles)
@@ -127,7 +138,6 @@ namespace Application.Services
             {
                 return new RefreshTokenServiceResponse(RefreshTokenServiceResponseMessages.InternalError);
             }
-
         }
     }
 }

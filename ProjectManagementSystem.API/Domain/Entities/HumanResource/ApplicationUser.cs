@@ -12,6 +12,8 @@ namespace Domain.Entities.HumanResource
 {
     public class ApplicationUser:IdentityUser
     {
+        public string FullName { get; set; }
+
         //OrgRel
         public List<Organization> Organizations { get; set; }
 

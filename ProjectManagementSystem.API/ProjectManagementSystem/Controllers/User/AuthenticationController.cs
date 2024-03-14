@@ -20,33 +20,33 @@ namespace ProjectManagementSystem.Controllers.User
         {
            var serviceResponse =await _authenticationService.SignUpUser(request);
 
-            if (serviceResponse.Message == SignUpServiceResponseMessages.EmailExists)
+            if (serviceResponse.Status == SignUpServiceResponseStatus.EmailExists)
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new SignUpResponse
                     {
-                        Status = serviceResponse.Message,
+                        Status = serviceResponse.Status,
                         Message = "User already exists!"
                     });
 
-            if (serviceResponse.Message == SignUpServiceResponseMessages.CreationFaild)
+            if (serviceResponse.Status == SignUpServiceResponseStatus.CreationFaild)
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new SignUpResponse
                     {
-                        Status = serviceResponse.Message,
-                        Message = "User creation failed! Please check user details and try again."
+                        Status = serviceResponse.Status,
+                        Message = serviceResponse.Message
                     });
 
-            if (serviceResponse.Message == SignUpServiceResponseMessages.InternalError)
+            if (serviceResponse.Status == SignUpServiceResponseStatus.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new SignUpResponse
                     {
-                        Status = serviceResponse.Message,
+                        Status = serviceResponse.Status,
                         Message = "InternulServerError!"
                     });
 
             return Ok(new SignUpResponse
             {
-                Status = serviceResponse.Message,
+                Status = serviceResponse.Status,
                 Message = "User created successfully!"
             });
         }
