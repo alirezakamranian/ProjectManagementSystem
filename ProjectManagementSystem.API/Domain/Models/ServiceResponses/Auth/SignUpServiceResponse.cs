@@ -1,4 +1,5 @@
 ﻿
+using Domain.Models.ServiceResponses.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,16 +8,13 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.Auth
 {
-    public class SignUpServiceResponse(string status)
+    public class SignUpServiceResponse(string status): ServiceResponseBase(status)
     {
-        public string Status { get; set; } = status;
         public string Message { get; set; }
     }
-    public static class SignUpServiceResponseStatus
+    public class SignUpServiceResponseStatus:ServiceResponseStatusBase
     {
-        public const string Success = "Success";
         public const string EmailExists = "EmailExists";
         public const string CreationFaild = "CreationFaild";
-        public const string InternalError = "InternalError";
     }
 }
