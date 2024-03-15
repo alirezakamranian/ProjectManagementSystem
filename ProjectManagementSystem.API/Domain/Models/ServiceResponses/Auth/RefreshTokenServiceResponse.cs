@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Models.ServiceResponses.User.Auth
+namespace Domain.Models.ServiceResponses.Auth
 {
     public class RefreshTokenServiceResponse(string message)
     {
-        public string Message { get; set; } = message;
+        public string Status { get; set; } = message;
         public string Token { get; set; }
     }
-    public static class RefreshTokenServiceResponseMessages
+    public static class RefreshTokenServiceResponseStatus
     {
         public const string Success = "Success";
         public const string ProcessFaild = "ProcessFaild";

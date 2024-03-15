@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Domain.Models.Dtos.Auth.Request;
 using Domain.Models.Dtos.Auth.Response;
-using Domain.Models.ServiceResponses.User.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Domain.Services.ApiServices;
+using Domain.Models.ServiceResponses.Auth;
 namespace ProjectManagementSystem.Controllers.User
 {
     [Route("api/user/auth")]
@@ -12,7 +12,6 @@ namespace ProjectManagementSystem.Controllers.User
     public class AuthenticationController(IAuthenticationService authenticationService) : ControllerBase
     {
        private readonly IAuthenticationService _authenticationService = authenticationService;
-
 
         [HttpPost]
         [Route("register")]
@@ -58,25 +57,25 @@ namespace ProjectManagementSystem.Controllers.User
         {
             var serviceResponse=await _authenticationService.SignInUser(request);
 
-            if (serviceResponse.Message == SignInServiceResponseMessages.InvalidUserCredentials)
+            if (serviceResponse.Status == SignInServiceResponseStatus.InvalidUserCredentials)
                 return StatusCode(StatusCodes.Status400BadRequest,
                      new SignInResponse
                      {
-                         Status = serviceResponse.Message,
+                         Status = serviceResponse.Status,
                          Message = "UserNotExists!"
                      });
 
-            if (serviceResponse.Message == SignInServiceResponseMessages.InternalError)
+            if (serviceResponse.Status == SignInServiceResponseStatus.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                      new SignInResponse
                      {
-                         Status = serviceResponse.Message,
+                         Status = serviceResponse.Status,
                          Message = "InternulServerError!"
                      });
 
             return Ok(new SignInResponse
             {
-                Status= serviceResponse.Message,
+                Status= serviceResponse.Status,
                 Message= "User Login successfully!",
                 Token=serviceResponse.Token,
                 RefrshToken=serviceResponse.RefrshToken
@@ -93,25 +92,25 @@ namespace ProjectManagementSystem.Controllers.User
 
             var serviceResponse = await _authenticationService.RefreshToken(new RefreshTokenRequest(email.Value));
 
-            if (serviceResponse.Message == RefreshTokenServiceResponseMessages.ProcessFaild)
+            if (serviceResponse.Status == RefreshTokenServiceResponseStatus.ProcessFaild)
                 return StatusCode(StatusCodes.Status400BadRequest,
                      new RefreshTokenResponse
                      {
-                         Status = serviceResponse.Message,
+                         Status = serviceResponse.Status,
                          Message = "RefreshingFaild"
                      });
 
-            if (serviceResponse.Message == RefreshTokenServiceResponseMessages.InternalError)
+            if (serviceResponse.Status == RefreshTokenServiceResponseStatus.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                      new RefreshTokenResponse
                      {
-                         Status = serviceResponse.Message,
+                         Status = serviceResponse.Status,
                          Message = "InternulServerError!"
                      });
 
             return Ok(new RefreshTokenResponse
             {
-                Status= serviceResponse.Message,
+                Status= serviceResponse.Status,
                 Message= "RefreshTokenSuccessfully!",
                 Token = serviceResponse.Token
             });

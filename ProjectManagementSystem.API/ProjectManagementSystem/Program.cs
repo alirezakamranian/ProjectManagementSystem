@@ -18,13 +18,11 @@ builder.Services.ConfigureSwagger();
 //Auth
 builder.Services.ConfigureAuth(builder);
 
+//ApiServices
+builder.Services.ConfigureApiServices();
+
 //InternalServices
-builder.Services.ConfigureAuthenticationservice();
-builder.Services.ConfigureOrganizationService();
-
-//TokenGenerator
-builder.Services.ConfigureTokenGenerator();
-
+builder.Services.ConfigureInternalServices();
 
 
 var app = builder.Build();

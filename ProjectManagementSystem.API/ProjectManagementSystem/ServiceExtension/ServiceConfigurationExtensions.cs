@@ -16,22 +16,24 @@ namespace ProjectManagementSystem.ServiceExtension
         //Mvc
         public static void ConfigureMvc(this IServiceCollection services) =>
             services.AddControllers();
+
         //DbContext
         public static void ConfigureDbContext(this IServiceCollection services, WebApplicationBuilder builder) =>
             services.AddDbContext<DataContext>(options => 
             options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+
         //Swagger
         public static void ConfigureSwagger(this IServiceCollection services)
         {
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }
+
         //AuthAndIdentity
         public static void ConfigureAuth(this IServiceCollection services, WebApplicationBuilder builder)
         {
             // Identity
             services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
-
 
             // Authentication &  Jwt Bearer
             services.AddAuthentication(options =>
@@ -55,20 +57,21 @@ namespace ProjectManagementSystem.ServiceExtension
                 };
             });
         }
-        //AuthService
-        public static void ConfigureAuthenticationservice(this IServiceCollection services)
+
+        //ApiServices
+        public static void ConfigureApiServices(this IServiceCollection services)
         {
+            //AuthService
              services.AddTransient<IAuthenticationService, AuthenticationService>();
+            //OrgService
+             services.AddTransient<IOrganizationService, OrganizationService>();
         }
-        //OrgService
-        public static void ConfigureOrganizationService(this IServiceCollection services)
+
+        //InternalServices
+        public static void ConfigureInternalServices(this IServiceCollection services)
         {
-            services.AddTransient<IOrganizationService, OrganizationService>();
-        }
-        //TokenGenerator
-        public static void ConfigureTokenGenerator(this IServiceCollection services)
-        {
-            services.AddTransient<ITokenGenerator, TokenGenerator>();
+            //TokenGenerator
+             services.AddTransient<ITokenGenerator, TokenGenerator>();
         }
     }
 }
