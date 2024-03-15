@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Services;
 using Domain.Models.Dtos.Auth.Request;
 using Domain.Models.Dtos.Auth.Response;
 using Domain.Models.ServiceResponses.User.Auth;
 using Microsoft.AspNetCore.Authorization;
+using Domain.Services.ApiServices;
 namespace ProjectManagementSystem.Controllers.User
 {
     [Route("api/user/auth")]
@@ -47,7 +47,7 @@ namespace ProjectManagementSystem.Controllers.User
             return Ok(new SignUpResponse
             {
                 Status = serviceResponse.Status,
-                Message = "User created successfully!"
+                Message = "UserCreatedSuccessfully!"
             });
         }
 
@@ -63,7 +63,7 @@ namespace ProjectManagementSystem.Controllers.User
                      new SignInResponse
                      {
                          Status = serviceResponse.Message,
-                         Message = "User Not Exists!"
+                         Message = "UserNotExists!"
                      });
 
             if (serviceResponse.Message == SignInServiceResponseMessages.InternalError)
@@ -112,7 +112,7 @@ namespace ProjectManagementSystem.Controllers.User
             return Ok(new RefreshTokenResponse
             {
                 Status= serviceResponse.Message,
-                Message= "Refresh Token successfully!",
+                Message= "RefreshTokenSuccessfully!",
                 Token = serviceResponse.Token
             });
         }

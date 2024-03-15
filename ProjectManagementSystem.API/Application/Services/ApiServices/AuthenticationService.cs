@@ -1,5 +1,4 @@
-﻿using Domain.Services;
-using Infrastructure.DataAccess;
+﻿using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,8 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using Domain.Services.InternalServices;
 using Application.Services.InternalServices;
-namespace Application.Services
+using Domain.Services.ApiServices;
+namespace Application.Services.ApiServices
 {
     public class AuthenticationService(UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
@@ -43,14 +43,14 @@ namespace Application.Services
                     Email = request.Email,
                     SecurityStamp = Guid.NewGuid().ToString(),
                     FullName = request.FullName,
-                    UserName=request.Email
+                    UserName = request.Email
                 };
 
                 var result = await _userManager.CreateAsync(user, request.Password);
-                
+
                 if (!result.Succeeded)
                 {
-                    string errors="";
+                    string errors = "";
                     foreach (var error in result.Errors)
                     {
                         errors += $"  {error.Description}";
@@ -60,7 +60,7 @@ namespace Application.Services
                         Message = errors
                     };
                 }
-                   
+
                 return new SignUpServiceResponse(SignUpServiceResponseStatus.Success);
             }
             catch
@@ -92,8 +92,8 @@ namespace Application.Services
 
                     return new SignInServiceResponse(SignInServiceResponseMessages.Success)
                     {
-                            Token = new JwtSecurityTokenHandler().WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddHours(1), authClaims)),
-                            RefrshToken = new JwtSecurityTokenHandler().WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddMonths(1), authClaims))   
+                        Token = new JwtSecurityTokenHandler().WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddHours(1), authClaims)),
+                        RefrshToken = new JwtSecurityTokenHandler().WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddMonths(1), authClaims))
                     };
                 }
 
@@ -117,8 +117,8 @@ namespace Application.Services
 
                     var authClaims = new List<Claim>
                     {
-                         new("Name", user.UserName),
-                         new("Email", user.Email.ToLower())
+                         new("Name", user.FullName),
+                         new("Email", user.Email)
                     };
 
                     foreach (var userRole in userRoles)
