@@ -14,6 +14,7 @@ namespace ProjectManagementSystem.Controllers.Organization
     {
 
         private readonly IOrganizationService _organizationService = organizationService;
+
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateOrganization([FromBody] CreateOrganizationRequest request)

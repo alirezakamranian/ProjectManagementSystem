@@ -9,7 +9,6 @@ using Domain.Entities.HumanResource;
 using Azure;
 using Domain.Models.Dtos.Auth.Response;
 using Domain.Models.Dtos.Auth.Request;
-using Domain.Models.ServiceResponses.User.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,14 +17,13 @@ using Microsoft.IdentityModel.Tokens;
 using Domain.Services.InternalServices;
 using Application.Services.InternalServices;
 using Domain.Services.ApiServices;
+using Domain.Models.ServiceResponses.Auth;
 namespace Application.Services.ApiServices
 {
     public class AuthenticationService(UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager,
         ITokenGenerator tokenGenerator) : IAuthenticationService
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
-        private readonly RoleManager<IdentityRole> _roleManager = roleManager;
         private readonly ITokenGenerator _tokenGenerator = tokenGenerator;
 
 
@@ -90,18 +88,18 @@ namespace Application.Services.ApiServices
                         authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                     }
 
-                    return new SignInServiceResponse(SignInServiceResponseMessages.Success)
+                    return new SignInServiceResponse(SignInServiceResponseStatus.Success)
                     {
                         Token = new JwtSecurityTokenHandler().WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddHours(1), authClaims)),
                         RefrshToken = new JwtSecurityTokenHandler().WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddMonths(1), authClaims))
                     };
                 }
 
-                return new SignInServiceResponse(SignInServiceResponseMessages.InvalidUserCredentials);
+                return new SignInServiceResponse(SignInServiceResponseStatus.InvalidUserCredentials);
             }
             catch
             {
-                return new SignInServiceResponse(SignInServiceResponseMessages.InternalError);
+                return new SignInServiceResponse(SignInServiceResponseStatus.InternalError);
             }
         }
 
@@ -126,17 +124,17 @@ namespace Application.Services.ApiServices
                         authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                     }
 
-                    return new RefreshTokenServiceResponse(RefreshTokenServiceResponseMessages.Success)
+                    return new RefreshTokenServiceResponse(RefreshTokenServiceResponseStatus.Success)
                     {
                         Token = new JwtSecurityTokenHandler()
                         .WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddHours(1), authClaims))
                     };
                 }
-                return new RefreshTokenServiceResponse(RefreshTokenServiceResponseMessages.ProcessFaild);
+                return new RefreshTokenServiceResponse(RefreshTokenServiceResponseStatus.ProcessFaild);
             }
             catch
             {
-                return new RefreshTokenServiceResponse(RefreshTokenServiceResponseMessages.InternalError);
+                return new RefreshTokenServiceResponse(RefreshTokenServiceResponseStatus.InternalError);
             }
         }
     }
