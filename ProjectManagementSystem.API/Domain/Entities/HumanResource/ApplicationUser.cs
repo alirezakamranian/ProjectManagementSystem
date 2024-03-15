@@ -22,6 +22,5 @@ namespace Domain.Entities.HumanResource
 
         //NotifRel
         public List<Notification> Notifications { get; set; }
-
     }
 }

@@ -20,9 +20,11 @@ builder.Services.ConfigureAuth(builder);
 
 //InternalServices
 builder.Services.ConfigureAuthenticationservice();
+builder.Services.ConfigureOrganizationService();
 
 //TokenGenerator
 builder.Services.ConfigureTokenGenerator();
+
 
 
 var app = builder.Build();

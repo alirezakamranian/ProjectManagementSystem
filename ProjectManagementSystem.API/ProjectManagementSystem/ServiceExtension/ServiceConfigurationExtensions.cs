@@ -1,15 +1,14 @@
-﻿
-using Application.Services;
-using Infrastructure.DataAccess;
+﻿using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
-using Domain.Services;
 using Domain.Entities.HumanResource;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Domain.Services.InternalServices;
+using Domain.Services.ApiServices;
+using Application.Services.ApiServices;
 using Application.Services.InternalServices;
+using Domain.Services.InternalServices;
 namespace ProjectManagementSystem.ServiceExtension
 {
     public static class ServiceConfigurationExtensions
@@ -60,6 +59,11 @@ namespace ProjectManagementSystem.ServiceExtension
         public static void ConfigureAuthenticationservice(this IServiceCollection services)
         {
              services.AddTransient<IAuthenticationService, AuthenticationService>();
+        }
+        //OrgService
+        public static void ConfigureOrganizationService(this IServiceCollection services)
+        {
+            services.AddTransient<IOrganizationService, OrganizationService>();
         }
         //TokenGenerator
         public static void ConfigureTokenGenerator(this IServiceCollection services)
