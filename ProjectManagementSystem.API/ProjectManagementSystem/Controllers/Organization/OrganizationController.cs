@@ -145,7 +145,46 @@ namespace ProjectManagementSystem.Controllers.Organization
             {
                 Status = serviceResponse.Status,
                 Message = "Success!",
-                Organizations= serviceResponse.Organizations
+                Organizations = serviceResponse.Organizations
+            });
+        }
+
+        [Authorize]
+        [HttpPost("invite")]
+        public async Task<IActionResult> InviteEmployee([FromBody] InviteEmployeeRequest request)
+        {
+            if (request == null)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new InviteEmployeeResponse
+                        {
+                            Status = "InvaildData",
+                            Message = "InviteDetailsIsRequired!"
+                        });
+
+            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+
+            var serviceResponse = await _organizationService.InviteEmployee(request, email);
+
+            if (serviceResponse.Status == InviteEmployeeServiceResponseStatus.InternalError)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new InviteEmployeeResponse
+                        {
+                            Status = serviceResponse.Status,
+                            Message = "InternulServerError!"
+                        });
+
+            if (serviceResponse.Status == InviteEmployeeServiceResponseStatus.UserNotExists)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new InviteEmployeeResponse
+                        {
+                            Status = serviceResponse.Status,
+                            Message = "UserWithThisEmailNotExists!"
+                        });
+
+            return Ok(new GetSubscribedOrganizationsResponse
+            {
+                Status = serviceResponse.Status,
+                Message = "RequestSent!",
             });
         }
     }

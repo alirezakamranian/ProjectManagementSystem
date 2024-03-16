@@ -38,10 +38,10 @@ namespace Application.Services.ApiServices
 
                 ApplicationUser user = new()
                 {
-                    Email = request.Email,
+                    Email = request.Email.ToLower(),
                     SecurityStamp = Guid.NewGuid().ToString(),
                     FullName = request.FullName,
-                    UserName = request.Email
+                    UserName = request.Email.ToLower()
                 };
 
                 var result = await _userManager.CreateAsync(user, request.Password);

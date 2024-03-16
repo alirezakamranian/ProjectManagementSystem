@@ -11,9 +11,10 @@ namespace Domain.Services.ApiServices
 {
     public interface IOrganizationService
     {
-        public Task<CreateOrganizationServiceResponse> CreateOrganization(CreateOrganizationRequest request,string email);
-        public Task<UpdateOrganizationServiceResponse> UpdateOrganization(UpdateOrganizationRequest request,string email);
+        public Task<CreateOrganizationServiceResponse> CreateOrganization(CreateOrganizationRequest request, string email);
+        public Task<UpdateOrganizationServiceResponse> UpdateOrganization(UpdateOrganizationRequest request, string email);
         public Task<GetSubscribedOrganizationsServiceResponse> GetSubscribedOrganizations(GetSubscribedOrganizationsRequest request, string email);
         public Task<GetOrganizationServiceResponse> GetOrganization(GetOrganizationRequest request);
+        public Task<InviteEmployeeServiceResponse> InviteEmployee(InviteEmployeeRequest request, string issuerEmail);
     }
 }
