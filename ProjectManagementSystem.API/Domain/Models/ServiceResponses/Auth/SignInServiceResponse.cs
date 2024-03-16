@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Dtos.Auth.Response;
+using Domain.Models.ServiceResponses.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,16 +8,14 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.Auth
 {
-    public class SignInServiceResponse(string message)
+    public class SignInServiceResponse(string status): ServiceResponseBase(status)
     {
-        public string Status { get; set; } = message.ToString();
+
         public string Token { get; set; }
         public string RefrshToken { get; set; }
     }
-    public static class SignInServiceResponseStatus
+    public  class SignInServiceResponseStatus : ServiceResponseStatusBase
     {
-        public const string Success = "Success";
         public const string InvalidUserCredentials = "InvalidUserCredentials";
-        public const string InternalError = "InternalError";
     }
 }

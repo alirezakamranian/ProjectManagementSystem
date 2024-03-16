@@ -24,13 +24,14 @@ namespace ProjectManagementSystem.Controllers.Organization
                         new CreateOrganizationResponse
                         {
                             Status = "InvaildData",
-                            Message = "OrganizationNameIsRequired"
+                            Message = "OrganizationNameIsRequired!"
                         });
+
             var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
 
-            var serviceResponse= await  _organizationService.CreateOrganization(request, email);
+            var serviceResponse = await _organizationService.CreateOrganization(request, email);
 
-            if (serviceResponse.Status == CreateOrganizationServiceResponseStatus.InternalError) 
+            if (serviceResponse.Status == CreateOrganizationServiceResponseStatus.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                      new RefreshTokenResponse
                      {
@@ -40,8 +41,111 @@ namespace ProjectManagementSystem.Controllers.Organization
 
             return Ok(new CreateOrganizationResponse
             {
-                Status= serviceResponse.Status,
-                Message= "OrganizationCreatedSuccessfully!"
+                Status = serviceResponse.Status,
+                Message = "OrganizationCreatedSuccessfully!"
+            });
+        }
+
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> UpdateOrganization([FromBody] UpdateOrganizationRequest request)
+        {
+            if (request == null)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new UpdateOrganizationResponse
+                        {
+                            Status = "InvaildData",
+                            Message = "OrganizationDetailsIsRequired"
+                        });
+
+            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+
+            var serviceResponse = await _organizationService.UpdateOrganization(request, email);
+
+            if (serviceResponse.Status == UpdateOrganizationServiceResponseStatus.OrganizationNotExists)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new CreateOrganizationResponse
+                        {
+                            Status = serviceResponse.Status,
+                            Message = "OrganizationWithThisUserOrIdNotExists!"
+                        });
+
+            if (serviceResponse.Status == UpdateOrganizationServiceResponseStatus.InternalError)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new CreateOrganizationResponse
+                        {
+                            Status = serviceResponse.Status,
+                            Message = "InternulServerError!"
+                        });
+
+            return Ok(new CreateOrganizationResponse
+            {
+                Status = serviceResponse.Status,
+                Message = "OrganizationUpdatedSuccessfully!"
+            });
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetOrganization([FromBody] GetOrganizationRequest request)
+        {
+
+            if (request == null)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new GetOrganizationResponse
+                        {
+                            Status = "InvaildData",
+                            Message = "OrganizationDetailsIsRequired"
+                        });
+
+            var serviceResponse = await _organizationService.GetOrganization(request);
+
+            if (serviceResponse.Status == GetOrganizationServiceResponseStatus.OrganizationNotExists)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new GetOrganizationResponse
+                        {
+                            Status = serviceResponse.Status,
+                            Message = "OrganizationWithThisUserOrIdNotExists!"
+                        });
+
+            if (serviceResponse.Status == GetOrganizationServiceResponseStatus.InternalError)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new GetOrganizationResponse
+                        {
+                            Status = serviceResponse.Status,
+                            Message = "InternulServerError!"
+                        });
+
+            return Ok(new GetOrganizationResponse
+            {
+                Status = serviceResponse.Status,
+                Message = "Success!",
+                Name = serviceResponse.Name,
+                Projects = serviceResponse.Projects
+            });
+        }
+
+        [Authorize]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetSubscribedOrganizations([FromBody] GetSubscribedOrganizationsRequest request)
+        {
+            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+
+            var serviceResponse = await _organizationService.GetSubscribedOrganizations(request, email);
+
+            if (serviceResponse.Status == GetSubscribedOrganizationsServiceResponseStatus.InternalError)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new GetSubscribedOrganizationsResponse
+                        {
+                            Status = serviceResponse.Status,
+                            Message = "InternulServerError!"
+                        });
+
+            return Ok(new GetSubscribedOrganizationsResponse
+            {
+                Status = serviceResponse.Status,
+                Message = "Success!",
+                Organizations= serviceResponse.Organizations
             });
         }
     }
