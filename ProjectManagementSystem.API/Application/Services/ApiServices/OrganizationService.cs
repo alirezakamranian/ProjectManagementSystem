@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities.HumanResource;
+using Domain.Entities.Common;
 using Domain.Models.Dtos.Organization.Request;
 using Domain.Models.Dtos.Organization.Response;
 using Domain.Models.ServiceResponses.Organization;
@@ -11,17 +12,18 @@ using Domain.Services.ApiServices;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Domain.Constants.Notification;
 namespace Application.Services.ApiServices
 {
     public class OrganizationService(DataContext context) : IOrganizationService
     {
         private readonly DataContext _context = context;
-        public async Task<CreateOrganizationServiceResponse> CreateOrganization(CreateOrganizationRequest request,string email)
+        public async Task<CreateOrganizationServiceResponse> CreateOrganization(CreateOrganizationRequest request, string email)
         {
             try
             {
-                var user = await _context.Users.Include(u=>u.Organizations)
-                    .FirstOrDefaultAsync(u=>u.Email == email);
+                var user = await _context.Users.Include(u => u.Organizations)
+                    .FirstOrDefaultAsync(u => u.Email == email);
 
                 user.Organizations.Add(new Organization
                 {
@@ -32,12 +34,12 @@ namespace Application.Services.ApiServices
                 return new CreateOrganizationServiceResponse(
                     CreateOrganizationServiceResponseStatus.Success);
             }
-            catch 
-            { 
+            catch
+            {
                 return new CreateOrganizationServiceResponse(
                     CreateOrganizationServiceResponseStatus.InternalError);
             }
-           
+
         }
 
         public async Task<UpdateOrganizationServiceResponse> UpdateOrganization(UpdateOrganizationRequest request, string email)
@@ -50,9 +52,9 @@ namespace Application.Services.ApiServices
                 var org = user.Organizations.Where(o => o.Id == request.OrganizationId)
                     .Where(o => o.OwnerId == user.Id).FirstOrDefault();
 
-                if(org == null) 
-                  return new UpdateOrganizationServiceResponse(
-                      UpdateOrganizationServiceResponseStatus.OrganizationNotExists);
+                if (org == null)
+                    return new UpdateOrganizationServiceResponse(
+                        UpdateOrganizationServiceResponseStatus.OrganizationNotExists);
 
                 org.Name = request.NewName;
 
@@ -61,7 +63,7 @@ namespace Application.Services.ApiServices
                 return new UpdateOrganizationServiceResponse(
                     UpdateOrganizationServiceResponseStatus.Success);
             }
-            catch 
+            catch
             {
                 return new UpdateOrganizationServiceResponse(
                     UpdateOrganizationServiceResponseStatus.InternalError);
@@ -81,19 +83,19 @@ namespace Application.Services.ApiServices
 
                 return new GetOrganizationServiceResponse(
                        GetOrganizationServiceResponseStatus.Success)
-                       {
-                           Name = org.Name,
-                           Projects = org.Projects
-                       };
+                {
+                    Name = org.Name,
+                    Projects = org.Projects
+                };
             }
             catch (Exception)
             {
                 return new GetOrganizationServiceResponse(
-                    GetOrganizationServiceResponseStatus.InternalError);
+                     GetOrganizationServiceResponseStatus.InternalError);
             }
         }
 
-        public async Task<GetSubscribedOrganizationsServiceResponse> GetSubscribedOrganizations(GetSubscribedOrganizationsRequest request,string email)
+        public async Task<GetSubscribedOrganizationsServiceResponse> GetSubscribedOrganizations(GetSubscribedOrganizationsRequest request, string email)
         {
             try
             {
@@ -126,10 +128,40 @@ namespace Application.Services.ApiServices
 
                 return response;
             }
-            catch 
+            catch
             {
                 return new GetSubscribedOrganizationsServiceResponse(
                      GetSubscribedOrganizationsServiceResponseStatus.InternalError);
+            }
+        }
+
+        public async Task<InviteEmployeeServiceResponse> InviteEmployee(InviteEmployeeRequest request , string issuerEmail)
+        {
+            try
+            {
+                var targetUser = await _context.Users.Include(u => u.Notifications)
+                                .FirstOrDefaultAsync(u => u.Email == request.UserEmail.ToLower());
+
+                if (targetUser == null)
+                    return new InviteEmployeeServiceResponse(
+                         InviteEmployeeServiceResponseStatus.UserNotExists);
+
+                targetUser.Notifications.Add(new Notification
+                {
+                    Type = NotificationTypes.Invite,
+                    Title = "OrganizationInvitation",
+                    Description = request.Message + $" From: {issuerEmail}"
+                });
+
+                await  _context.SaveChangesAsync();
+
+                return new InviteEmployeeServiceResponse(
+                     InviteEmployeeServiceResponseStatus.Success);
+            }
+            catch 
+            {
+                return new InviteEmployeeServiceResponse(
+                     InviteEmployeeServiceResponseStatus.InternalError);
             }
         }
     }
