@@ -93,5 +93,44 @@ namespace ProjectManagementSystem.Controllers.Invitation
                 Message = "InviteAcceptedSuccessfully!"
             });
         }
+
+        [Authorize]
+        [HttpPost("reject")]
+        public async Task<IActionResult> Reject([FromBody] RejectInvitationRequest request)
+        {
+            if (request == null)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                       new RejectInvitationRespons
+                       {
+                           Status = "InvaildData",
+                           Message = "ActionDetailsIsRequired!"
+                       });
+
+            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+
+            var serviceResponse = await _invitationService.RejectOrganizationInvitation(request, email);
+
+            if (serviceResponse.Status == RejectOrganizationInvitationServiceResponseStatus.NotificationNotExists)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                       new RejectInvitationRespons
+                       {
+                           Status = serviceResponse.Status,
+                           Message = "TargetNotificationNotExists!!"
+                       });
+
+            if (serviceResponse.Status == RejectOrganizationInvitationServiceResponseStatus.InternalError)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                       new RejectInvitationRespons
+                       {
+                           Status = serviceResponse.Status,
+                           Message = "InternulServerError!"
+                       });
+
+            return Ok(new RejectInvitationRespons
+            {
+                Status = serviceResponse.Status,
+                Message = "InviteRejectedSuccessfully!"
+            });
+        }
     }
 }

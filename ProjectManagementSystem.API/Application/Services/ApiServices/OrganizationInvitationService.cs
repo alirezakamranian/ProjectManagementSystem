@@ -88,5 +88,45 @@ namespace Application.Services.ApiServices
                      AcceptOrganizationInvitationServiceResponseStatus.InternalError);
             }
         }
+
+        public async Task<RejectOrganizationInvitationServiceResponse> RejectOrganizationInvitation(RejectInvitationRequest request, string email)
+        {
+            try
+            {
+                var user = await _context.Users.AsNoTracking()
+                 .FirstOrDefaultAsync(u => u.Email == email);
+
+                var notification = await _context.Notifications
+                    .Where(n => n.UserId == user.Id)
+                    .FirstOrDefaultAsync(n => n.Id == int.Parse(request.InviteId));
+
+                if (notification == null)
+                    return new RejectOrganizationInvitationServiceResponse(
+                         RejectOrganizationInvitationServiceResponseStatus.NotificationNotExists);
+
+                _context.Notifications.Remove(notification);
+
+                var issuer = await _context.Users.Include(u => u.Notifications)
+                  .FirstOrDefaultAsync(u => u.Email == notification.Issuer);
+
+                issuer.Notifications.Add(new Notification
+                {
+                    Type = NotificationTypes.Notice,
+                    Title = "InvitationRejected!",
+                    Description = $"YourInvitationToUser [{email}] Rejected!",
+                    Issuer = email
+                });
+
+                await _context.SaveChangesAsync();
+
+                return new RejectOrganizationInvitationServiceResponse(
+                     RejectOrganizationInvitationServiceResponseStatus.Success);
+            }
+            catch (Exception)
+            {
+                return new RejectOrganizationInvitationServiceResponse(
+                     RejectOrganizationInvitationServiceResponseStatus.InternalError);
+            }
+        }
     }
 }
