@@ -9,5 +9,6 @@ namespace Domain.Constants.Notification
     public class NotificationTypes
     {
         public const string Invite = "Invite";
+        public const string Notice = "Notice";
     }
 }

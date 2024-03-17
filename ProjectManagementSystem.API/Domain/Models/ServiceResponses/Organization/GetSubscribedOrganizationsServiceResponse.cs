@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.Organization
 {
-    public class GetSubscribedOrganizationsServiceResponse(string status):ServiceResponseBase(status)
+    public class GetSubscribedOrganizationsServiceResponse(string status) : ServiceResponseBase(status)
     {
-        public List<OrganizationForResponsteDto> Organizations{ get; set; }
+        public List<OrganizationForResponsteDto> Organizations { get; set; }
 
     }
-    public class GetSubscribedOrganizationsServiceResponseStatus:ServiceResponseStatusBase
+    public class GetSubscribedOrganizationsServiceResponseStatus : ServiceResponseStatusBase
     {
     }
     public class OrganizationForResponsteDto

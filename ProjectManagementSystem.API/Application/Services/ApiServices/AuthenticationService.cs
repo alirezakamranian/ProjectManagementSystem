@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Domain.Entities.HumanResource;
 using Azure;
 using Domain.Models.Dtos.Auth.Response;
-using Domain.Models.Dtos.Auth.Request;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,6 +17,7 @@ using Domain.Services.InternalServices;
 using Application.Services.InternalServices;
 using Domain.Services.ApiServices;
 using Domain.Models.ServiceResponses.Auth;
+using Domain.Models.Dtos.Auth.Request;
 namespace Application.Services.ApiServices
 {
     public class AuthenticationService(UserManager<ApplicationUser> userManager,

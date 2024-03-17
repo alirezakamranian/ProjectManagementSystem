@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Models.Dtos.Auth.Request;
 using Domain.Models.Dtos.Auth.Response;
 using Microsoft.AspNetCore.Authorization;
 using Domain.Services.ApiServices;
 using Domain.Models.ServiceResponses.Auth;
+using Domain.Models.Dtos.Auth.Request;
 namespace ProjectManagementSystem.Controllers.User
 {
     [Route("api/user/auth")]

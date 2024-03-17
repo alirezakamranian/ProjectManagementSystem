@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.Auth
 {
-    public class SignInServiceResponse(string status): ServiceResponseBase(status)
+    public class SignInServiceResponse(string status) : ServiceResponseBase(status)
     {
 
         public string Token { get; set; }
         public string RefrshToken { get; set; }
     }
-    public  class SignInServiceResponseStatus : ServiceResponseStatusBase
+    public class SignInServiceResponseStatus : ServiceResponseStatusBase
     {
         public const string InvalidUserCredentials = "InvalidUserCredentials";
     }

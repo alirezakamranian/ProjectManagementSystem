@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.Organization
 {
-    public class GetOrganizationServiceResponse(string status):ServiceResponseBase(status)
+    public class GetOrganizationServiceResponse(string status) : ServiceResponseBase(status)
     {
         public string Name { get; set; }
         public List<Project> Projects { get; set; }

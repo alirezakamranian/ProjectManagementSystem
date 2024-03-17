@@ -24,6 +24,8 @@ namespace Domain.Entities.Common
         [Required]
         public string Type { get; set; }
 
+        [Required]
+        public string Issuer { get; set; }
         //UserRel
         public string UserId { get; set; }
 
