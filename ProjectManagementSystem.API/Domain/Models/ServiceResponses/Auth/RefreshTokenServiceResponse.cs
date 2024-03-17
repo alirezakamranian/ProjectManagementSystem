@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.Auth
 {
-    public class RefreshTokenServiceResponse(string status): ServiceResponseBase(status)
+    public class RefreshTokenServiceResponse(string status) : ServiceResponseBase(status)
     {
         public string Token { get; set; }
     }

@@ -5,14 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities.HumanResource;
 using Domain.Entities.Common;
-using Domain.Models.Dtos.Organization.Request;
 using Domain.Models.Dtos.Organization.Response;
-using Domain.Models.ServiceResponses.Organization;
 using Domain.Services.ApiServices;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Domain.Constants.Notification;
+using Domain.Models.ServiceResponses.Organization;
+using Domain.Models.Dtos.Organization.Request;
 namespace Application.Services.ApiServices
 {
     public class OrganizationService(DataContext context) : IOrganizationService
@@ -132,36 +132,6 @@ namespace Application.Services.ApiServices
             {
                 return new GetSubscribedOrganizationsServiceResponse(
                      GetSubscribedOrganizationsServiceResponseStatus.InternalError);
-            }
-        }
-
-        public async Task<InviteEmployeeServiceResponse> InviteEmployee(InviteEmployeeRequest request , string issuerEmail)
-        {
-            try
-            {
-                var targetUser = await _context.Users.Include(u => u.Notifications)
-                                .FirstOrDefaultAsync(u => u.Email == request.UserEmail.ToLower());
-
-                if (targetUser == null)
-                    return new InviteEmployeeServiceResponse(
-                         InviteEmployeeServiceResponseStatus.UserNotExists);
-
-                targetUser.Notifications.Add(new Notification
-                {
-                    Type = NotificationTypes.Invite,
-                    Title = "OrganizationInvitation",
-                    Description = request.Message + $" From: {issuerEmail}"
-                });
-
-                await  _context.SaveChangesAsync();
-
-                return new InviteEmployeeServiceResponse(
-                     InviteEmployeeServiceResponseStatus.Success);
-            }
-            catch 
-            {
-                return new InviteEmployeeServiceResponse(
-                     InviteEmployeeServiceResponseStatus.InternalError);
             }
         }
     }

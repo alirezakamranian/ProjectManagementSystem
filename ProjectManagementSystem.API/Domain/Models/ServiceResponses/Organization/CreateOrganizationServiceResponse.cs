@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.Organization
 {
-    public class CreateOrganizationServiceResponse(string status): ServiceResponseBase(status)
+    public class CreateOrganizationServiceResponse(string status) : ServiceResponseBase(status)
     {
-       
+
     }
     public class CreateOrganizationServiceResponseStatus : ServiceResponseStatusBase
     {

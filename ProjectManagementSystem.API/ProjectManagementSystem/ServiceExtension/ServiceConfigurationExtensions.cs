@@ -20,7 +20,7 @@ namespace ProjectManagementSystem.ServiceExtension
         //DbContext
         public static void ConfigureDbContext(this IServiceCollection services, WebApplicationBuilder builder) =>
             services.AddDbContext<DataContext>(options => 
-            options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"), b => b.MigrationsAssembly("ProjectManagementSystem")));
 
         //Swagger
         public static void ConfigureSwagger(this IServiceCollection services)
@@ -65,6 +65,8 @@ namespace ProjectManagementSystem.ServiceExtension
              services.AddTransient<IAuthenticationService, AuthenticationService>();
             //OrgService
              services.AddTransient<IOrganizationService, OrganizationService>();
+            //OrgInvitation
+            services.AddTransient<IOrganizationInvitationService, OrganizationInvitationService>();
         }
 
         //InternalServices

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Models.Dtos.Organization.Request
+namespace Domain.Models.Dtos.OrganizationInvitation.Response
 {
-    public class InviteEmployeeRequest
+    public class InviteEmployeeResponse
     {
-        public string UserEmail { get; set; }
+        public string Status { get; set; }
         public string Message { get; set; }
     }
 }

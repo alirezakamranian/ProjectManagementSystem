@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Models.Dtos.Organization.Response
+namespace Domain.Models.Dtos.OrganizationInvitation.Response
 {
-    public class InviteEmployeeResponse
+    public class AcceptInvitationResponse
     {
         public string Status { get; set; }
         public string Message { get; set; }
