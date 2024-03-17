@@ -22,7 +22,7 @@ builder.Services.ConfigureAuth(builder);
 builder.Services.ConfigureApiServices();
 
 //InternalServices
-builder.Services.ConfigureInternalServices();
+//builder.Services.ConfigureInternalServices();
 
 
 var app = builder.Build();

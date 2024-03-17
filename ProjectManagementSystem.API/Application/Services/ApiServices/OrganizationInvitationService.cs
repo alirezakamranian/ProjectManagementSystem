@@ -1,8 +1,10 @@
-﻿using Domain.Constants.Notification;
+﻿using Application.Services.InternalServices;
+using Domain.Constants.Notification;
 using Domain.Entities.Common;
 using Domain.Models.Dtos.OrganizationInvitation.Request;
 using Domain.Models.ServiceResponses.OrganizationInvitation;
 using Domain.Services.ApiServices;
+using Domain.Services.InternalServices;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,10 +15,11 @@ using System.Threading.Tasks;
 
 namespace Application.Services.ApiServices
 {
-    public class OrganizationInvitationService(DataContext context) : IOrganizationInvitationService
+    public class OrganizationInvitationService(IInvitationPendingManager pendingManager, DataContext context) : IOrganizationInvitationService
     {
-
+        private IInvitationPendingManager _pendingManager = pendingManager;
         private readonly DataContext _context = context;
+
 
         public async Task<InviteEmployeeServiceResponse> InviteEmployee(InviteEmployeeRequest request, string issuerEmail)
         {
@@ -35,6 +38,16 @@ namespace Application.Services.ApiServices
                     Title = "OrganizationInvitation",
                     Issuer = issuerEmail,
                     Description = request.Message
+                });
+
+                await _context.SaveChangesAsync();
+
+                var notification = await _context.Notifications.AsNoTracking().FirstOrDefaultAsync(n => n.UserId == targetUser.Id);
+
+                _context.InvitationPendings.Add(new InvitationPending
+                {
+                    NotificationId = notification.Id,
+                    OrganizationId = int.Parse(request.OrganizationId)
                 });
 
                 await _context.SaveChangesAsync();
@@ -64,17 +77,23 @@ namespace Application.Services.ApiServices
                     return new AcceptOrganizationInvitationServiceResponse(
                          AcceptOrganizationInvitationServiceResponseStatus.NotificationNotExists);
 
+                var serviceResault = await _pendingManager.AcceptPending(notification.Id, user.Id);
+
+                if (serviceResault == "error")
+                    return new AcceptOrganizationInvitationServiceResponse(
+                     AcceptOrganizationInvitationServiceResponseStatus.InternalError);
+
                 _context.Notifications.Remove(notification);
 
-                var issuer = await _context.Users.Include(u=>u.Notifications)
+                var issuer = await _context.Users.Include(u => u.Notifications)
                     .FirstOrDefaultAsync(u => u.Email == notification.Issuer);
 
                 issuer.Notifications.Add(new Notification
                 {
-                    Type=NotificationTypes.Notice,
-                    Title="InvitationAccepted!",
-                    Description=$"YourInvitationToUser [{email}] accepted!",
-                    Issuer=email
+                    Type = NotificationTypes.Notice,
+                    Title = "InvitationAccepted!",
+                    Description = $"YourInvitationToUser [{email}] accepted!",
+                    Issuer = email
                 });
 
                 await _context.SaveChangesAsync();
@@ -103,6 +122,13 @@ namespace Application.Services.ApiServices
                 if (notification == null)
                     return new RejectOrganizationInvitationServiceResponse(
                          RejectOrganizationInvitationServiceResponseStatus.NotificationNotExists);
+
+                var serviceResault = await _pendingManager
+                    .RejectPending(int.Parse(request.InviteId), user.Id);
+
+                if (serviceResault == "error")
+                    return new RejectOrganizationInvitationServiceResponse(
+                     RejectOrganizationInvitationServiceResponseStatus.InternalError);
 
                 _context.Notifications.Remove(notification);
 
