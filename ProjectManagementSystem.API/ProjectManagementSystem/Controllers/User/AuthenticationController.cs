@@ -17,14 +17,22 @@ namespace ProjectManagementSystem.Controllers.User
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] SignUpRequest request)
         {
-           var serviceResponse =await _authenticationService.SignUpUser(request);
+            if (request == null)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                   new SignUpResponse
+                   {
+                       Status = "InvaildData",
+                       Message = "UserDetailsRequired!"
+                   });
+
+            var serviceResponse =await _authenticationService.SignUpUser(request);
 
             if (serviceResponse.Status == SignUpServiceResponseStatus.EmailExists)
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new SignUpResponse
                     {
                         Status = serviceResponse.Status,
-                        Message = "User already exists!"
+                        Message = "UserAlreadyExists!"
                     });
 
             if (serviceResponse.Status == SignUpServiceResponseStatus.CreationFaild)
@@ -55,6 +63,14 @@ namespace ProjectManagementSystem.Controllers.User
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] SignInRequest request)
         {
+            if (request == null)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                   new SignUpResponse
+                   {
+                       Status = "InvaildData",
+                       Message = "UserDetailsRequired!"
+                   });
+
             var serviceResponse=await _authenticationService.SignInUser(request);
 
             if (serviceResponse.Status == SignInServiceResponseStatus.InvalidUserCredentials)
@@ -76,7 +92,7 @@ namespace ProjectManagementSystem.Controllers.User
             return Ok(new SignInResponse
             {
                 Status= serviceResponse.Status,
-                Message= "User Login successfully!",
+                Message= "UserLoginsuccessfully!",
                 Token=serviceResponse.Token,
                 RefrshToken=serviceResponse.RefrshToken
             });
