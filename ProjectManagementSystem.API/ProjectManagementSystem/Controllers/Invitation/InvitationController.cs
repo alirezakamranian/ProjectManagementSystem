@@ -14,13 +14,13 @@ namespace ProjectManagementSystem.Controllers.Invitation
     public class InvitationController(IOrganizationInvitationService invitationService) : ControllerBase
     {
 
-        private readonly IOrganizationInvitationService _invitationService=invitationService;
+        private readonly IOrganizationInvitationService _invitationService = invitationService;
 
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> InviteEmployee([FromBody] InviteEmployeeRequest request)
         {
-            if (request == null)
+            if (string.IsNullOrEmpty(request.UserEmail) || request == null)
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new InviteEmployeeResponse
                         {
@@ -59,7 +59,7 @@ namespace ProjectManagementSystem.Controllers.Invitation
         [HttpPost("accept")]
         public async Task<IActionResult> Accept([FromBody] AcceptInvitationRequest request)
         {
-            if (request == null)
+            if (string.IsNullOrEmpty(request.InviteId) || request == null)
                 return StatusCode(StatusCodes.Status400BadRequest,
                        new AcceptInvitationResponse
                        {
@@ -79,14 +79,14 @@ namespace ProjectManagementSystem.Controllers.Invitation
                            Message = "TargetNotificationNotExists!!"
                        });
 
-            if (serviceResponse.Status==AcceptOrganizationInvitationServiceResponseStatus.InternalError)
+            if (serviceResponse.Status == AcceptOrganizationInvitationServiceResponseStatus.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                        new AcceptInvitationResponse
                        {
                            Status = serviceResponse.Status,
                            Message = "InternulServerError!"
                        });
-           
+
             return Ok(new AcceptInvitationResponse
             {
                 Status = serviceResponse.Status,
@@ -98,7 +98,7 @@ namespace ProjectManagementSystem.Controllers.Invitation
         [HttpPost("reject")]
         public async Task<IActionResult> Reject([FromBody] RejectInvitationRequest request)
         {
-            if (request == null)
+            if (string.IsNullOrEmpty(request.InviteId) || request == null)
                 return StatusCode(StatusCodes.Status400BadRequest,
                        new RejectInvitationRespons
                        {
