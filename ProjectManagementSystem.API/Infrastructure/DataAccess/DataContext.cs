@@ -28,7 +28,7 @@ namespace Infrastructure.DataAccess
 
         //Common
         public DbSet<Notification> Notifications{ get; set; }
-
+        public DbSet<InvitationPending> InvitationPendings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

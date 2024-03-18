@@ -66,14 +66,19 @@ namespace ProjectManagementSystem.ServiceExtension
             //OrgService
              services.AddTransient<IOrganizationService, OrganizationService>();
             //OrgInvitation
-            services.AddTransient<IOrganizationInvitationService, OrganizationInvitationService>();
+             services.AddTransient<IOrganizationInvitationService, OrganizationInvitationService>();
+
+            services.AddTransient<ITokenGenerator, TokenGenerator>();
+            services.AddTransient<IInvitationPendingManager, InvitationPendingManager>();
         }
 
         //InternalServices
         public static void ConfigureInternalServices(this IServiceCollection services)
         {
             //TokenGenerator
-             services.AddTransient<ITokenGenerator, TokenGenerator>();
+             //services.AddTransient<ITokenGenerator, TokenGenerator>();
+            //InvitationManager
+             //services.AddTransient<IInvitationPendingManager, InvitationPendingManager>();
         }
     }
 }

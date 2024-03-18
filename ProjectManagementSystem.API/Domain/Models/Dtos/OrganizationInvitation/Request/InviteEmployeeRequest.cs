@@ -9,6 +9,7 @@ namespace Domain.Models.Dtos.OrganizationInvitation.Request
     public class InviteEmployeeRequest
     {
         public string UserEmail { get; set; }
+        public string OrganizationId { get; set; }
         public string Message { get; set; }
     }
 }

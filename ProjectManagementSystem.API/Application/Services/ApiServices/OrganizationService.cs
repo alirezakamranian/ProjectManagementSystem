@@ -75,7 +75,7 @@ namespace Application.Services.ApiServices
             try
             {
                 var org = await _context.Organizations.Include(o => o.Projects)
-               .FirstOrDefaultAsync(o => o.Id == request.OrganizationId);
+                     .FirstOrDefaultAsync(o => o.Id == request.OrganizationId);
 
                 if (org == null)
                     return new GetOrganizationServiceResponse(
@@ -100,7 +100,7 @@ namespace Application.Services.ApiServices
             try
             {
                 var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email);
+                    .FirstOrDefaultAsync(u => u.Email == email);
 
                 var userOrgs = await _context.Organizations
                     .Where(o => o.OwnerId == user.Id).ToListAsync();
