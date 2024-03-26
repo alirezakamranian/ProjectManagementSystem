@@ -59,26 +59,25 @@ namespace ProjectManagementSystem.ServiceExtension
         }
 
         //ApiServices
-        public static void ConfigureApiServices(this IServiceCollection services)
+        public static void ConfigureAppServices(this IServiceCollection services)
         {
+                     /*ApiServices*/
+
             //AuthService
              services.AddTransient<IAuthenticationService, AuthenticationService>();
             //OrgService
              services.AddTransient<IOrganizationService, OrganizationService>();
             //OrgInvitation
              services.AddTransient<IOrganizationInvitationService, OrganizationInvitationService>();
+            //UserService
+             services.AddTransient<IUserService, UserService>();
 
+                   /*InternalServices*/
+
+            //TokenGeneratorw
             services.AddTransient<ITokenGenerator, TokenGenerator>();
+            //InvitationService
             services.AddTransient<IInvitationPendingManager, InvitationPendingManager>();
-        }
-
-        //InternalServices
-        public static void ConfigureInternalServices(this IServiceCollection services)
-        {
-            //TokenGenerator
-             //services.AddTransient<ITokenGenerator, TokenGenerator>();
-            //InvitationManager
-             //services.AddTransient<IInvitationPendingManager, InvitationPendingManager>();
         }
     }
 }

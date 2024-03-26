@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\ServiceResponses\User\" />
+    <Folder Include="Models\Dtos\User\Request\" />
   </ItemGroup>
 
 </Project>

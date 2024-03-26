@@ -4,7 +4,7 @@ using ProjectManagementSystem.ServiceExtension;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//                                                                  Services Configuration
+/*----------                                        Services Configuration                                         ---------*/
 
 //Controllers
 builder.Services.ConfigureMvc();
@@ -18,15 +18,14 @@ builder.Services.ConfigureSwagger();
 //Auth
 builder.Services.ConfigureAuth(builder);
 
-//ApiServices
-builder.Services.ConfigureApiServices();
-
-//InternalServices
-//builder.Services.ConfigureInternalServices();
+//AppServices
+builder.Services.ConfigureAppServices();
 
 
 var app = builder.Build();
-//                                                                  HTTP request pipeline
+
+/*----------                                        HTTP request pipeline                                          --------- */
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
