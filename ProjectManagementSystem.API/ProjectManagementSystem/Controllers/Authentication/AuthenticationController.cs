@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Authorization;
 using Domain.Services.ApiServices;
 using Domain.Models.ServiceResponses.Auth;
 using Domain.Models.Dtos.Auth.Request;
-namespace ProjectManagementSystem.Controllers.User
+namespace ProjectManagementSystem.Controllers.Authentication
 {
     [Route("api/user/auth")]
     [ApiController]
     public class AuthenticationController(IAuthenticationService authenticationService) : ControllerBase
     {
-       private readonly IAuthenticationService _authenticationService = authenticationService;
+        private readonly IAuthenticationService _authenticationService = authenticationService;
 
         [HttpPost]
         [Route("register")]
@@ -25,7 +25,7 @@ namespace ProjectManagementSystem.Controllers.User
                        Message = "UserDetailsRequired!"
                    });
 
-            var serviceResponse =await _authenticationService.SignUpUser(request);
+            var serviceResponse = await _authenticationService.SignUpUser(request);
 
             if (serviceResponse.Status == SignUpServiceResponseStatus.EmailExists)
                 return StatusCode(StatusCodes.Status400BadRequest,
@@ -43,7 +43,7 @@ namespace ProjectManagementSystem.Controllers.User
                         Message = serviceResponse.Message
                     });
 
-            if (serviceResponse.Status == SignUpServiceResponseStatus.InternalError)
+            if (serviceResponse.Status == Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new SignUpResponse
                     {
@@ -71,7 +71,7 @@ namespace ProjectManagementSystem.Controllers.User
                        Message = "UserDetailsRequired!"
                    });
 
-            var serviceResponse=await _authenticationService.SignInUser(request);
+            var serviceResponse = await _authenticationService.SignInUser(request);
 
             if (serviceResponse.Status == SignInServiceResponseStatus.InvalidUserCredentials)
                 return StatusCode(StatusCodes.Status400BadRequest,
@@ -81,7 +81,7 @@ namespace ProjectManagementSystem.Controllers.User
                          Message = "UserNotExists!"
                      });
 
-            if (serviceResponse.Status == SignInServiceResponseStatus.InternalError)
+            if (serviceResponse.Status == Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                      new SignInResponse
                      {
@@ -91,10 +91,10 @@ namespace ProjectManagementSystem.Controllers.User
 
             return Ok(new SignInResponse
             {
-                Status= serviceResponse.Status,
-                Message= "UserLoginsuccessfully!",
-                Token=serviceResponse.Token,
-                RefrshToken=serviceResponse.RefrshToken
+                Status = serviceResponse.Status,
+                Message = "UserLoginsuccessfully!",
+                Token = serviceResponse.Token,
+                RefrshToken = serviceResponse.RefrshToken
             });
         }
 
@@ -104,7 +104,7 @@ namespace ProjectManagementSystem.Controllers.User
         [Route("refresh")]
         public async Task<IActionResult> Refresh()
         {
-            var email = HttpContext.User.Claims.FirstOrDefault(c=>c.Type=="Email");
+            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email");
 
             var serviceResponse = await _authenticationService.RefreshToken(new RefreshTokenRequest(email.Value));
 
@@ -116,7 +116,7 @@ namespace ProjectManagementSystem.Controllers.User
                          Message = "RefreshingFaild"
                      });
 
-            if (serviceResponse.Status == RefreshTokenServiceResponseStatus.InternalError)
+            if (serviceResponse.Status == Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                      new RefreshTokenResponse
                      {
@@ -126,8 +126,8 @@ namespace ProjectManagementSystem.Controllers.User
 
             return Ok(new RefreshTokenResponse
             {
-                Status= serviceResponse.Status,
-                Message= "RefreshTokenSuccessfully!",
+                Status = serviceResponse.Status,
+                Message = "RefreshTokenSuccessfully!",
                 Token = serviceResponse.Token
             });
         }
