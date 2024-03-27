@@ -1,4 +1,5 @@
-﻿using Domain.Models.Dtos.Organization.Request;
+﻿using Domain.Entities.HumanResource;
+using Domain.Models.Dtos.Organization.Request;
 using Domain.Models.Dtos.Organization.Response;
 using Domain.Models.ServiceResponses.Organization;
 using System;
@@ -13,7 +14,7 @@ namespace Domain.Services.ApiServices
     {
         public Task<CreateOrganizationServiceResponse> CreateOrganization(CreateOrganizationRequest request, string email);
         public Task<UpdateOrganizationServiceResponse> UpdateOrganization(UpdateOrganizationRequest request, string email);
-        public Task<GetSubscribedOrganizationsServiceResponse> GetSubscribedOrganizations(GetSubscribedOrganizationsRequest request, string email);
+        public Task<GetSubscribedOrganizationsServiceResponse> GetSubscribedOrganizations(string email);
         public Task<GetOrganizationServiceResponse> GetOrganization(GetOrganizationRequest request);
     }
 }

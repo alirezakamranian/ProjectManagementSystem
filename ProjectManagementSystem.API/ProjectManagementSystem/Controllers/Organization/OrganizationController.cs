@@ -86,19 +86,18 @@ namespace ProjectManagementSystem.Controllers.Organization
         }
 
         [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> GetOrganization([FromBody] GetOrganizationRequest request)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrganization(int id)
         {
 
-            if (request == null)
-                return StatusCode(StatusCodes.Status400BadRequest,
-                        new GetOrganizationResponse
-                        {
-                            Status = "InvaildData",
-                            Message = "OrganizationDetailsIsRequired"
-                        });
+            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
 
-            var serviceResponse = await _organizationService.GetOrganization(request);
+            var serviceResponse = await _organizationService
+                .GetOrganization(new GetOrganizationRequest 
+                {
+                    OrganizationId=id,
+                    Email=email
+                });
 
             if (serviceResponse.Status == GetOrganizationServiceResponseStatus.OrganizationNotExists)
                 return StatusCode(StatusCodes.Status400BadRequest,
@@ -116,6 +115,14 @@ namespace ProjectManagementSystem.Controllers.Organization
                             Message = "InternulServerError!"
                         });
 
+            if (serviceResponse.Status == GetOrganizationServiceResponseStatus.AccessDenied)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new GetOrganizationResponse
+                        {
+                            Status = serviceResponse.Status,
+                            Message = "YouAreNotAnEmployeeOfThisOrganization!"
+                        });
+
             return Ok(new GetOrganizationResponse
             {
                 Status = serviceResponse.Status,
@@ -127,11 +134,11 @@ namespace ProjectManagementSystem.Controllers.Organization
 
         [Authorize]
         [HttpGet("all")]
-        public async Task<IActionResult> GetSubscribedOrganizations([FromBody] GetSubscribedOrganizationsRequest request)
+        public async Task<IActionResult> GetSubscribedOrganizations()
         {
             var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
 
-            var serviceResponse = await _organizationService.GetSubscribedOrganizations(request, email);
+            var serviceResponse = await _organizationService.GetSubscribedOrganizations(email);
 
             if (serviceResponse.Status == GetSubscribedOrganizationsServiceResponseStatus.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
@@ -147,6 +154,7 @@ namespace ProjectManagementSystem.Controllers.Organization
                 Message = "Success!",
                 Organizations = serviceResponse.Organizations
             });
+
         }
     }
 }
