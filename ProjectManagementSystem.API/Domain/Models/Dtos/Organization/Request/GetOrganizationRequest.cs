@@ -9,5 +9,6 @@ namespace Domain.Models.Dtos.Organization.Request
     public class GetOrganizationRequest
     {
         public int OrganizationId { get; set; }
+        public string Email { get; set; }
     }
 }

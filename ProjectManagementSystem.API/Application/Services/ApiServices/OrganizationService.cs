@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Domain.Constants.Notification;
 using Domain.Models.ServiceResponses.Organization;
 using Domain.Models.Dtos.Organization.Request;
+using Domain.Constants.Roles.OrganiationEmployees;
 namespace Application.Services.ApiServices
 {
     public class OrganizationService(DataContext context) : IOrganizationService
@@ -29,6 +30,20 @@ namespace Application.Services.ApiServices
                 {
                     Name = request.Name
                 });
+
+                await _context.SaveChangesAsync();
+
+                var org = await _context.Organizations
+                    .Include(o => o.OrganizationEmployees)
+                    .FirstOrDefaultAsync(o => o.OwnerId == user.Id);
+
+                org.OrganizationEmployees.Add(new OrganizationEmployee
+                {
+                    UserId = user.Id,
+                    Role = OrganizationEmployeesRoles.Admin,
+
+                });
+
                 await _context.SaveChangesAsync();
 
                 return new CreateOrganizationServiceResponse(
@@ -75,14 +90,22 @@ namespace Application.Services.ApiServices
             try
             {
                 var org = await _context.Organizations.Include(o => o.Projects)
-                     .FirstOrDefaultAsync(o => o.Id == request.OrganizationId);
+                    .Include(o => o.OrganizationEmployees)
+                        .FirstOrDefaultAsync(o => o.Id == request.OrganizationId);
+
+                var user = await _context.Users.Include(u => u.Organizations)
+                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
                 if (org == null)
                     return new GetOrganizationServiceResponse(
                         GetOrganizationServiceResponseStatus.OrganizationNotExists);
 
+                if (!org.OrganizationEmployees.Any(e => e.UserId == user.Id))
+                    return new GetOrganizationServiceResponse(
+                       GetOrganizationServiceResponseStatus.AccessDenied);
+
                 return new GetOrganizationServiceResponse(
-                       GetOrganizationServiceResponseStatus.Success)
+                           GetOrganizationServiceResponseStatus.Success)
                 {
                     Name = org.Name,
                     Projects = org.Projects
@@ -95,36 +118,35 @@ namespace Application.Services.ApiServices
             }
         }
 
-        public async Task<GetSubscribedOrganizationsServiceResponse> GetSubscribedOrganizations(GetSubscribedOrganizationsRequest request, string email)
+        public async Task<GetSubscribedOrganizationsServiceResponse> GetSubscribedOrganizations(string email)
         {
             try
             {
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.Email == email);
 
-                var userOrgs = await _context.Organizations
-                    .Where(o => o.OwnerId == user.Id).ToListAsync();
-
                 var memberOf = await _context.OrganizationEmployees
                     .Where(e => e.UserId == user.Id).ToListAsync();
 
+                List<OrganizationForResponsteDto> userOrgs = new List<OrganizationForResponsteDto>();
+
                 foreach (var e in memberOf)
                 {
-                    userOrgs.Add(await _context.Organizations
-                        .Where(o => o.Id == e.OrganizationId).FirstOrDefaultAsync());
+                    var org = await _context.Organizations
+                        .Where(o => o.Id == e.OrganizationId).FirstOrDefaultAsync();
+
+                    userOrgs.Add(new OrganizationForResponsteDto()
+                    {
+                        Id = org.Id,
+                        Name = org.Name
+                    });
                 }
 
                 var response = new GetSubscribedOrganizationsServiceResponse(
-                    GetSubscribedOrganizationsServiceResponseStatus.Success);
-
-                foreach (var Org in userOrgs)
+                    GetSubscribedOrganizationsServiceResponseStatus.Success)
                 {
-                    response.Organizations.Add(new OrganizationForResponsteDto
-                    {
-                        Id = Org.Id,
-                        Name = Org.Name,
-                    });
-                }
+                    Organizations = userOrgs
+                };
 
                 return response;
             }

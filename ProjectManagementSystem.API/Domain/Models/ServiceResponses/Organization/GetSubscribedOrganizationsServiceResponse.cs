@@ -11,7 +11,7 @@ namespace Domain.Models.ServiceResponses.Organization
 {
     public class GetSubscribedOrganizationsServiceResponse(string status) : ServiceResponseBase(status)
     {
-        public List<OrganizationForResponsteDto> Organizations { get; set; }
+        public List<OrganizationForResponsteDto> Organizations { get; set; } = null;
 
     }
     public class GetSubscribedOrganizationsServiceResponseStatus : ServiceResponseStatusBase
