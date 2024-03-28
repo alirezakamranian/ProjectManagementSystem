@@ -8,7 +8,7 @@ namespace Domain.Models.Dtos.Project.Request
 {
     public class CreateProjectRequest
     {
-        public int OrganizationId { get; set; }
+        public string OrganizationId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime DeadLine { get; set; }

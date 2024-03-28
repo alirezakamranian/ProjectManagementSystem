@@ -12,7 +12,7 @@ namespace Domain.Entities.Project.ProjectMemberTask
     public class ProjectMemberTaskList
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [MaxLength(50)]
         [Required]
@@ -22,7 +22,7 @@ namespace Domain.Entities.Project.ProjectMemberTask
         public string Priority { get; set; }
 
         //ProjMemberRel
-        public int ProjectMemberId { get; set; }
+        public Guid ProjectMemberId { get; set; }
         [ForeignKey(nameof(ProjectMemberId))]
         public ProjectMember ProjectMember{ get; set; }
 

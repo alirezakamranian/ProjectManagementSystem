@@ -13,7 +13,7 @@ namespace Domain.Entities.HumanResource
     public class ProjectMember
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [MaxLength(50)]
         [Required]
@@ -21,13 +21,13 @@ namespace Domain.Entities.HumanResource
 
 
         //ProjectRel
-        public int ProjectId { get; set; }
+        public Guid ProjectId { get; set; }
 
         [ForeignKey("ProjectId")]
         public Project.Project Project { get; set; }
 
         //OrgEmployeeRel
-        public int OrganizationEmployeeId { get; set; }
+        public Guid OrganizationEmployeeId { get; set; }
 
         [ForeignKey("OrganizationEmployeeId")]
         public OrganizationEmployee OrganizationEmployee { get; set; }

@@ -27,17 +27,24 @@ namespace Infrastructure.DataAccess
         public DbSet<ProjectMemberTask> ProjectMemberTasks { get; set; }
 
         //Common
-        public DbSet<Notification> Notifications{ get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         public DbSet<InvitationPending> InvitationPendings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            //foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            //{
-            //    relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            //}
+        {           
+            modelBuilder.Entity<Project>()
+                .HasMany(o => o.ProjectMembers)             
+                  .WithOne(pm => pm.Project)                 
+                    .HasForeignKey(pm => pm.ProjectId)
+                       .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProjectTask>()
+                .HasMany(o => o.projectTaskExecutiveAgents)
+                  .WithOne(pm => pm.ProjectTask)
+                    .HasForeignKey(pm => pm.ProjectTaskId)
+                       .OnDelete(DeleteBehavior.Restrict);
+
             base.OnModelCreating(modelBuilder);
         }
-
     }
 }

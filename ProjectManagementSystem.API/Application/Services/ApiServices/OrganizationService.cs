@@ -64,7 +64,7 @@ namespace Application.Services.ApiServices
                 var user = await _context.Users.Include(u => u.Organizations)
                     .FirstOrDefaultAsync(u => u.Email == email);
 
-                var org = user.Organizations.Where(o => o.Id == request.OrganizationId)
+                var org = user.Organizations.Where(o => o.Id.ToString() == request.OrganizationId)
                     .Where(o => o.OwnerId == user.Id).FirstOrDefault();
 
                 if (org == null)
@@ -81,7 +81,7 @@ namespace Application.Services.ApiServices
             catch
             {
                 return new UpdateOrganizationServiceResponse(
-                    UpdateOrganizationServiceResponseStatus.InternalError);
+                     UpdateOrganizationServiceResponseStatus.InternalError);
             }
         }
 
@@ -91,7 +91,7 @@ namespace Application.Services.ApiServices
             {
                 var org = await _context.Organizations.Include(o => o.Projects)
                     .Include(o => o.OrganizationEmployees)
-                        .FirstOrDefaultAsync(o => o.Id == request.OrganizationId);
+                        .FirstOrDefaultAsync(o => o.Id.ToString() == request.OrganizationId);
 
                 var user = await _context.Users.Include(u => u.Organizations)
                  .FirstOrDefaultAsync(u => u.Email == request.Email);
@@ -102,16 +102,16 @@ namespace Application.Services.ApiServices
 
                 if (!org.OrganizationEmployees.Any(e => e.UserId == user.Id))
                     return new GetOrganizationServiceResponse(
-                       GetOrganizationServiceResponseStatus.AccessDenied);
+                         GetOrganizationServiceResponseStatus.AccessDenied);
 
                 return new GetOrganizationServiceResponse(
-                           GetOrganizationServiceResponseStatus.Success)
+                     GetOrganizationServiceResponseStatus.Success)
                 {
                     Name = org.Name,
                     Projects = org.Projects
                 };
             }
-            catch (Exception)
+            catch  
             {
                 return new GetOrganizationServiceResponse(
                      GetOrganizationServiceResponseStatus.InternalError);
@@ -137,7 +137,7 @@ namespace Application.Services.ApiServices
 
                     userOrgs.Add(new OrganizationForResponsteDto()
                     {
-                        Id = org.Id,
+                        Id = org.Id.ToString(),
                         Name = org.Name
                     });
                 }

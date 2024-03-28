@@ -86,17 +86,17 @@ namespace ProjectManagementSystem.Controllers.Organization
         }
 
         [Authorize]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetOrganization(int id)
+        [HttpGet("get")]
+        public async Task<IActionResult> GetOrganization([FromQuery] string id)
         {
 
             var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
 
             var serviceResponse = await _organizationService
-                .GetOrganization(new GetOrganizationRequest 
+                .GetOrganization(new GetOrganizationRequest
                 {
-                    OrganizationId=id,
-                    Email=email
+                    OrganizationId = id,
+                    Email = email
                 });
 
             if (serviceResponse.Status == GetOrganizationServiceResponseStatus.OrganizationNotExists)

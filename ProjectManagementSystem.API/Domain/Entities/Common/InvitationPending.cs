@@ -13,10 +13,10 @@ namespace Domain.Entities.Common
     public class InvitationPending
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public int OrganizationId { get; set; }
+        public Guid OrganizationId { get; set; }
 
-        public int NotificationId { get; set; }
+        public Guid NotificationId { get; set; }
     }
 }

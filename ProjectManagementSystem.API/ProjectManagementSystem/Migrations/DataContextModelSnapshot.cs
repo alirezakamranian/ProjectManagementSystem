@@ -24,17 +24,15 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.Common.InvitationPending", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("NotificationId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("NotificationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -43,11 +41,9 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.Common.Notification", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .HasMaxLength(700)
@@ -146,11 +142,9 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.HumanResource.Organization", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -169,14 +163,12 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.HumanResource.OrganizationEmployee", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -197,17 +189,15 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.HumanResource.ProjectMember", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("OrganizationEmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationEmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -225,11 +215,9 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.Project.Project", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DeadLine")
                         .HasColumnType("datetime2");
@@ -246,8 +234,8 @@ namespace ProjectManagementSystem.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -264,18 +252,16 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.Project.ProjectMemberTask.ProjectMemberTask", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .HasMaxLength(700)
                         .HasColumnType("nvarchar(700)");
 
-                    b.Property<int>("MemberTaskListId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("MemberTaskListId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Priority")
                         .IsRequired()
@@ -295,11 +281,9 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.Project.ProjectMemberTask.ProjectMemberTaskList", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -310,8 +294,8 @@ namespace ProjectManagementSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjectMemberId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ProjectMemberId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -322,11 +306,9 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.Project.ProjectTask.ProjectTask", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .HasMaxLength(700)
@@ -335,8 +317,8 @@ namespace ProjectManagementSystem.Migrations
                     b.Property<string>("Priority")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjectTaskListId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ProjectTaskListId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -352,17 +334,15 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.Project.ProjectTask.ProjectTaskExecutiveAgent", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("ProjectMemberId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ProjectMemberId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjectTaskId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ProjectTaskId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -380,11 +360,9 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.Project.ProjectTask.ProjectTaskList", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -395,8 +373,8 @@ namespace ProjectManagementSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -584,7 +562,7 @@ namespace ProjectManagementSystem.Migrations
                     b.HasOne("Domain.Entities.Project.Project", "Project")
                         .WithMany("ProjectMembers")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("OrganizationEmployee");
@@ -647,7 +625,7 @@ namespace ProjectManagementSystem.Migrations
                     b.HasOne("Domain.Entities.Project.ProjectTask.ProjectTask", "ProjectTask")
                         .WithMany("projectTaskExecutiveAgents")
                         .HasForeignKey("ProjectTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ProjectMember");
