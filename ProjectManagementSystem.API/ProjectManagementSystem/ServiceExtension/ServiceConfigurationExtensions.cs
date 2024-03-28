@@ -71,8 +71,11 @@ namespace ProjectManagementSystem.ServiceExtension
              services.AddTransient<IOrganizationInvitationService, OrganizationInvitationService>();
             //UserService
              services.AddTransient<IUserService, UserService>();
+            //ProjectService
+             services.AddTransient<IProjectService, ProjectService>();
 
-                   /*InternalServices*/
+
+            /*InternalServices*/
 
             //TokenGeneratorw
             services.AddTransient<ITokenGenerator, TokenGenerator>();

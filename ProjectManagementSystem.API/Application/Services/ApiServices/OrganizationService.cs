@@ -128,7 +128,7 @@ namespace Application.Services.ApiServices
                 var memberOf = await _context.OrganizationEmployees
                     .Where(e => e.UserId == user.Id).ToListAsync();
 
-                List<OrganizationForResponsteDto> userOrgs = new List<OrganizationForResponsteDto>();
+                List<OrganizationForResponsteDto> userOrgs = [];
 
                 foreach (var e in memberOf)
                 {

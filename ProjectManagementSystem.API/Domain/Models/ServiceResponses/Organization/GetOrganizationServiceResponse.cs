@@ -11,7 +11,7 @@ namespace Domain.Models.ServiceResponses.Organization
     public class GetOrganizationServiceResponse(string status) : ServiceResponseBase(status)
     {
         public string Name { get; set; }
-        public List<Project> Projects { get; set; }
+        public List<Domain.Entities.Project.Project> Projects { get; set; }
     }
     public class GetOrganizationServiceResponseStatus : ServiceResponseStatusBase
     {
