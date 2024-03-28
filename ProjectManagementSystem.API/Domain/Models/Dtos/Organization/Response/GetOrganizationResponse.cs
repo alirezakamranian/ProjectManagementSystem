@@ -12,6 +12,6 @@ namespace Domain.Models.Dtos.Organization.Response
         public string Status { get; set; }
         public string Message { get; set; }
         public string Name { get; set; }
-        public List<Project> Projects { get; set; }
+        public List<Domain.Entities.Project.Project> Projects { get; set; }
     }
 }

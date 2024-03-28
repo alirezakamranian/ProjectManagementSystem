@@ -17,7 +17,7 @@ namespace Application.Services.ApiServices
 {
     public class OrganizationInvitationService(IInvitationPendingManager pendingManager, DataContext context) : IOrganizationInvitationService
     {
-        private IInvitationPendingManager _pendingManager = pendingManager;
+        private readonly IInvitationPendingManager _pendingManager = pendingManager;
         private readonly DataContext _context = context;
 
 
@@ -26,7 +26,7 @@ namespace Application.Services.ApiServices
             try
             {
                 var targetUser = await _context.Users.Include(u => u.Notifications)
-                                .FirstOrDefaultAsync(u => u.Email == request.UserEmail.ToLower());
+                                .FirstOrDefaultAsync(u => u.Email.Equals(request.UserEmail.ToLower()));
 
                 if (targetUser == null)
                     return new InviteEmployeeServiceResponse(
@@ -42,7 +42,8 @@ namespace Application.Services.ApiServices
 
                 await _context.SaveChangesAsync();
 
-                var notification = await _context.Notifications.AsNoTracking().FirstOrDefaultAsync(n => n.UserId == targetUser.Id);
+                var notification = await _context.Notifications.AsNoTracking()
+                    .FirstOrDefaultAsync(n => n.UserId == targetUser.Id);
 
                 _context.InvitationPendings.Add(new InvitationPending
                 {
