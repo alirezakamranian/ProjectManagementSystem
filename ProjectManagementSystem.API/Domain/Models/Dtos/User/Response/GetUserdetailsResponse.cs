@@ -15,7 +15,7 @@ namespace Domain.Models.Dtos.User.Response
     }
     public class NotificationForResponseDto
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string Title { get; set; }
 

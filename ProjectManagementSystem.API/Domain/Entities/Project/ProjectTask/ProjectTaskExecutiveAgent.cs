@@ -12,7 +12,7 @@ namespace Domain.Entities.Project.ProjectTask
     public class ProjectTaskExecutiveAgent
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [MaxLength(50)]
         [Required]
@@ -20,13 +20,13 @@ namespace Domain.Entities.Project.ProjectTask
 
 
         //ProjectTaskRel
-        public int ProjectTaskId { get; set; }
+        public Guid ProjectTaskId { get; set; }
 
         [ForeignKey(nameof(ProjectTaskId))]
         public ProjectTask ProjectTask { get; set; }
 
         //ProjMemberRel
-        public int ProjectMemberId { get; set; }
+        public Guid ProjectMemberId { get; set; }
 
         [ForeignKey("ProjectMemberId")]
         public ProjectMember ProjectMember { get; set; }

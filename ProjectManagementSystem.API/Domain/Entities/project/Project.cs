@@ -13,7 +13,7 @@ namespace Domain.Entities.Project
     public class Project
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [MaxLength(50)]
         [Required]
@@ -32,7 +32,7 @@ namespace Domain.Entities.Project
         public string Status { get; set; }
  
         //OrgRel
-        public int OrganizationId { get; set; }
+        public Guid OrganizationId { get; set; }
         [ForeignKey(nameof(OrganizationId))]
         public Organization Organization{ get; set; }
 

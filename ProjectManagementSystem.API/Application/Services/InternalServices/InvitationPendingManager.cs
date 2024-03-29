@@ -15,12 +15,12 @@ namespace Application.Services.InternalServices
     {
         private readonly DataContext _context = context;
 
-        public async Task<string> AcceptPending(int invitationId,string userId)
+        public async Task<string> AcceptPending(string invitationId,string userId)
         {
             try
             {
                 var pending = await _context.InvitationPendings
-                .FirstOrDefaultAsync(n => n.NotificationId == invitationId);
+                .FirstOrDefaultAsync(n => n.NotificationId.ToString() == invitationId);
 
                 var organization = await _context.Organizations
                     .Include(o=>o.OrganizationEmployees)
@@ -45,12 +45,12 @@ namespace Application.Services.InternalServices
 
         }
 
-        public async Task<string> RejectPending(int invitationId, string userId)
+        public async Task<string> RejectPending(string invitationId, string userId)
         {
             try
             {
                 var pending = await _context.InvitationPendings
-                   .FirstOrDefaultAsync(n => n.NotificationId == invitationId);
+                   .FirstOrDefaultAsync(n => n.NotificationId.ToString() == invitationId);
 
                 _context.Remove(pending);
 

@@ -27,7 +27,7 @@ namespace Application.Services.ApiServices
                 {
                     resultNotifications.Add(new NotificationForResponseDto
                     {
-                        Id = notif.Id,
+                        Id = notif.Id.ToString(),
                         Type = notif.Type,
                         Title = notif.Title,
                         Description = notif.Description,

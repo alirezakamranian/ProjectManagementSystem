@@ -8,9 +8,9 @@ namespace Domain.Services.InternalServices
 {
     public interface IInvitationPendingManager
     {
-        public Task<string> AcceptPending(int invitationId, string userId);
+        public Task<string> AcceptPending(string invitationId, string userId);
 
-        public Task<string> RejectPending(int invitationId, string userId);
+        public Task<string> RejectPending(string invitationId, string userId);
 
     }
 }

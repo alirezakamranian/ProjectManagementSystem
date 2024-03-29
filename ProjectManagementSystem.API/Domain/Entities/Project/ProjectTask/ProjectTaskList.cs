@@ -11,7 +11,7 @@ namespace Domain.Entities.Project.ProjectTask
     public class ProjectTaskList
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [MaxLength(50)]
         [Required]
@@ -24,7 +24,7 @@ namespace Domain.Entities.Project.ProjectTask
         public List<ProjectTask> projectTasks { get; set; }
 
         //ProjectRel
-        public int ProjectId { get; set; }
+        public Guid ProjectId { get; set; }
         [ForeignKey(nameof(ProjectId))]
         public Project Project { get; set; }
     }

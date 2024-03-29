@@ -24,7 +24,7 @@ namespace Application.Services.ApiServices
                 var org = await _context.Organizations
                 .Include(o => o.Projects)
                     .Include(o => o.OrganizationEmployees)
-                        .FirstOrDefaultAsync(o => o.Id.Equals(request.OrganizationId));
+                        .FirstOrDefaultAsync(o => o.Id.ToString().Equals(request.OrganizationId));
                 if (org == null)
                     return new CreateProjectServiceResponse(
                          CreateProjectServiceResponseStatus.OrganizationNotExists);

@@ -19,7 +19,7 @@ namespace Domain.Models.ServiceResponses.Organization
     }
     public class OrganizationForResponsteDto
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
     }
 }
