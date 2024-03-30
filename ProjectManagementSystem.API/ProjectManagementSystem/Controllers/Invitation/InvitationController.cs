@@ -6,6 +6,7 @@ using Domain.Services.ApiServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ProjectManagementSystem.Controllers.Invitation
 {
@@ -15,6 +16,50 @@ namespace ProjectManagementSystem.Controllers.Invitation
     {
 
         private readonly IOrganizationInvitationService _invitationService = invitationService;
+
+        [Authorize]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchUser([FromQuery] string query)
+        {
+            if (query.IsNullOrEmpty() || query.Trim().Length < 3)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new SearchUserResponse
+                        {
+                            Status = "InvalidData",
+                            Message = "EnterValid(3 char)input"
+                        });
+
+            var serviceResponse = await _invitationService.SearchUser(
+                new SearchUserRequst
+                {
+                    Query = query
+                });
+
+            if (serviceResponse.Status == SearchUserServiceResponseStatus.InternalError)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                       new SearchUserResponse
+                       {
+                           Status = serviceResponse.Status,
+                           Message = "InternulServerError!"
+                       });
+
+            List<UserForResponseDto> users = [];
+            foreach (var user in serviceResponse.Users)
+            {
+                users.Add(new()
+                {
+                    Email = user.Email,
+                    Name = user.FullName
+                });
+            }
+
+            return Ok(new SearchUserResponse
+            {
+                Status = serviceResponse.Status,
+                Message = "results:",
+                Results = users
+            });
+        }
 
         [Authorize]
         [HttpPost]
