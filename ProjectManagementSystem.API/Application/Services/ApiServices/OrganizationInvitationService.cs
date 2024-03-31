@@ -20,6 +20,25 @@ namespace Application.Services.ApiServices
         private readonly IInvitationPendingManager _pendingManager = pendingManager;
         private readonly DataContext _context = context;
 
+        public async Task<SearchUserServiceResponse> SearchUser(SearchUserRequst requst)
+        {
+            try
+            {
+                return new SearchUserServiceResponse(
+                    SearchUserServiceResponseStatus.Success)
+                {
+                    Users = await _context.Users.AsNoTracking()
+                        .Where(u => u.Email.Contains(requst.Query.ToLower().Trim()) ||
+                        u.FullName.ToLower().Contains(requst.Query.ToLower())).ToListAsync()
+                };
+            }
+
+            catch
+            {
+                return new SearchUserServiceResponse(
+                    SearchUserServiceResponseStatus.InternalError);
+            }
+        }
 
         public async Task<InviteEmployeeServiceResponse> InviteEmployee(InviteEmployeeRequest request, string issuerEmail)
         {
