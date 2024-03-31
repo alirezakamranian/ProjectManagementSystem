@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Dtos\UserNotification\Request\" />
     <Folder Include="Models\Dtos\User\Request\" />
   </ItemGroup>
 
