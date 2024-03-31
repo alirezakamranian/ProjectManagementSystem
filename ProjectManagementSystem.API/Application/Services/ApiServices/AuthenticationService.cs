@@ -79,8 +79,7 @@ namespace Application.Services.ApiServices
 
                     var authClaims = new List<Claim>
                     {
-                        new("Name", user.FullName),
-                        new("Email", user.Email)
+                        new("Id", user.Id)
                     };
 
                     foreach (var userRole in userRoles)
@@ -115,8 +114,7 @@ namespace Application.Services.ApiServices
 
                     var authClaims = new List<Claim>
                     {
-                         new("Name", user.FullName),
-                         new("Email", user.Email)
+                         new("Id", user.Id)
                     };
 
                     foreach (var userRole in userRoles)

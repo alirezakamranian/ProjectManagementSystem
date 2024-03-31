@@ -17,7 +17,7 @@ namespace Application.Services.ApiServices
 
         private readonly DataContext _context = context;
 
-        public async Task<CreateProjectServiceResponse> CreateProject(CreateProjectRequest request, string email)
+        public async Task<CreateProjectServiceResponse> CreateProject(CreateProjectRequest request, string userId)
         {
             try
             {
@@ -29,10 +29,8 @@ namespace Application.Services.ApiServices
                     return new CreateProjectServiceResponse(
                          CreateProjectServiceResponseStatus.OrganizationNotExists);
 
-                var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email == email);
                 if (!org.OrganizationEmployees
-                    .Where(e => e.UserId == user.Id)
+                    .Where(e => e.UserId == userId)
                     .Any(o => o.Role == OrganizationEmployeesRoles.Admin))
                     return new CreateProjectServiceResponse(
                          CreateProjectServiceResponseStatus.AccessDenied);

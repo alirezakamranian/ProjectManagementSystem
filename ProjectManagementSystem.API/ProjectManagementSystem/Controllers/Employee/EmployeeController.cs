@@ -27,9 +27,10 @@ namespace ProjectManagementSystem.Controllers.Employee
                        {
                            Message = "DetailsAreRequired!"
                        });
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
 
-            var serviceResponse =await _employeeService.ChangeEmployeeRole(request,email);
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+
+            var serviceResponse =await _employeeService.ChangeEmployeeRole(request,userId);
 
             if (serviceResponse.Status == ChangeEmployeeRoleServiceResponseStatus.OrganizationNotExists ||
                 serviceResponse.Status == ChangeEmployeeRoleServiceResponseStatus.AccessDenied ||

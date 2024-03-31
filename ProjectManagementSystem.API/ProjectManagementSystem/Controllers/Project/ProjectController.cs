@@ -28,9 +28,9 @@ namespace ProjectManagementSystem.Controllers.Project
                         Message = "ProjectDetailsAreRequired!"
                     });
 
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
 
-            var serviceResponse = await _projectService.CreateProject(request, email);
+            var serviceResponse = await _projectService.CreateProject(request, userId);
 
             if (serviceResponse.Status == CreateProjectServiceResponseStatus.OrganizationNotExists)
                 return StatusCode(StatusCodes.Status400BadRequest,

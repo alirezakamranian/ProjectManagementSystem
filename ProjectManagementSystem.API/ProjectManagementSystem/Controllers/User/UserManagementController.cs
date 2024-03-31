@@ -17,9 +17,9 @@ namespace ProjectManagementSystem.Controllers.User
         [HttpGet]
         public async Task<IActionResult> GetUserDetails()
         {
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
 
-            var serviceResponse = await _userService.GetUserDetails(email);
+            var serviceResponse = await _userService.GetUserDetails(userId);
 
             if (serviceResponse.Status == GetUserDetailsServiceResponseStatus.InternalError)
                 return StatusCode(StatusCodes.Status400BadRequest,
@@ -32,7 +32,10 @@ namespace ProjectManagementSystem.Controllers.User
             {
                 Status= serviceResponse.Status,
                 Notifications = serviceResponse.Notifications,
-                Email = email
+                Id=userId,
+                Email = serviceResponse.User
+                .Email.ToLower(),
+                FullName =serviceResponse.User.FullName
             });
         }
     }
