@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ProjectManagementSystem.Controllers.Invitation
 {
-    [Route("organization/invite")]
+    [Route("organization/employee/invite")]
     [ApiController]
     public class InvitationController(IOrganizationInvitationService invitationService) : ControllerBase
     {

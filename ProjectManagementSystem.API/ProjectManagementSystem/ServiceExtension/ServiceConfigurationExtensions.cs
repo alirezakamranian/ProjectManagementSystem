@@ -33,35 +33,34 @@ namespace ProjectManagementSystem.ServiceExtension
         public static void ConfigureAuth(this IServiceCollection services, WebApplicationBuilder builder)
         {
             // Identity
-            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
+             services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 
             // Authentication &  Jwt Bearer
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
+             services.AddAuthentication(options =>
+             {
+                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+             })
+             .AddJwtBearer(options =>
+             {
+                 options.SaveToken = true;
+                 options.RequireHttpsMetadata = false;
+                 options.TokenValidationParameters = new TokenValidationParameters()
+                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidAudience = builder.Configuration["AuthOptions:IssuerAudience"],
                     ValidIssuer = builder.Configuration["AuthOptions:IssuerAudience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AuthOptions:Key"]))
-                };
-            });
+                 };
+             });
         }
 
         //ApiServices
         public static void ConfigureAppServices(this IServiceCollection services)
         {
-                     /*ApiServices*/
+              /*ApiServices*/
 
             //AuthService
              services.AddTransient<IAuthenticationService, AuthenticationService>();
@@ -73,14 +72,15 @@ namespace ProjectManagementSystem.ServiceExtension
              services.AddTransient<IUserService, UserService>();
             //ProjectService
              services.AddTransient<IProjectService, ProjectService>();
+            //OrgEmployeeService
+            services.AddTransient<IOrganizationEmployeeService, OrganizationEmployeeService>();
 
-
-            /*InternalServices*/
+              /*InternalServices*/
 
             //TokenGeneratorw
-            services.AddTransient<ITokenGenerator, TokenGenerator>();
+             services.AddTransient<ITokenGenerator, TokenGenerator>();
             //InvitationService
-            services.AddTransient<IInvitationPendingManager, InvitationPendingManager>();
+             services.AddTransient<IInvitationPendingManager, InvitationPendingManager>();
         }
     }
 }
