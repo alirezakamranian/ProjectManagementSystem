@@ -8,7 +8,6 @@ namespace Domain.Models.Dtos.OrganizationInvitation.Response
 {
     public class RejectInvitationRespons
     {
-        public string Status { get; set; }
         public string Message { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace Application.Services.ApiServices
             try
             {
                 var user = await _context.Users.Include(u => u.Organizations)
-                    .FirstOrDefaultAsync(u => u.Id == userId);
+                    .FirstOrDefaultAsync(u => u.Id.Equals(userId));
 
                 user.Organizations.Add(new Organization
                 {
@@ -35,7 +35,7 @@ namespace Application.Services.ApiServices
 
                 var org = await _context.Organizations
                     .Include(o => o.OrganizationEmployees)
-                    .FirstOrDefaultAsync(o => o.OwnerId == userId);
+                        .FirstOrDefaultAsync(o => o.OwnerId.Equals(userId));
 
                 org.OrganizationEmployees.Add(new OrganizationEmployee
                 {
@@ -47,12 +47,12 @@ namespace Application.Services.ApiServices
                 await _context.SaveChangesAsync();
 
                 return new CreateOrganizationServiceResponse(
-                    CreateOrganizationServiceResponseStatus.Success);
+                     CreateOrganizationServiceResponseStatus.Success);
             }
             catch
             {
                 return new CreateOrganizationServiceResponse(
-                    CreateOrganizationServiceResponseStatus.InternalError);
+                     CreateOrganizationServiceResponseStatus.InternalError);
             }
 
         }
@@ -66,16 +66,16 @@ namespace Application.Services.ApiServices
                     .Where(o => o.Id.ToString().Equals(request.OrganizationId) &&
                          o.OwnerId.Equals(userId)).FirstOrDefault();
 
-                if (org == null)
+                if (org.Equals(null))
                     return new UpdateOrganizationServiceResponse(
-                        UpdateOrganizationServiceResponseStatus.OrganizationNotExists);
+                         UpdateOrganizationServiceResponseStatus.OrganizationNotExists);
 
                 org.Name = request.NewName;
 
                 await _context.SaveChangesAsync();
 
                 return new UpdateOrganizationServiceResponse(
-                    UpdateOrganizationServiceResponseStatus.Success);
+                     UpdateOrganizationServiceResponseStatus.Success);
             }
             catch
             {
@@ -90,13 +90,13 @@ namespace Application.Services.ApiServices
             {
                 var org = await _context.Organizations.Include(o => o.Projects)
                     .Include(o => o.OrganizationEmployees)
-                        .FirstOrDefaultAsync(o => o.Id.ToString() == request.OrganizationId);
+                        .FirstOrDefaultAsync(o => o.Id.ToString().Equals(request.OrganizationId));
 
-                if (org == null)
+                if (org.Equals(null))
                     return new GetOrganizationServiceResponse(
-                        GetOrganizationServiceResponseStatus.OrganizationNotExists);
+                         GetOrganizationServiceResponseStatus.OrganizationNotExists);
 
-                if (!org.OrganizationEmployees.Any(e => e.UserId == request.UserId))
+                if (!org.OrganizationEmployees.Any(e => e.UserId.Equals(request.UserId)))
                     return new GetOrganizationServiceResponse(
                          GetOrganizationServiceResponseStatus.AccessDenied);
 
@@ -119,14 +119,14 @@ namespace Application.Services.ApiServices
             try
             {
                 var memberOf = await _context.OrganizationEmployees
-                    .Where(e => e.UserId == userId).ToListAsync();
+                    .Where(e => e.UserId.Equals(userId)).ToListAsync();
 
                 List<OrganizationForResponsteDto> userOrgs = [];
 
                 foreach (var e in memberOf)
                 {
                     var org = await _context.Organizations
-                        .Where(o => o.Id == e.OrganizationId).FirstOrDefaultAsync();
+                        .Where(o => o.Id.Equals( e.OrganizationId)).FirstOrDefaultAsync();
 
                     userOrgs.Add(new OrganizationForResponsteDto()
                     {

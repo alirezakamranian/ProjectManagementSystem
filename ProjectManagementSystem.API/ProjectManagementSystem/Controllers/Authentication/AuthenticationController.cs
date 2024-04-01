@@ -14,120 +14,100 @@ namespace ProjectManagementSystem.Controllers.Authentication
         private readonly IAuthenticationService _authenticationService = authenticationService;
 
         [HttpPost]
-        [Route("register")]
+        [Route("sign-up")]
         public async Task<IActionResult> Register([FromBody] SignUpRequest request)
         {
-            if (request == null)
+            if (request.Equals(null))
                 return StatusCode(StatusCodes.Status400BadRequest,
                    new SignUpResponse
                    {
-                       Status = "InvaildData",
                        Message = "UserDetailsRequired!"
                    });
 
             var serviceResponse = await _authenticationService.SignUpUser(request);
 
-            if (serviceResponse.Status == SignUpServiceResponseStatus.EmailExists)
+            if (serviceResponse.Status.Equals(SignUpServiceResponseStatus.EmailExists)||
+               serviceResponse.Status.Equals(SignUpServiceResponseStatus.CreationFaild))
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new SignUpResponse
                     {
-                        Status = serviceResponse.Status,
-                        Message = "UserAlreadyExists!"
-                    });
-
-            if (serviceResponse.Status == SignUpServiceResponseStatus.CreationFaild)
-                return StatusCode(StatusCodes.Status400BadRequest,
-                    new SignUpResponse
-                    {
-                        Status = serviceResponse.Status,
                         Message = serviceResponse.Message
                     });
 
-            if (serviceResponse.Status == Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.InternalError)
+            if (serviceResponse.Status.Equals(SignUpServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new SignUpResponse
                     {
-                        Status = serviceResponse.Status,
-                        Message = "InternulServerError!"
+                        Message = serviceResponse.Message
                     });
 
             return Ok(new SignUpResponse
             {
-                Status = serviceResponse.Status,
-                Message = "UserCreatedSuccessfully!"
+                Message = serviceResponse.Message
             });
         }
 
-
         [HttpPost]
-        [Route("login")]
+        [Route("sign-in")]
         public async Task<IActionResult> Login([FromBody] SignInRequest request)
         {
-            if (request == null)
+            if (request.Equals(null))
                 return StatusCode(StatusCodes.Status400BadRequest,
-                   new SignUpResponse
+                   new SignInResponse
                    {
-                       Status = "InvaildData",
                        Message = "UserDetailsRequired!"
                    });
 
             var serviceResponse = await _authenticationService.SignInUser(request);
 
-            if (serviceResponse.Status == SignInServiceResponseStatus.InvalidUserCredentials)
+            if (serviceResponse.Status.Equals(SignInServiceResponseStatus.InvalidUserCredentials))
                 return StatusCode(StatusCodes.Status400BadRequest,
                      new SignInResponse
                      {
-                         Status = serviceResponse.Status,
-                         Message = "UserNotExists!"
+                         Message = serviceResponse.Status
                      });
 
-            if (serviceResponse.Status == Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.InternalError)
+            if (serviceResponse.Status.Equals(SignInServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                      new SignInResponse
                      {
-                         Status = serviceResponse.Status,
-                         Message = "InternulServerError!"
+                         Message = serviceResponse.Status
                      });
 
             return Ok(new SignInResponse
             {
-                Status = serviceResponse.Status,
-                Message = "UserLoginsuccessfully!",
+                Message = serviceResponse.Status,
                 Token = serviceResponse.Token,
                 RefrshToken = serviceResponse.RefrshToken
             });
         }
-
 
         [HttpPost]
         [Authorize]
         [Route("refresh")]
         public async Task<IActionResult> Refresh()
         {
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email");
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
-            var serviceResponse = await _authenticationService.RefreshToken(new RefreshTokenRequest(email.Value));
+            var serviceResponse = await _authenticationService.RefreshToken(new RefreshTokenRequest(userId));
 
-            if (serviceResponse.Status == RefreshTokenServiceResponseStatus.ProcessFaild)
+            if (serviceResponse.Status.Equals(RefreshTokenServiceResponseStatus.ProcessFaild))
                 return StatusCode(StatusCodes.Status400BadRequest,
                      new RefreshTokenResponse
                      {
-                         Status = serviceResponse.Status,
-                         Message = "RefreshingFaild"
+                         Message = serviceResponse.Status
                      });
 
-            if (serviceResponse.Status == Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.InternalError)
+            if (serviceResponse.Status.Equals(RefreshTokenServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                      new RefreshTokenResponse
                      {
-                         Status = serviceResponse.Status,
-                         Message = "InternulServerError!"
+                         Message = serviceResponse.Status
                      });
 
             return Ok(new RefreshTokenResponse
             {
-                Status = serviceResponse.Status,
-                Message = "RefreshTokenSuccessfully!",
+                Message = serviceResponse.Status,
                 Token = serviceResponse.Token
             });
         }

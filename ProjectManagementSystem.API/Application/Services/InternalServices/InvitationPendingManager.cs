@@ -20,11 +20,11 @@ namespace Application.Services.InternalServices
             try
             {
                 var pending = await _context.InvitationPendings
-                .FirstOrDefaultAsync(n => n.NotificationId.ToString() == invitationId);
+                .FirstOrDefaultAsync(n => n.NotificationId.ToString().Equals(invitationId));
 
                 var organization = await _context.Organizations
                     .Include(o=>o.OrganizationEmployees)
-                    .FirstOrDefaultAsync(o => o.Id == pending.OrganizationId);
+                        .FirstOrDefaultAsync(o => o.Id.Equals(pending.OrganizationId));
 
                 organization.OrganizationEmployees.Add(new OrganizationEmployee
                 {
@@ -50,7 +50,7 @@ namespace Application.Services.InternalServices
             try
             {
                 var pending = await _context.InvitationPendings
-                   .FirstOrDefaultAsync(n => n.NotificationId.ToString() == invitationId);
+                   .FirstOrDefaultAsync(n => n.NotificationId.ToString().Equals(invitationId));
 
                 _context.Remove(pending);
 

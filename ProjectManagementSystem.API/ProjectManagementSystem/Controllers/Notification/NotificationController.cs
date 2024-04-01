@@ -20,7 +20,7 @@ namespace ProjectManagementSystem.Controllers.Notification
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _notificationService.GetUserNotifications(userId);
 
@@ -56,9 +56,9 @@ namespace ProjectManagementSystem.Controllers.Notification
         [HttpDelete]
         public async Task<IActionResult> DeleteAll()
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
-            var serviceResponse= await _notificationService.DeleteAllUserNotifications(userId);
+            var serviceResponse = await _notificationService.DeleteAllUserNotifications(userId);
 
             if (serviceResponse.Status.Equals(GetNotificationsServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,

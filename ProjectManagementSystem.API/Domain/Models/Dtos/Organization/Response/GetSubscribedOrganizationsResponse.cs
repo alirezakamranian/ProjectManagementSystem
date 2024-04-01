@@ -9,7 +9,6 @@ namespace Domain.Models.Dtos.Organization.Response
 {
     public class GetSubscribedOrganizationsResponse
     {
-        public string Status { get; set; }
         public string Message { get; set; }
         public List<OrganizationForResponsteDto> Organizations { get; set; }
     }

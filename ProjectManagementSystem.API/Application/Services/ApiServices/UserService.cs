@@ -21,7 +21,7 @@ namespace Application.Services.ApiServices
             try
             {
                 var notifications = await _context.Notifications
-                    .AsNoTracking().Where(n => n.UserId == userId).ToListAsync();
+                    .AsNoTracking().Where(n => n.UserId.Equals(userId)).ToListAsync();
 
                 var resultNotifications = new List<NotificationForResponseDto>();
                 foreach (var notif in notifications)

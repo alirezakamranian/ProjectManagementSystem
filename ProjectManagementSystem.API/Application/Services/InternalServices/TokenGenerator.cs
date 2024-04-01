@@ -18,14 +18,15 @@ namespace Application.Services.InternalServices
 
         public JwtSecurityToken GetToken(DateTime expireTime,IEnumerable<Claim> authClaims) 
         {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthOptions:Key"]));
+            var authSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["AuthOptions:Key"]));
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["AuthOptions:IssuerAudience"],
                 audience: _configuration["AuthOptions:IssuerAudience"],
                 expires: expireTime,
                 claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                signingCredentials: new SigningCredentials(authSigningKey,SecurityAlgorithms.HmacSha256)
                 );
 
             return token;

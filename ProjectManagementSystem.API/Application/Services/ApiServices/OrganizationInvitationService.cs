@@ -29,14 +29,14 @@ namespace Application.Services.ApiServices
                 {
                     Users = await _context.Users.AsNoTracking()
                         .Where(u => u.Email.Contains(requst.Query.ToLower().Trim()) ||
-                        u.FullName.ToLower().Contains(requst.Query.ToLower())).ToListAsync()
+                             u.FullName.ToLower().Contains(requst.Query.ToLower())).ToListAsync()
                 };
             }
 
             catch
             {
                 return new SearchUserServiceResponse(
-                    SearchUserServiceResponseStatus.InternalError);
+                     SearchUserServiceResponseStatus.InternalError);
             }
         }
 
@@ -50,7 +50,7 @@ namespace Application.Services.ApiServices
                 var targetUser = await _context.Users.Include(u => u.Notifications)
                     .FirstOrDefaultAsync(u => u.Email.Equals(request.UserEmail.ToLower()));
 
-                if (targetUser == null)
+                if (targetUser.Equals(null))
                     return new InviteEmployeeServiceResponse(
                          InviteEmployeeServiceResponseStatus.UserNotExists);
 
@@ -65,7 +65,7 @@ namespace Application.Services.ApiServices
                 await _context.SaveChangesAsync();
 
                 var notification = await _context.Notifications.AsNoTracking()
-                    .FirstOrDefaultAsync(n => n.UserId == targetUser.Id);
+                    .FirstOrDefaultAsync(n => n.UserId.Equals(targetUser.Id));
 
                 _context.InvitationPendings.Add(new InvitationPending
                 {
@@ -89,14 +89,14 @@ namespace Application.Services.ApiServices
         {
             try
             {
-               var user = await _context.Users.Include(u => u.Notifications)
-                    .FirstOrDefaultAsync(u => u.Id.Equals(userId));
+                var user = await _context.Users.Include(u => u.Notifications)
+                     .FirstOrDefaultAsync(u => u.Id.Equals(userId));
 
                 var notification = await _context.Notifications
-                    .Where(n => n.UserId == userId)
+                    .Where(n => n.UserId.Equals(userId))
                         .FirstOrDefaultAsync(n => n.Id.ToString() == request.InviteId);
 
-                if (notification == null)
+                if (notification.Equals(null))
                     return new AcceptOrganizationInvitationServiceResponse(
                          AcceptOrganizationInvitationServiceResponseStatus.NotificationNotExists);
 
@@ -109,7 +109,7 @@ namespace Application.Services.ApiServices
                 _context.Notifications.Remove(notification);
 
                 var issuer = await _context.Users.Include(u => u.Notifications)
-                    .FirstOrDefaultAsync(u => u.Email == notification.Issuer);
+                    .FirstOrDefaultAsync(u => u.Email.Equals(notification.Issuer));
 
                 issuer.Notifications.Add(new Notification
                 {
@@ -139,8 +139,8 @@ namespace Application.Services.ApiServices
                     .FirstOrDefaultAsync(u => u.Id.Equals(userId));
 
                 var notification = await _context.Notifications
-                    .Where(n => n.UserId == user.Id)
-                        .FirstOrDefaultAsync(n => n.Id.ToString() == request.InviteId);
+                    .Where(n => n.UserId.Equals(user.Id))
+                        .FirstOrDefaultAsync(n => n.Id.ToString().Equals(request.InviteId));
 
                 if (notification == null)
                     return new RejectOrganizationInvitationServiceResponse(
@@ -149,14 +149,14 @@ namespace Application.Services.ApiServices
                 var serviceResault = await _pendingManager
                     .RejectPending(request.InviteId, userId);
 
-                if (serviceResault == "error")
+                if (serviceResault.Equals("error"))
                     return new RejectOrganizationInvitationServiceResponse(
-                     RejectOrganizationInvitationServiceResponseStatus.InternalError);
+                         RejectOrganizationInvitationServiceResponseStatus.InternalError);
 
                 _context.Notifications.Remove(notification);
 
                 var issuer = await _context.Users.Include(u => u.Notifications)
-                  .FirstOrDefaultAsync(u => u.Email == notification.Issuer);
+                    .FirstOrDefaultAsync(u => u.Email.Equals(notification.Issuer));
 
                 issuer.Notifications.Add(new Notification
                 {
