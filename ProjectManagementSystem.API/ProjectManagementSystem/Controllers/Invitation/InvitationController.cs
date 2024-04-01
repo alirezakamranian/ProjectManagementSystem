@@ -62,7 +62,7 @@ namespace ProjectManagementSystem.Controllers.Invitation
         [HttpPost]
         public async Task<IActionResult> InviteEmployee([FromBody] InviteEmployeeRequest request)
         {
-            if (string.IsNullOrEmpty(request.UserEmail) || request.Equals(null))
+            if (!ModelState.IsValid)
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new InviteEmployeeResponse
                         {
@@ -97,7 +97,7 @@ namespace ProjectManagementSystem.Controllers.Invitation
         [HttpPost("accept")]
         public async Task<IActionResult> Accept([FromBody] AcceptInvitationRequest request)
         {
-            if (string.IsNullOrEmpty(request.InviteId) || request.Equals(null))
+            if (!ModelState.IsValid)
                 return StatusCode(StatusCodes.Status400BadRequest,
                        new AcceptInvitationResponse
                        {
@@ -132,7 +132,7 @@ namespace ProjectManagementSystem.Controllers.Invitation
         [HttpPost("reject")]
         public async Task<IActionResult> Reject([FromBody] RejectInvitationRequest request)
         {
-            if (string.IsNullOrEmpty(request.InviteId) || request.Equals(null))
+            if (!ModelState.IsValid)
                 return StatusCode(StatusCodes.Status400BadRequest,
                        new RejectInvitationRespons
                        {

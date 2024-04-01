@@ -34,7 +34,7 @@ namespace Application.Services.ApiServices
                 var emailExists = await _userManager
                     .FindByEmailAsync(request.Email);
 
-                if (!emailExists.Equals(null))
+                if (emailExists != null)
                     return new SignUpServiceResponse(
                          SignUpServiceResponseStatus.EmailExists);
 
@@ -104,7 +104,7 @@ namespace Application.Services.ApiServices
                              .GetToken(DateTime.Now.AddHours(1), authClaims)),
 
                         RefrshToken = new JwtSecurityTokenHandler()
-                            .WriteToken(_tokenGenerator 
+                            .WriteToken(_tokenGenerator
                                 .GetToken(DateTime.Now.AddMonths(1), authClaims))
                     };
                 }
