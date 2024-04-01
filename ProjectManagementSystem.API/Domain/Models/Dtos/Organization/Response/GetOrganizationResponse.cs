@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Project;
+using Domain.Models.ServiceResponses.Organization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,6 @@ namespace Domain.Models.Dtos.Organization.Response
         public string Status { get; set; }
         public string Message { get; set; }
         public string Name { get; set; }
-        public List<Domain.Entities.Project.Project> Projects { get; set; }
+        public List<ProjectForResponseDto> Projects { get; set; }
     }
 }

@@ -19,12 +19,12 @@ namespace Application.Services.ApiServices
     public class OrganizationService(DataContext context) : IOrganizationService
     {
         private readonly DataContext _context = context;
-        public async Task<CreateOrganizationServiceResponse> CreateOrganization(CreateOrganizationRequest request, string email)
+        public async Task<CreateOrganizationServiceResponse> CreateOrganization(CreateOrganizationRequest request, string userId)
         {
             try
             {
                 var user = await _context.Users.Include(u => u.Organizations)
-                    .FirstOrDefaultAsync(u => u.Email == email);
+                    .FirstOrDefaultAsync(u => u.Id == userId);
 
                 user.Organizations.Add(new Organization
                 {
@@ -35,11 +35,11 @@ namespace Application.Services.ApiServices
 
                 var org = await _context.Organizations
                     .Include(o => o.OrganizationEmployees)
-                    .FirstOrDefaultAsync(o => o.OwnerId == user.Id);
+                    .FirstOrDefaultAsync(o => o.OwnerId == userId);
 
                 org.OrganizationEmployees.Add(new OrganizationEmployee
                 {
-                    UserId = user.Id,
+                    UserId = userId,
                     Role = OrganizationEmployeesRoles.Admin,
 
                 });
@@ -57,15 +57,14 @@ namespace Application.Services.ApiServices
 
         }
 
-        public async Task<UpdateOrganizationServiceResponse> UpdateOrganization(UpdateOrganizationRequest request, string email)
+        public async Task<UpdateOrganizationServiceResponse> UpdateOrganization(UpdateOrganizationRequest request, string userId)
         {
             try
             {
-                var user = await _context.Users.Include(u => u.Organizations)
-                    .FirstOrDefaultAsync(u => u.Email == email);
 
-                var org = user.Organizations.Where(o => o.Id.ToString() == request.OrganizationId)
-                    .Where(o => o.OwnerId == user.Id).FirstOrDefault();
+                var org = _context.Organizations
+                    .Where(o => o.Id.ToString().Equals(request.OrganizationId) &&
+                         o.OwnerId.Equals(userId)).FirstOrDefault();
 
                 if (org == null)
                     return new UpdateOrganizationServiceResponse(
@@ -93,14 +92,11 @@ namespace Application.Services.ApiServices
                     .Include(o => o.OrganizationEmployees)
                         .FirstOrDefaultAsync(o => o.Id.ToString() == request.OrganizationId);
 
-                var user = await _context.Users.Include(u => u.Organizations)
-                 .FirstOrDefaultAsync(u => u.Email == request.Email);
-
                 if (org == null)
                     return new GetOrganizationServiceResponse(
                         GetOrganizationServiceResponseStatus.OrganizationNotExists);
 
-                if (!org.OrganizationEmployees.Any(e => e.UserId == user.Id))
+                if (!org.OrganizationEmployees.Any(e => e.UserId == request.UserId))
                     return new GetOrganizationServiceResponse(
                          GetOrganizationServiceResponseStatus.AccessDenied);
 
@@ -118,15 +114,12 @@ namespace Application.Services.ApiServices
             }
         }
 
-        public async Task<GetSubscribedOrganizationsServiceResponse> GetSubscribedOrganizations(string email)
+        public async Task<GetSubscribedOrganizationsServiceResponse> GetSubscribedOrganizations(string userId)
         {
             try
             {
-                var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email == email);
-
                 var memberOf = await _context.OrganizationEmployees
-                    .Where(e => e.UserId == user.Id).ToListAsync();
+                    .Where(e => e.UserId == userId).ToListAsync();
 
                 List<OrganizationForResponsteDto> userOrgs = [];
 

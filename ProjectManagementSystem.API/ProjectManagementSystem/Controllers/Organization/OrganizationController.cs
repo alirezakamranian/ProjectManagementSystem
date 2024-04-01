@@ -27,9 +27,9 @@ namespace ProjectManagementSystem.Controllers.Organization
                             Message = "OrganizationNameIsRequired!"
                         });
 
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
 
-            var serviceResponse = await _organizationService.CreateOrganization(request, email);
+            var serviceResponse = await _organizationService.CreateOrganization(request, userId);
 
             if (serviceResponse.Status == CreateOrganizationServiceResponseStatus.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
@@ -58,9 +58,9 @@ namespace ProjectManagementSystem.Controllers.Organization
                             Message = "OrganizationDetailsIsRequired"
                         });
 
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
 
-            var serviceResponse = await _organizationService.UpdateOrganization(request, email);
+            var serviceResponse = await _organizationService.UpdateOrganization(request, userId);
 
             if (serviceResponse.Status == UpdateOrganizationServiceResponseStatus.OrganizationNotExists)
                 return StatusCode(StatusCodes.Status400BadRequest,
@@ -90,13 +90,13 @@ namespace ProjectManagementSystem.Controllers.Organization
         public async Task<IActionResult> GetOrganization([FromQuery] string id)
         {
 
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
 
             var serviceResponse = await _organizationService
                 .GetOrganization(new GetOrganizationRequest
                 {
                     OrganizationId = id,
-                    Email = email
+                    UserId = userId
                 });
 
             if (serviceResponse.Status == GetOrganizationServiceResponseStatus.OrganizationNotExists)
@@ -123,12 +123,28 @@ namespace ProjectManagementSystem.Controllers.Organization
                             Message = "YouAreNotAnEmployeeOfThisOrganization!"
                         });
 
+            List<ProjectForResponseDto> projects = new();
+
+            foreach (var p in serviceResponse.Projects)
+            {
+                projects.Add(new()
+                {
+                    Id = p.Id.ToString(),
+                    Name = p.Name,
+                    Description = p.Description,
+                    Status = p.Status,
+                    StartDate = p.StartDate,
+                    DeadLine = p.DeadLine,
+                    EndDate = p.EndDate,
+                });
+            }
+
             return Ok(new GetOrganizationResponse
             {
                 Status = serviceResponse.Status,
                 Message = "Success!",
                 Name = serviceResponse.Name,
-                Projects = serviceResponse.Projects
+                Projects = projects
             });
         }
 
@@ -136,9 +152,9 @@ namespace ProjectManagementSystem.Controllers.Organization
         [HttpGet("all")]
         public async Task<IActionResult> GetSubscribedOrganizations()
         {
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
 
-            var serviceResponse = await _organizationService.GetSubscribedOrganizations(email);
+            var serviceResponse = await _organizationService.GetSubscribedOrganizations(userId);
 
             if (serviceResponse.Status == GetSubscribedOrganizationsServiceResponseStatus.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,

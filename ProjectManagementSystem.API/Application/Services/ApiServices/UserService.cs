@@ -15,12 +15,12 @@ namespace Application.Services.ApiServices
     {
         private readonly DataContext _context = context;
 
-        public async Task<GetUserDetailsServiceResponse> GetUserDetails(string email)
+        public async Task<GetUserDetailsServiceResponse> GetUserDetails(string userId)
         {
             try
             {
-                var user = await _context.Users.Include(u => u.Notifications).FirstOrDefaultAsync(u => u.Email == email);
-                var notifications = _context.Notifications.Where(n => n.UserId == user.Id).ToList();
+                var notifications = await _context.Notifications
+                    .AsNoTracking().Where(n => n.UserId == userId).ToListAsync();
 
                 var resultNotifications = new List<NotificationForResponseDto>();
                 foreach (var notif in notifications)
@@ -31,14 +31,16 @@ namespace Application.Services.ApiServices
                         Type = notif.Type,
                         Title = notif.Title,
                         Description = notif.Description,
-                        Issuer=notif.Issuer
+                        Issuer = notif.Issuer
                     });
                 }
 
                 return new GetUserDetailsServiceResponse(
                      GetUserDetailsServiceResponseStatus.Success)
                 {
-                    Notifications = resultNotifications
+                    Notifications = resultNotifications,
+                    User = await _context.Users.AsNoTracking()
+                    .FirstOrDefaultAsync(u=>u.Id.Equals(userId))
                 };
 
             }

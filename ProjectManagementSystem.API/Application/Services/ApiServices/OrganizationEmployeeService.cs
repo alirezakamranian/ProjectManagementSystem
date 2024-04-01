@@ -16,7 +16,7 @@ namespace Application.Services.ApiServices
     {
         public readonly DataContext _context = context;
 
-        public async Task<ChangeEmployeeRoleServiceResponse> ChangeEmployeeRole(ChangeEmployeeRoleRequest request, string email)
+        public async Task<ChangeEmployeeRoleServiceResponse> ChangeEmployeeRole(ChangeEmployeeRoleRequest request, string userId)
         {
             try
             {
@@ -29,11 +29,8 @@ namespace Application.Services.ApiServices
                     return new ChangeEmployeeRoleServiceResponse(
                          ChangeEmployeeRoleServiceResponseStatus.OrganizationNotExists);
 
-                var user = await _context.Users
-                   .FirstOrDefaultAsync(u => u.Email.Equals(email));
-
                 if (!org.OrganizationEmployees.Any(
-                    e => e.UserId.Equals(user.Id) &&
+                    e => e.UserId.Equals(userId) &&
                     e.Role == OrganizationEmployeesRoles.Admin))
                     return new ChangeEmployeeRoleServiceResponse(
                       ChangeEmployeeRoleServiceResponseStatus.AccessDenied);

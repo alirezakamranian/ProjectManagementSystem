@@ -9,9 +9,13 @@ namespace Domain.Models.Dtos.User.Response
 {
     public class GetUserDetailsResponse
     {
-        public List<NotificationForResponseDto> Notifications { get; set; }
-        public string Email { get; set; }
         public string Status { get; set; }
+        public List<NotificationForResponseDto> Notifications { get; set; }
+        public string Id { get; set; }
+        public string Email { get; set; }
+        public string FullName { get; set; }
+        public string Avatar { get; set; }
+        
     }
     public class NotificationForResponseDto
     {

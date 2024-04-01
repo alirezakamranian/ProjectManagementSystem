@@ -40,22 +40,25 @@ namespace Application.Services.ApiServices
             }
         }
 
-        public async Task<InviteEmployeeServiceResponse> InviteEmployee(InviteEmployeeRequest request, string issuerEmail)
+        public async Task<InviteEmployeeServiceResponse> InviteEmployee(InviteEmployeeRequest request, string userId)
         {
             try
             {
+                var issuerUser = await _context.Users.Include(u => u.Notifications)
+                    .FirstOrDefaultAsync(u => u.Id.Equals(userId));
+
                 var targetUser = await _context.Users.Include(u => u.Notifications)
                     .FirstOrDefaultAsync(u => u.Email.Equals(request.UserEmail.ToLower()));
 
                 if (targetUser == null)
                     return new InviteEmployeeServiceResponse(
                          InviteEmployeeServiceResponseStatus.UserNotExists);
-                    
+
                 targetUser.Notifications.Add(new Notification
                 {
                     Type = NotificationTypes.Invite,
                     Title = "OrganizationInvitation",
-                    Issuer = issuerEmail,
+                    Issuer = issuerUser.Email,
                     Description = request.Message
                 });
 
@@ -82,22 +85,22 @@ namespace Application.Services.ApiServices
             }
         }
 
-        public async Task<AcceptOrganizationInvitationServiceResponse> AcceptOrganizationInvitation(AcceptInvitationRequest request, string email)
+        public async Task<AcceptOrganizationInvitationServiceResponse> AcceptOrganizationInvitation(AcceptInvitationRequest request, string userId)
         {
             try
             {
-                var user = await _context.Users.AsNoTracking()
-                    .FirstOrDefaultAsync(u => u.Email == email);
+               var user = await _context.Users.Include(u => u.Notifications)
+                    .FirstOrDefaultAsync(u => u.Id.Equals(userId));
 
                 var notification = await _context.Notifications
-                    .Where(n => n.UserId == user.Id)
+                    .Where(n => n.UserId == userId)
                         .FirstOrDefaultAsync(n => n.Id.ToString() == request.InviteId);
 
                 if (notification == null)
                     return new AcceptOrganizationInvitationServiceResponse(
                          AcceptOrganizationInvitationServiceResponseStatus.NotificationNotExists);
 
-                var serviceResault = await _pendingManager.AcceptPending(notification.Id.ToString(), user.Id);
+                var serviceResault = await _pendingManager.AcceptPending(notification.Id.ToString(), userId);
 
                 if (serviceResault == "error")
                     return new AcceptOrganizationInvitationServiceResponse(
@@ -112,8 +115,8 @@ namespace Application.Services.ApiServices
                 {
                     Type = NotificationTypes.Notice,
                     Title = "InvitationAccepted!",
-                    Description = $"YourInvitationToUser [{email}] accepted!",
-                    Issuer = email
+                    Description = $"YourInvitationToUser [{user.Email}] accepted!",
+                    Issuer = user.Email
                 });
 
                 await _context.SaveChangesAsync();
@@ -128,12 +131,12 @@ namespace Application.Services.ApiServices
             }
         }
 
-        public async Task<RejectOrganizationInvitationServiceResponse> RejectOrganizationInvitation(RejectInvitationRequest request, string email)
+        public async Task<RejectOrganizationInvitationServiceResponse> RejectOrganizationInvitation(RejectInvitationRequest request, string userId)
         {
             try
             {
-                var user = await _context.Users.AsNoTracking()
-                    .FirstOrDefaultAsync(u => u.Email == email);
+                var user = await _context.Users.Include(u => u.Notifications)
+                    .FirstOrDefaultAsync(u => u.Id.Equals(userId));
 
                 var notification = await _context.Notifications
                     .Where(n => n.UserId == user.Id)
@@ -144,7 +147,7 @@ namespace Application.Services.ApiServices
                          RejectOrganizationInvitationServiceResponseStatus.NotificationNotExists);
 
                 var serviceResault = await _pendingManager
-                    .RejectPending(request.InviteId, user.Id);
+                    .RejectPending(request.InviteId, userId);
 
                 if (serviceResault == "error")
                     return new RejectOrganizationInvitationServiceResponse(
@@ -159,8 +162,8 @@ namespace Application.Services.ApiServices
                 {
                     Type = NotificationTypes.Notice,
                     Title = "InvitationRejected!",
-                    Description = $"YourInvitationToUser [{email}] Rejected!",
-                    Issuer = email
+                    Description = $"YourInvitationToUser [{user.Email}] Rejected!",
+                    Issuer = user.Email
                 });
 
                 await _context.SaveChangesAsync();

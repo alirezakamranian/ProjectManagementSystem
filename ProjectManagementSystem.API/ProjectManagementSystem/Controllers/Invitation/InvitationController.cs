@@ -73,9 +73,9 @@ namespace ProjectManagementSystem.Controllers.Invitation
                             Message = "InviteDetailsIsRequired!"
                         });
 
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
 
-            var serviceResponse = await _invitationService.InviteEmployee(request, email);
+            var serviceResponse = await _invitationService.InviteEmployee(request, userId);
 
             if (serviceResponse.Status == InviteEmployeeServiceResponseStatus.InternalError)
                 return StatusCode(StatusCodes.Status500InternalServerError,
@@ -112,9 +112,9 @@ namespace ProjectManagementSystem.Controllers.Invitation
                            Message = "ActionDetailsIsRequired!"
                        });
 
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
 
-            var serviceResponse = await _invitationService.AcceptOrganizationInvitation(request, email);
+            var serviceResponse = await _invitationService.AcceptOrganizationInvitation(request, userId);
 
             if (serviceResponse.Status == AcceptOrganizationInvitationServiceResponseStatus.NotificationNotExists)
                 return StatusCode(StatusCodes.Status400BadRequest,
@@ -151,9 +151,9 @@ namespace ProjectManagementSystem.Controllers.Invitation
                            Message = "ActionDetailsIsRequired!"
                        });
 
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
 
-            var serviceResponse = await _invitationService.RejectOrganizationInvitation(request, email);
+            var serviceResponse = await _invitationService.RejectOrganizationInvitation(request, userId);
 
             if (serviceResponse.Status == RejectOrganizationInvitationServiceResponseStatus.NotificationNotExists)
                 return StatusCode(StatusCodes.Status400BadRequest,
