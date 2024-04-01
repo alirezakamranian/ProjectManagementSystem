@@ -1,6 +1,7 @@
 ﻿using Domain.Entities.Common;
 using Domain.Entities.HumanResource;
 using Domain.Models.Dtos.User.Response;
+using Domain.Models.Dtos.UserNotification.Response;
 using Domain.Models.ServiceResponses.Base;
 using System;
 using System.Collections.Generic;

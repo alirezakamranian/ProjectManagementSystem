@@ -73,7 +73,9 @@ namespace ProjectManagementSystem.ServiceExtension
             //ProjectService
              services.AddTransient<IProjectService, ProjectService>();
             //OrgEmployeeService
-            services.AddTransient<IOrganizationEmployeeService, OrganizationEmployeeService>();
+             services.AddTransient<IOrganizationEmployeeService, OrganizationEmployeeService>();
+            //NotificationService
+             services.AddTransient<IUserNotificationService,UserNotificationService>();
 
               /*InternalServices*/
 

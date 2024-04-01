@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Dtos.User.Response;
+using Domain.Models.Dtos.UserNotification.Response;
 using Domain.Models.ServiceResponses.User;
 using Domain.Services.ApiServices;
 using Infrastructure.DataAccess;
@@ -40,9 +41,8 @@ namespace Application.Services.ApiServices
                 {
                     Notifications = resultNotifications,
                     User = await _context.Users.AsNoTracking()
-                    .FirstOrDefaultAsync(u=>u.Id.Equals(userId))
+                     .FirstOrDefaultAsync(u=>u.Id.Equals(userId))
                 };
-
             }
             catch
             {

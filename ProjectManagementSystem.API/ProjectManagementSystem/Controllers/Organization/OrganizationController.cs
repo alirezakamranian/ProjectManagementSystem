@@ -86,7 +86,7 @@ namespace ProjectManagementSystem.Controllers.Organization
         }
 
         [Authorize]
-        [HttpGet("get")]
+        [HttpGet]
         public async Task<IActionResult> GetOrganization([FromQuery] string id)
         {
 
@@ -123,7 +123,7 @@ namespace ProjectManagementSystem.Controllers.Organization
                             Message = "YouAreNotAnEmployeeOfThisOrganization!"
                         });
 
-            List<ProjectForResponseDto> projects = new();
+            List<ProjectForResponseDto> projects = [];
 
             foreach (var p in serviceResponse.Projects)
             {

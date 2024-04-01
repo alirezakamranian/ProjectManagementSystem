@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Common;
+using Domain.Models.Dtos.UserNotification.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +17,5 @@ namespace Domain.Models.Dtos.User.Response
         public string FullName { get; set; }
         public string Avatar { get; set; }
         
-    }
-    public class NotificationForResponseDto
-    {
-        public string Id { get; set; }
-
-        public string Title { get; set; }
-
-        public string Description { get; set; }
-
-        public string Type { get; set; }
-
-        public string Issuer { get; set; }
     }
 }
