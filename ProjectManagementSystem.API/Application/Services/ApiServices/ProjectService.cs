@@ -22,16 +22,17 @@ namespace Application.Services.ApiServices
             try
             {
                 var org = await _context.Organizations
-                .Include(o => o.Projects)
-                    .Include(o => o.OrganizationEmployees)
-                        .FirstOrDefaultAsync(o => o.Id.ToString().Equals(request.OrganizationId));
-                if (org == null)
+                    .Include(o => o.Projects)
+                       .Include(o => o.OrganizationEmployees)
+                          .FirstOrDefaultAsync(o => o.Id.ToString()
+                              .Equals(request.OrganizationId));
+                if (org.Equals(null))
                     return new CreateProjectServiceResponse(
                          CreateProjectServiceResponseStatus.OrganizationNotExists);
 
                 if (!org.OrganizationEmployees
-                    .Where(e => e.UserId == userId)
-                    .Any(o => o.Role == OrganizationEmployeesRoles.Admin))
+                    .Where(e => e.UserId.Equals(userId))
+                    .Any(o => o.Role.Equals(OrganizationEmployeesRoles.Admin)))
                     return new CreateProjectServiceResponse(
                          CreateProjectServiceResponseStatus.AccessDenied);
 
@@ -47,12 +48,12 @@ namespace Application.Services.ApiServices
                 await _context.SaveChangesAsync();
 
                 return new CreateProjectServiceResponse(
-                         CreateProjectServiceResponseStatus.Success);
+                     CreateProjectServiceResponseStatus.Success);
             }
             catch
             {
                 return new CreateProjectServiceResponse(
-                         CreateProjectServiceResponseStatus.InternalError);
+                     CreateProjectServiceResponseStatus.InternalError);
             }
         }
     }

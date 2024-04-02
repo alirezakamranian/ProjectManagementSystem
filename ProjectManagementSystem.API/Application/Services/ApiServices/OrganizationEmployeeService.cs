@@ -25,13 +25,13 @@ namespace Application.Services.ApiServices
                              .FirstOrDefaultAsync(o => o.Id.ToString()
                                  .Equals(request.OrganizationId));
 
-                if (org == null)
+                if (org.Equals(null))
                     return new ChangeEmployeeRoleServiceResponse(
                          ChangeEmployeeRoleServiceResponseStatus.OrganizationNotExists);
 
                 if (!org.OrganizationEmployees.Any(
                     e => e.UserId.Equals(userId) &&
-                    e.Role == OrganizationEmployeesRoles.Admin))
+                    e.Role.Equals(OrganizationEmployeesRoles.Admin)))
                     return new ChangeEmployeeRoleServiceResponse(
                       ChangeEmployeeRoleServiceResponseStatus.AccessDenied);
 
@@ -39,7 +39,7 @@ namespace Application.Services.ApiServices
                     .FirstOrDefault(e => e.Id.ToString()
                         .Equals(request.EmployeeId));
 
-                if (targetUser == null)
+                if (targetUser.Equals(null))
                     return new ChangeEmployeeRoleServiceResponse(
                          ChangeEmployeeRoleServiceResponseStatus.EmployeeNotExists);
 

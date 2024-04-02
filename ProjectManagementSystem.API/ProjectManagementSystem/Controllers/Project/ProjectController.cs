@@ -18,49 +18,44 @@ namespace ProjectManagementSystem.Controllers.Project
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]CreateProjectRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateProjectRequest request)
         {
-            if (request == null)
+            if (request.Equals(null))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new CreateProjectResponse
                     {
-                        Status = "InvaildData",
                         Message = "ProjectDetailsAreRequired!"
                     });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _projectService.CreateProject(request, userId);
 
-            if (serviceResponse.Status == CreateProjectServiceResponseStatus.OrganizationNotExists)
+            if (serviceResponse.Status.Equals(CreateProjectServiceResponseStatus.OrganizationNotExists))
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new CreateProjectResponse
                     {
-                        Status = serviceResponse.Status,
-                        Message = "TargetOrganizationNotExists!"
+                        Message = serviceResponse.Status
                     });
 
-            if (serviceResponse.Status == CreateProjectServiceResponseStatus.AccessDenied)
+            if (serviceResponse.Status.Equals(CreateProjectServiceResponseStatus.AccessDenied))
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new CreateProjectResponse
                     {
-                        Status = serviceResponse.Status,
-                        Message = "YouDontHaveAccessForCurrentOperationInThisOrganization!"
+                        Message = serviceResponse.Status
                     });
 
-            if (serviceResponse.Status == CreateProjectServiceResponseStatus.InternalError)
+            if (serviceResponse.Status.Equals(CreateProjectServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new CreateProjectResponse
                     {
-                        Status = serviceResponse.Status,
-                        Message = "InternalServerError!"
+                        Message = serviceResponse.Status
                     });
 
             return Ok(new CreateProjectResponse
             {
-                Status = serviceResponse.Status,
-                Message = "ProjectCreatedSuccessfully!"
+                Message = serviceResponse.Status
             });
         }
-    }    
+    }
 }

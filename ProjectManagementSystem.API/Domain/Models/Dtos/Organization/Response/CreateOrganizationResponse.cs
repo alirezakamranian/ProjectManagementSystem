@@ -8,7 +8,6 @@ namespace Domain.Models.Dtos.Organization.Response
 {
     public class CreateOrganizationResponse
     {
-        public string Status { get; set; }
         public string Message { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace Application.Services.ApiServices
                     .AsNoTracking().Where(n => n.UserId.Equals(userId)).ToListAsync();
 
                 return new GetNotificationsServiceResponse(
-                    GetNotificationsServiceResponseStatus.Success)
+                     GetNotificationsServiceResponseStatus.Success)
                 {
                     Notifications = notifications
                 };
@@ -41,11 +41,12 @@ namespace Application.Services.ApiServices
         {
             try
             {
-                var ns = await _context.Notifications
+                var notifications = await _context.Notifications
                      .Where(n => n.UserId.Equals(userId) &&
                         n.Type.Equals(NotificationTypes.Notice)).ToListAsync();
+
                 _context.Notifications
-                  .RemoveRange(ns);
+                  .RemoveRange(notifications);
 
                 await _context.SaveChangesAsync();
 

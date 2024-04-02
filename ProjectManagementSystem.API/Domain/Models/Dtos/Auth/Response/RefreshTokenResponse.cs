@@ -8,7 +8,6 @@ namespace Domain.Models.Dtos.Auth.Response
 {
     public class RefreshTokenResponse
     {
-        public string Status { get; set; }
         public string Message { get; set; }
         public string Token { get; set; }
     }

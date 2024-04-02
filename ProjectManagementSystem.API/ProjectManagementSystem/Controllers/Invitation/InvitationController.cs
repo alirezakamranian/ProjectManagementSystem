@@ -25,7 +25,6 @@ namespace ProjectManagementSystem.Controllers.Invitation
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new SearchUserResponse
                         {
-                            Status = "InvalidData",
                             Message = "EnterValid(3 char)input"
                         });
 
@@ -35,12 +34,11 @@ namespace ProjectManagementSystem.Controllers.Invitation
                     Query = query
                 });
 
-            if (serviceResponse.Status == SearchUserServiceResponseStatus.InternalError)
+            if (serviceResponse.Status.Equals(SearchUserServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                        new SearchUserResponse
                        {
-                           Status = serviceResponse.Status,
-                           Message = "InternulServerError!"
+                           Message = serviceResponse.Status
                        });
 
             List<UserForResponseDto> users = [];
@@ -55,8 +53,7 @@ namespace ProjectManagementSystem.Controllers.Invitation
 
             return Ok(new SearchUserResponse
             {
-                Status = serviceResponse.Status,
-                Message = "results:",
+                Message = serviceResponse.Status,
                 Results = users
             });
         }
@@ -65,38 +62,34 @@ namespace ProjectManagementSystem.Controllers.Invitation
         [HttpPost]
         public async Task<IActionResult> InviteEmployee([FromBody] InviteEmployeeRequest request)
         {
-            if (string.IsNullOrEmpty(request.UserEmail) || request == null)
+            if (string.IsNullOrEmpty(request.UserEmail) || request.Equals(null))
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new InviteEmployeeResponse
                         {
-                            Status = "InvaildData",
                             Message = "InviteDetailsIsRequired!"
                         });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _invitationService.InviteEmployee(request, userId);
 
-            if (serviceResponse.Status == InviteEmployeeServiceResponseStatus.InternalError)
+            if (serviceResponse.Status.Equals(InviteEmployeeServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                         new InviteEmployeeResponse
                         {
-                            Status = serviceResponse.Status,
-                            Message = "InternulServerError!"
+                            Message = serviceResponse.Status,
                         });
 
-            if (serviceResponse.Status == InviteEmployeeServiceResponseStatus.UserNotExists)
+            if (serviceResponse.Status.Equals(InviteEmployeeServiceResponseStatus.UserNotExists))
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new InviteEmployeeResponse
                         {
-                            Status = serviceResponse.Status,
-                            Message = "UserWithThisEmailNoteExists!"
+                            Message = serviceResponse.Status,
                         });
 
-            return Ok(new GetSubscribedOrganizationsResponse
+            return Ok(new InviteEmployeeResponse
             {
-                Status = serviceResponse.Status,
-                Message = "RequestSent!",
+                Message = serviceResponse.Status
             });
         }
 
@@ -104,38 +97,34 @@ namespace ProjectManagementSystem.Controllers.Invitation
         [HttpPost("accept")]
         public async Task<IActionResult> Accept([FromBody] AcceptInvitationRequest request)
         {
-            if (string.IsNullOrEmpty(request.InviteId) || request == null)
+            if (string.IsNullOrEmpty(request.InviteId) || request.Equals(null))
                 return StatusCode(StatusCodes.Status400BadRequest,
                        new AcceptInvitationResponse
                        {
-                           Status = "InvaildData",
                            Message = "ActionDetailsIsRequired!"
                        });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _invitationService.AcceptOrganizationInvitation(request, userId);
 
-            if (serviceResponse.Status == AcceptOrganizationInvitationServiceResponseStatus.NotificationNotExists)
-                return StatusCode(StatusCodes.Status400BadRequest,
-                       new AcceptInvitationResponse
-                       {
-                           Status = serviceResponse.Status,
-                           Message = "TargetNotificationNotExists!!"
-                       });
-
-            if (serviceResponse.Status == AcceptOrganizationInvitationServiceResponseStatus.InternalError)
+            if (serviceResponse.Status.Equals(AcceptOrganizationInvitationServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                        new AcceptInvitationResponse
                        {
-                           Status = serviceResponse.Status,
-                           Message = "InternulServerError!"
+                           Message = serviceResponse.Status
+                       });
+
+            if (serviceResponse.Status.Equals(AcceptOrganizationInvitationServiceResponseStatus.NotificationNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                       new AcceptInvitationResponse
+                       {
+                           Message = serviceResponse.Status
                        });
 
             return Ok(new AcceptInvitationResponse
             {
-                Status = serviceResponse.Status,
-                Message = "InviteAcceptedSuccessfully!"
+                Message = serviceResponse.Status
             });
         }
 
@@ -143,38 +132,34 @@ namespace ProjectManagementSystem.Controllers.Invitation
         [HttpPost("reject")]
         public async Task<IActionResult> Reject([FromBody] RejectInvitationRequest request)
         {
-            if (string.IsNullOrEmpty(request.InviteId) || request == null)
+            if (string.IsNullOrEmpty(request.InviteId) || request.Equals(null))
                 return StatusCode(StatusCodes.Status400BadRequest,
                        new RejectInvitationRespons
                        {
-                           Status = "InvaildData",
                            Message = "ActionDetailsIsRequired!"
                        });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _invitationService.RejectOrganizationInvitation(request, userId);
 
-            if (serviceResponse.Status == RejectOrganizationInvitationServiceResponseStatus.NotificationNotExists)
+            if (serviceResponse.Status.Equals(RejectOrganizationInvitationServiceResponseStatus.NotificationNotExists))
                 return StatusCode(StatusCodes.Status400BadRequest,
                        new RejectInvitationRespons
                        {
-                           Status = serviceResponse.Status,
-                           Message = "TargetNotificationNotExists!!"
+                           Message = serviceResponse.Status
                        });
 
-            if (serviceResponse.Status == RejectOrganizationInvitationServiceResponseStatus.InternalError)
+            if (serviceResponse.Status.Equals(RejectOrganizationInvitationServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                        new RejectInvitationRespons
                        {
-                           Status = serviceResponse.Status,
-                           Message = "InternulServerError!"
+                           Message = serviceResponse.Status
                        });
 
             return Ok(new RejectInvitationRespons
             {
-                Status = serviceResponse.Status,
-                Message = "InviteRejectedSuccessfully!"
+                Message = serviceResponse.Status,
             });
         }
     }

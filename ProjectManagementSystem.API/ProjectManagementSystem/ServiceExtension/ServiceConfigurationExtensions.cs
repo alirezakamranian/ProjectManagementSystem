@@ -20,7 +20,8 @@ namespace ProjectManagementSystem.ServiceExtension
         //DbContext
         public static void ConfigureDbContext(this IServiceCollection services, WebApplicationBuilder builder) =>
             services.AddDbContext<DataContext>(options => 
-            options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"), b => b.MigrationsAssembly("ProjectManagementSystem")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"), 
+                    b => b.MigrationsAssembly("ProjectManagementSystem")));
 
         //Swagger
         public static void ConfigureSwagger(this IServiceCollection services)
@@ -33,7 +34,8 @@ namespace ProjectManagementSystem.ServiceExtension
         public static void ConfigureAuth(this IServiceCollection services, WebApplicationBuilder builder)
         {
             // Identity
-             services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
+             services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 
             // Authentication &  Jwt Bearer
              services.AddAuthentication(options =>
@@ -52,7 +54,8 @@ namespace ProjectManagementSystem.ServiceExtension
                     ValidateAudience = true,
                     ValidAudience = builder.Configuration["AuthOptions:IssuerAudience"],
                     ValidIssuer = builder.Configuration["AuthOptions:IssuerAudience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AuthOptions:Key"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+                        .GetBytes(builder.Configuration["AuthOptions:Key"]))
                  };
              });
         }

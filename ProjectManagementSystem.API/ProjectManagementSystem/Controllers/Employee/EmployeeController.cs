@@ -28,20 +28,20 @@ namespace ProjectManagementSystem.Controllers.Employee
                            Message = "DetailsAreRequired!"
                        });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
-            var serviceResponse =await _employeeService.ChangeEmployeeRole(request,userId);
+            var serviceResponse = await _employeeService.ChangeEmployeeRole(request, userId);
 
-            if (serviceResponse.Status == ChangeEmployeeRoleServiceResponseStatus.OrganizationNotExists ||
-                serviceResponse.Status == ChangeEmployeeRoleServiceResponseStatus.AccessDenied ||
-                serviceResponse.Status == ChangeEmployeeRoleServiceResponseStatus.EmployeeNotExists)
+            if (serviceResponse.Status.Equals(ChangeEmployeeRoleServiceResponseStatus.OrganizationNotExists) ||
+                serviceResponse.Status.Equals(ChangeEmployeeRoleServiceResponseStatus.AccessDenied) ||
+                serviceResponse.Status.Equals(ChangeEmployeeRoleServiceResponseStatus.EmployeeNotExists))
                 return StatusCode(StatusCodes.Status400BadRequest,
                      new ChangeEmployeeRoleResponse
                      {
                          Message = serviceResponse.Status,
                      });
 
-            if (serviceResponse.Status == ChangeEmployeeRoleServiceResponseStatus.InternalError)
+            if (serviceResponse.Status.Equals(ChangeEmployeeRoleServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                      new ChangeEmployeeRoleResponse
                      {

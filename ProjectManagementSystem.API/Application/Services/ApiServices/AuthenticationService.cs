@@ -31,10 +31,12 @@ namespace Application.Services.ApiServices
         {
             try
             {
-                var emailExists = await _userManager.FindByEmailAsync(request.Email);
+                var emailExists = await _userManager
+                    .FindByEmailAsync(request.Email);
 
-                if (emailExists != null)
-                    return new SignUpServiceResponse(SignUpServiceResponseStatus.EmailExists);
+                if (!emailExists.Equals(null))
+                    return new SignUpServiceResponse(
+                         SignUpServiceResponseStatus.EmailExists);
 
                 ApplicationUser user = new()
                 {
@@ -44,7 +46,8 @@ namespace Application.Services.ApiServices
                     UserName = request.Email.ToLower()
                 };
 
-                var result = await _userManager.CreateAsync(user, request.Password);
+                var result = await _userManager
+                    .CreateAsync(user, request.Password);
 
                 if (!result.Succeeded)
                 {
@@ -53,17 +56,20 @@ namespace Application.Services.ApiServices
                     {
                         errors += $"  {error.Description}";
                     }
-                    return new SignUpServiceResponse(SignUpServiceResponseStatus.CreationFaild)
+                    return new SignUpServiceResponse(
+                         SignUpServiceResponseStatus.CreationFaild)
                     {
                         Message = errors
                     };
                 }
 
-                return new SignUpServiceResponse(SignUpServiceResponseStatus.Success);
+                return new SignUpServiceResponse(
+                     SignUpServiceResponseStatus.Success);
             }
             catch
             {
-                return new SignUpServiceResponse(SignUpServiceResponseStatus.InternalError);
+                return new SignUpServiceResponse(
+                     SignUpServiceResponseStatus.InternalError);
             }
         }
 
@@ -73,9 +79,12 @@ namespace Application.Services.ApiServices
             try
             {
                 var user = await _userManager.FindByEmailAsync(request.Email);
-                if (user != null && await _userManager.CheckPasswordAsync(user, request.Password))
+
+                if (!user.Equals(null) && await _userManager
+                    .CheckPasswordAsync(user, request.Password))
                 {
-                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var userRoles = await _userManager
+                        .GetRolesAsync(user);
 
                     var authClaims = new List<Claim>
                     {
@@ -87,18 +96,26 @@ namespace Application.Services.ApiServices
                         authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                     }
 
-                    return new SignInServiceResponse(SignInServiceResponseStatus.Success)
+                    return new SignInServiceResponse(
+                         SignInServiceResponseStatus.Success)
                     {
-                        Token = new JwtSecurityTokenHandler().WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddHours(1), authClaims)),
-                        RefrshToken = new JwtSecurityTokenHandler().WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddMonths(1), authClaims))
+                        Token = new JwtSecurityTokenHandler()
+                          .WriteToken(_tokenGenerator
+                             .GetToken(DateTime.Now.AddHours(1), authClaims)),
+
+                        RefrshToken = new JwtSecurityTokenHandler()
+                            .WriteToken(_tokenGenerator 
+                                .GetToken(DateTime.Now.AddMonths(1), authClaims))
                     };
                 }
 
-                return new SignInServiceResponse(SignInServiceResponseStatus.InvalidUserCredentials);
+                return new SignInServiceResponse(
+                     SignInServiceResponseStatus.InvalidUserCredentials);
             }
             catch
             {
-                return new SignInServiceResponse(SignInServiceResponseStatus.InternalError);
+                return new SignInServiceResponse(
+                     SignInServiceResponseStatus.InternalError);
             }
         }
 
@@ -106,11 +123,13 @@ namespace Application.Services.ApiServices
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(request.Email);
+                var user = await _userManager
+                    .FindByEmailAsync(request.Email);
 
-                if (user != null)
+                if (!user.Equals(null))
                 {
-                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var userRoles = await _userManager
+                        .GetRolesAsync(user);
 
                     var authClaims = new List<Claim>
                     {
@@ -122,17 +141,21 @@ namespace Application.Services.ApiServices
                         authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                     }
 
-                    return new RefreshTokenServiceResponse(RefreshTokenServiceResponseStatus.Success)
+                    return new RefreshTokenServiceResponse(
+                         RefreshTokenServiceResponseStatus.Success)
                     {
                         Token = new JwtSecurityTokenHandler()
-                        .WriteToken(_tokenGenerator.GetToken(DateTime.Now.AddHours(1), authClaims))
+                            .WriteToken(_tokenGenerator
+                                .GetToken(DateTime.Now.AddHours(1), authClaims))
                     };
                 }
-                return new RefreshTokenServiceResponse(RefreshTokenServiceResponseStatus.ProcessFaild);
+                return new RefreshTokenServiceResponse(
+                     RefreshTokenServiceResponseStatus.ProcessFaild);
             }
             catch
             {
-                return new RefreshTokenServiceResponse(RefreshTokenServiceResponseStatus.InternalError);
+                return new RefreshTokenServiceResponse(
+                     RefreshTokenServiceResponseStatus.InternalError);
             }
         }
     }

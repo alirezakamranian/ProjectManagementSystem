@@ -1,10 +1,12 @@
-﻿using Domain.Models.Dtos.Auth.Response;
+﻿using Azure.Core;
+using Domain.Models.Dtos.Auth.Response;
 using Domain.Models.Dtos.Organization.Request;
 using Domain.Models.Dtos.Organization.Response;
 using Domain.Models.ServiceResponses.Organization;
 using Domain.Services.ApiServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ProjectManagementSystem.Controllers.Organization
 {
@@ -19,30 +21,27 @@ namespace ProjectManagementSystem.Controllers.Organization
         [HttpPost]
         public async Task<IActionResult> CreateOrganization([FromBody] CreateOrganizationRequest request)
         {
-            if (request == null)
+            if (request.Equals(null))
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new CreateOrganizationResponse
                         {
-                            Status = "InvaildData",
-                            Message = "OrganizationNameIsRequired!"
+                            Message = "OrganizationDetailIsRequired!"
                         });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _organizationService.CreateOrganization(request, userId);
 
-            if (serviceResponse.Status == CreateOrganizationServiceResponseStatus.InternalError)
+            if (serviceResponse.Status.Equals(CreateOrganizationServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                      new RefreshTokenResponse
                      {
-                         Status = serviceResponse.Status,
-                         Message = "InternulServerError!"
+                         Message = serviceResponse.Status
                      });
 
             return Ok(new CreateOrganizationResponse
             {
-                Status = serviceResponse.Status,
-                Message = "OrganizationCreatedSuccessfully!"
+                Message = serviceResponse.Status
             });
         }
 
@@ -50,38 +49,34 @@ namespace ProjectManagementSystem.Controllers.Organization
         [HttpPut]
         public async Task<IActionResult> UpdateOrganization([FromBody] UpdateOrganizationRequest request)
         {
-            if (request == null)
+            if (request.Equals(null))
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new UpdateOrganizationResponse
                         {
-                            Status = "InvaildData",
                             Message = "OrganizationDetailsIsRequired"
                         });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _organizationService.UpdateOrganization(request, userId);
 
-            if (serviceResponse.Status == UpdateOrganizationServiceResponseStatus.OrganizationNotExists)
+            if (serviceResponse.Status.Equals(UpdateOrganizationServiceResponseStatus.OrganizationNotExists))
                 return StatusCode(StatusCodes.Status400BadRequest,
-                        new CreateOrganizationResponse
+                        new UpdateOrganizationResponse
                         {
-                            Status = serviceResponse.Status,
-                            Message = "OrganizationWithThisUserOrIdNotExists!"
+                            Message = serviceResponse.Status
                         });
 
-            if (serviceResponse.Status == UpdateOrganizationServiceResponseStatus.InternalError)
+            if (serviceResponse.Status.Equals(UpdateOrganizationServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                        new CreateOrganizationResponse
+                        new UpdateOrganizationResponse
                         {
-                            Status = serviceResponse.Status,
-                            Message = "InternulServerError!"
+                            Message = serviceResponse.Status
                         });
 
-            return Ok(new CreateOrganizationResponse
+            return Ok(new UpdateOrganizationResponse
             {
-                Status = serviceResponse.Status,
-                Message = "OrganizationUpdatedSuccessfully!"
+                Message = serviceResponse.Status
             });
         }
 
@@ -89,8 +84,14 @@ namespace ProjectManagementSystem.Controllers.Organization
         [HttpGet]
         public async Task<IActionResult> GetOrganization([FromQuery] string id)
         {
+            if (id.IsNullOrEmpty())
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new GetOrganizationResponse
+                        {
+                            Message = "OrganizationDetailsIsRequired"
+                        });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _organizationService
                 .GetOrganization(new GetOrganizationRequest
@@ -99,28 +100,19 @@ namespace ProjectManagementSystem.Controllers.Organization
                     UserId = userId
                 });
 
-            if (serviceResponse.Status == GetOrganizationServiceResponseStatus.OrganizationNotExists)
+            if (serviceResponse.Status.Equals(GetOrganizationServiceResponseStatus.OrganizationNotExists) ||
+                serviceResponse.Status.Equals(GetOrganizationServiceResponseStatus.AccessDenied))
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new GetOrganizationResponse
                         {
-                            Status = serviceResponse.Status,
-                            Message = "OrganizationWithThisUserOrIdNotExists!"
+                            Message = serviceResponse.Status
                         });
 
-            if (serviceResponse.Status == GetOrganizationServiceResponseStatus.InternalError)
+            if (serviceResponse.Status.Equals(GetOrganizationServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                         new GetOrganizationResponse
                         {
-                            Status = serviceResponse.Status,
-                            Message = "InternulServerError!"
-                        });
-
-            if (serviceResponse.Status == GetOrganizationServiceResponseStatus.AccessDenied)
-                return StatusCode(StatusCodes.Status400BadRequest,
-                        new GetOrganizationResponse
-                        {
-                            Status = serviceResponse.Status,
-                            Message = "YouAreNotAnEmployeeOfThisOrganization!"
+                            Message = serviceResponse.Status
                         });
 
             List<ProjectForResponseDto> projects = [];
@@ -141,8 +133,7 @@ namespace ProjectManagementSystem.Controllers.Organization
 
             return Ok(new GetOrganizationResponse
             {
-                Status = serviceResponse.Status,
-                Message = "Success!",
+                Message = serviceResponse.Status,
                 Name = serviceResponse.Name,
                 Projects = projects
             });
@@ -152,22 +143,20 @@ namespace ProjectManagementSystem.Controllers.Organization
         [HttpGet("all")]
         public async Task<IActionResult> GetSubscribedOrganizations()
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _organizationService.GetSubscribedOrganizations(userId);
 
-            if (serviceResponse.Status == GetSubscribedOrganizationsServiceResponseStatus.InternalError)
+            if (serviceResponse.Status.Equals(GetSubscribedOrganizationsServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                         new GetSubscribedOrganizationsResponse
                         {
-                            Status = serviceResponse.Status,
-                            Message = "InternulServerError!"
+                            Message = serviceResponse.Status
                         });
 
             return Ok(new GetSubscribedOrganizationsResponse
             {
-                Status = serviceResponse.Status,
-                Message = "Success!",
+                Message = serviceResponse.Status,
                 Organizations = serviceResponse.Organizations
             });
 
