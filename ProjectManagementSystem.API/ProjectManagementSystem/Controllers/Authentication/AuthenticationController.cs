@@ -17,11 +17,11 @@ namespace ProjectManagementSystem.Controllers.Authentication
         [Route("sign-up")]
         public async Task<IActionResult> Register([FromBody] SignUpRequest request)
         {
-            if (request.Equals(null))
+            if (!ModelState.IsValid)
                 return StatusCode(StatusCodes.Status400BadRequest,
                    new SignUpResponse
                    {
-                       Message = "UserDetailsRequired!"
+                       Message = "UserDetailsAreInvalid!"
                    });
 
             var serviceResponse = await _authenticationService.SignUpUser(request);
@@ -31,19 +31,19 @@ namespace ProjectManagementSystem.Controllers.Authentication
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new SignUpResponse
                     {
-                        Message = serviceResponse.Message
+                        Message = serviceResponse.Status
                     });
 
             if (serviceResponse.Status.Equals(SignUpServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new SignUpResponse
                     {
-                        Message = serviceResponse.Message
+                        Message = serviceResponse.Status
                     });
 
             return Ok(new SignUpResponse
             {
-                Message = serviceResponse.Message
+                Message = serviceResponse.Status
             });
         }
 
@@ -51,11 +51,11 @@ namespace ProjectManagementSystem.Controllers.Authentication
         [Route("sign-in")]
         public async Task<IActionResult> Login([FromBody] SignInRequest request)
         {
-            if (request.Equals(null))
+            if (!ModelState.IsValid)
                 return StatusCode(StatusCodes.Status400BadRequest,
                    new SignInResponse
                    {
-                       Message = "UserDetailsRequired!"
+                       Message = "UserDetailsAreRequired!"
                    });
 
             var serviceResponse = await _authenticationService.SignInUser(request);

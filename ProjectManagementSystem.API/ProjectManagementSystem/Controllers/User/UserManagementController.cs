@@ -17,7 +17,8 @@ namespace ProjectManagementSystem.Controllers.User
         [HttpGet]
         public async Task<IActionResult> GetUserDetails()
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _userService.GetUserDetails(userId);
 

@@ -20,7 +20,7 @@ namespace ProjectManagementSystem.Controllers.Project
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateProjectRequest request)
         {
-            if (request.Equals(null))
+            if (!ModelState.IsValid)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new CreateProjectResponse
                     {
@@ -31,14 +31,8 @@ namespace ProjectManagementSystem.Controllers.Project
 
             var serviceResponse = await _projectService.CreateProject(request, userId);
 
-            if (serviceResponse.Status.Equals(CreateProjectServiceResponseStatus.OrganizationNotExists))
-                return StatusCode(StatusCodes.Status400BadRequest,
-                    new CreateProjectResponse
-                    {
-                        Message = serviceResponse.Status
-                    });
-
-            if (serviceResponse.Status.Equals(CreateProjectServiceResponseStatus.AccessDenied))
+            if (serviceResponse.Status.Equals(CreateProjectServiceResponseStatus.OrganizationNotExists) ||
+                serviceResponse.Status.Equals(CreateProjectServiceResponseStatus.AccessDenied))
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new CreateProjectResponse
                     {

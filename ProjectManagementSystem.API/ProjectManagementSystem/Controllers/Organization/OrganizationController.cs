@@ -21,11 +21,11 @@ namespace ProjectManagementSystem.Controllers.Organization
         [HttpPost]
         public async Task<IActionResult> CreateOrganization([FromBody] CreateOrganizationRequest request)
         {
-            if (request.Equals(null))
+            if (!ModelState.IsValid)
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new CreateOrganizationResponse
                         {
-                            Message = "OrganizationDetailIsRequired!"
+                            Message = "OrganizationDetailIsInvalid"
                         });
 
             var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
@@ -49,7 +49,7 @@ namespace ProjectManagementSystem.Controllers.Organization
         [HttpPut]
         public async Task<IActionResult> UpdateOrganization([FromBody] UpdateOrganizationRequest request)
         {
-            if (request.Equals(null))
+            if (!ModelState.IsValid)
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new UpdateOrganizationResponse
                         {
