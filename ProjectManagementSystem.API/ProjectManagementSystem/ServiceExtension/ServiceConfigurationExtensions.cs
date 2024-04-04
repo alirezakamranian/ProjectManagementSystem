@@ -9,6 +9,7 @@ using Domain.Services.ApiServices;
 using Application.Services.ApiServices;
 using Application.Services.InternalServices;
 using Domain.Services.InternalServices;
+using Serilog;
 namespace ProjectManagementSystem.ServiceExtension
 {
     public static class ServiceConfigurationExtensions
@@ -17,10 +18,17 @@ namespace ProjectManagementSystem.ServiceExtension
         public static void ConfigureMvc(this IServiceCollection services) =>
             services.AddControllers();
 
+        //Logger
+        public static void ConfigureLogging(this IHostBuilder hostBuilder) 
+        {
+            hostBuilder.UseSerilog((context, configuration) =>
+                configuration.ReadFrom.Configuration(context.Configuration));
+        }
+
         //DbContext
         public static void ConfigureDbContext(this IServiceCollection services, WebApplicationBuilder builder) =>
-            services.AddDbContext<DataContext>(options => 
-                options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"), 
+            services.AddDbContext<DataContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"),
                     b => b.MigrationsAssembly("ProjectManagementSystem")));
 
         //Swagger
@@ -34,58 +42,58 @@ namespace ProjectManagementSystem.ServiceExtension
         public static void ConfigureAuth(this IServiceCollection services, WebApplicationBuilder builder)
         {
             // Identity
-             services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+               .AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 
             // Authentication &  Jwt Bearer
-             services.AddAuthentication(options =>
-             {
-                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-             })
-             .AddJwtBearer(options =>
-             {
-                 options.SaveToken = true;
-                 options.RequireHttpsMetadata = false;
-                 options.TokenValidationParameters = new TokenValidationParameters()
-                 {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidAudience = builder.Configuration["AuthOptions:IssuerAudience"],
                     ValidIssuer = builder.Configuration["AuthOptions:IssuerAudience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                        .GetBytes(builder.Configuration["AuthOptions:Key"]))
-                 };
-             });
+                       .GetBytes(builder.Configuration["AuthOptions:Key"]))
+                };
+            });
         }
 
         //ApiServices
         public static void ConfigureAppServices(this IServiceCollection services)
         {
-              /*ApiServices*/
+            /*ApiServices*/
 
             //AuthService
-             services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
             //OrgService
-             services.AddTransient<IOrganizationService, OrganizationService>();
+            services.AddTransient<IOrganizationService, OrganizationService>();
             //OrgInvitation
-             services.AddTransient<IOrganizationInvitationService, OrganizationInvitationService>();
+            services.AddTransient<IOrganizationInvitationService, OrganizationInvitationService>();
             //UserService
-             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IUserService, UserService>();
             //ProjectService
-             services.AddTransient<IProjectService, ProjectService>();
+            services.AddTransient<IProjectService, ProjectService>();
             //OrgEmployeeService
-             services.AddTransient<IOrganizationEmployeeService, OrganizationEmployeeService>();
+            services.AddTransient<IOrganizationEmployeeService, OrganizationEmployeeService>();
             //NotificationService
-             services.AddTransient<IUserNotificationService,UserNotificationService>();
+            services.AddTransient<IUserNotificationService, UserNotificationService>();
 
-              /*InternalServices*/
+            /*InternalServices*/
 
             //TokenGeneratorw
-             services.AddTransient<ITokenGenerator, TokenGenerator>();
+            services.AddTransient<ITokenGenerator, TokenGenerator>();
             //InvitationService
-             services.AddTransient<IInvitationPendingManager, InvitationPendingManager>();
+            services.AddTransient<IInvitationPendingManager, InvitationPendingManager>();
         }
     }
 }

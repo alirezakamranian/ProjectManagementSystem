@@ -4,6 +4,7 @@ using Domain.Models.ServiceResponses.User;
 using Domain.Services.ApiServices;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,11 @@ using System.Threading.Tasks;
 
 namespace Application.Services.ApiServices
 {
-    public class UserService(DataContext context) : IUserService
+    public class UserService(DataContext context,
+        ILogger<UserService> logger) : IUserService
     {
         private readonly DataContext _context = context;
+        private readonly ILogger<UserService> _logger = logger;
 
         public async Task<GetUserDetailsServiceResponse> GetUserDetails(string userId)
         {
@@ -41,16 +44,17 @@ namespace Application.Services.ApiServices
                 {
                     Notifications = resultNotifications,
                     User = await _context.Users.AsNoTracking()
-                     .FirstOrDefaultAsync(u=>u.Id.Equals(userId))
+                     .FirstOrDefaultAsync(u => u.Id.Equals(userId))
                 };
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError($"GetUserDetails : {ex.Message}");
+
                 return new GetUserDetailsServiceResponse(
                      GetUserDetailsServiceResponseStatus.InternalError);
             }
         }
-
     }
 }
 

@@ -1,27 +1,31 @@
 
 using Infrastructure.DataAccess;
 using ProjectManagementSystem.ServiceExtension;
+using Serilog;
 
-                                                //-_-_-_-- EntryPoint --_-_-_-//
+//-_-_-_-- EntryPoint --_-_-_-//
 
 var builder = WebApplication.CreateBuilder(args);
 
 /*----------                                 -_-_-_-- Services Configuration --_-_-_-                                        ---------*/
 
 //Controllers
- builder.Services.ConfigureMvc();
+builder.Services.ConfigureMvc();
+
+//Logger 
+builder.Host.ConfigureLogging();
 
 //DbContext
- builder.Services.ConfigureDbContext(builder);
+builder.Services.ConfigureDbContext(builder);
 
 //Swagger
- builder.Services.ConfigureSwagger();
+builder.Services.ConfigureSwagger();
 
 //Auth
- builder.Services.ConfigureAuth(builder);
+builder.Services.ConfigureAuth(builder);
 
 //AppServices
- builder.Services.ConfigureAppServices();
+builder.Services.ConfigureAppServices();
 
 
 var app = builder.Build();

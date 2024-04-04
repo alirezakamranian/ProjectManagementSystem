@@ -14,11 +14,15 @@ using Domain.Constants.Notification;
 using Domain.Models.ServiceResponses.Organization;
 using Domain.Models.Dtos.Organization.Request;
 using Domain.Constants.Roles.OrganiationEmployees;
+using Microsoft.Extensions.Logging;
 namespace Application.Services.ApiServices
 {
-    public class OrganizationService(DataContext context) : IOrganizationService
+    public class OrganizationService(DataContext context,
+       ILogger<AuthenticationService> logger) : IOrganizationService
     {
         private readonly DataContext _context = context;
+        private readonly ILogger<AuthenticationService> _logger = logger;
+
         public async Task<CreateOrganizationServiceResponse> CreateOrganization(CreateOrganizationRequest request, string userId)
         {
             try
@@ -49,8 +53,10 @@ namespace Application.Services.ApiServices
                 return new CreateOrganizationServiceResponse(
                      CreateOrganizationServiceResponseStatus.Success);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError("CreateOrganizationService : {Message}", ex.Message);
+
                 return new CreateOrganizationServiceResponse(
                      CreateOrganizationServiceResponseStatus.InternalError);
             }
@@ -77,8 +83,10 @@ namespace Application.Services.ApiServices
                 return new UpdateOrganizationServiceResponse(
                      UpdateOrganizationServiceResponseStatus.Success);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError("UpdateOrganizationService : {Message}", ex.Message);
+
                 return new UpdateOrganizationServiceResponse(
                      UpdateOrganizationServiceResponseStatus.InternalError);
             }
@@ -107,8 +115,10 @@ namespace Application.Services.ApiServices
                     Projects = org.Projects
                 };
             }
-            catch  
+            catch (Exception ex)
             {
+                _logger.LogError("GetOrganizationService : {Message}", ex.Message);
+
                 return new GetOrganizationServiceResponse(
                      GetOrganizationServiceResponseStatus.InternalError);
             }
@@ -126,7 +136,7 @@ namespace Application.Services.ApiServices
                 foreach (var e in memberOf)
                 {
                     var org = await _context.Organizations
-                        .Where(o => o.Id.Equals( e.OrganizationId)).FirstOrDefaultAsync();
+                        .Where(o => o.Id.Equals(e.OrganizationId)).FirstOrDefaultAsync();
 
                     userOrgs.Add(new OrganizationForResponsteDto()
                     {
@@ -143,8 +153,11 @@ namespace Application.Services.ApiServices
 
                 return response;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError("GetSubscribedOrganizationService {Message}", ex.Message);
+
+
                 return new GetSubscribedOrganizationsServiceResponse(
                      GetSubscribedOrganizationsServiceResponseStatus.InternalError);
             }

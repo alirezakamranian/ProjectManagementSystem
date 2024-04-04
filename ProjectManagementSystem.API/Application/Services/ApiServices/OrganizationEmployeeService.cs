@@ -4,6 +4,7 @@ using Domain.Models.ServiceResponses.OrganizationEmployee;
 using Domain.Services.ApiServices;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,11 @@ using System.Threading.Tasks;
 
 namespace Application.Services.ApiServices
 {
-    public class OrganizationEmployeeService(DataContext context) : IOrganizationEmployeeService
+    public class OrganizationEmployeeService(DataContext context,
+        ILogger<AuthenticationService> logger) : IOrganizationEmployeeService
     {
-        public readonly DataContext _context = context;
+        private readonly DataContext _context = context;
+        private readonly ILogger<AuthenticationService> _logger = logger;
 
         public async Task<ChangeEmployeeRoleServiceResponse> ChangeEmployeeRole(ChangeEmployeeRoleRequest request, string userId)
         {
@@ -57,8 +60,10 @@ namespace Application.Services.ApiServices
                 return new ChangeEmployeeRoleServiceResponse(
                       ChangeEmployeeRoleServiceResponseStatus.Success);
             }
-            catch
+            catch(Exception ex)
             {
+                _logger.LogError("ChangeEmployeeRole : {Message}", ex.Message);
+
                 return new ChangeEmployeeRoleServiceResponse(
                      ChangeEmployeeRoleServiceResponseStatus.InternalError);
             }

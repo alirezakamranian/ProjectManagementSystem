@@ -9,12 +9,15 @@ using Domain.Services.ApiServices;
 using Domain.Services.InternalServices;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 namespace Application.Services.ApiServices
 {
-    public class UserNotificationService(DataContext context) : IUserNotificationService
+    public class UserNotificationService(DataContext context,
+         ILogger<UserNotificationService> logger) : IUserNotificationService
     {
 
         private readonly DataContext _context = context;
+        private readonly ILogger<UserNotificationService> _logger = logger;
 
         public async Task<GetNotificationsServiceResponse> GetUserNotifications(string userId)
         {
@@ -29,11 +32,12 @@ namespace Application.Services.ApiServices
                     Notifications = notifications
                 };
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError("GetUserNotificationsService : {Message}", ex.Message);
+
                 return new GetNotificationsServiceResponse(
                      GetNotificationsServiceResponseStatus.InternalError);
-
             }
         }
 
@@ -53,8 +57,10 @@ namespace Application.Services.ApiServices
                 return new DeleteNotificationServiceResponse(
                      DeleteNotificationServiceResponseStatus.Success);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError("DeleteAllUserNotifications {Message}", ex.Message);
+
                 return new DeleteNotificationServiceResponse(
                      DeleteNotificationServiceResponseStatus.InternalError);
             }
