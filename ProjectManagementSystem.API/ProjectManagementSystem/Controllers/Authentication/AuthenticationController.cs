@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Domain.Services.ApiServices;
 using Domain.Models.ServiceResponses.Auth;
 using Domain.Models.Dtos.Auth.Request;
+using Serilog;
 namespace ProjectManagementSystem.Controllers.Authentication
 {
     [Route("api/user/auth")]
@@ -26,7 +27,7 @@ namespace ProjectManagementSystem.Controllers.Authentication
 
             var serviceResponse = await _authenticationService.SignUpUser(request);
 
-            if (serviceResponse.Status.Equals(SignUpServiceResponseStatus.EmailExists)||
+            if (serviceResponse.Status.Equals(SignUpServiceResponseStatus.EmailExists) ||
                serviceResponse.Status.Equals(SignUpServiceResponseStatus.CreationFaild))
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new SignUpResponse

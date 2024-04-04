@@ -18,14 +18,16 @@ using Application.Services.InternalServices;
 using Domain.Services.ApiServices;
 using Domain.Models.ServiceResponses.Auth;
 using Domain.Models.Dtos.Auth.Request;
+using Microsoft.Extensions.Logging;
 namespace Application.Services.ApiServices
 {
     public class AuthenticationService(UserManager<ApplicationUser> userManager,
-        ITokenGenerator tokenGenerator) : IAuthenticationService
+        ITokenGenerator tokenGenerator,
+        ILogger<AuthenticationService> logger) : IAuthenticationService
     {
-        private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly ILogger<AuthenticationService> _logger = logger;
         private readonly ITokenGenerator _tokenGenerator = tokenGenerator;
-
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
 
         public async Task<SignUpServiceResponse> SignUpUser(SignUpRequest request)
         {
@@ -63,11 +65,20 @@ namespace Application.Services.ApiServices
                     };
                 }
 
+                _logger.LogInformation(
+                    "New User registerd:" +
+                    " Name: {FullName}" +
+                    " Email: {Email}",
+                    request.FullName,
+                    request.Email);
+
                 return new SignUpServiceResponse(
                      SignUpServiceResponseStatus.Success);
             }
-            catch
+            catch(Exception ex)
             {
+                _logger.LogError("SignUpService : {Message}", ex.Message);
+
                 return new SignUpServiceResponse(
                      SignUpServiceResponseStatus.InternalError);
             }
@@ -112,8 +123,10 @@ namespace Application.Services.ApiServices
                 return new SignInServiceResponse(
                      SignInServiceResponseStatus.InvalidUserCredentials);
             }
-            catch
+            catch(Exception ex) 
             {
+                _logger.LogError("SignInService : {Message}", ex.Message);
+
                 return new SignInServiceResponse(
                      SignInServiceResponseStatus.InternalError);
             }
@@ -152,8 +165,10 @@ namespace Application.Services.ApiServices
                 return new RefreshTokenServiceResponse(
                      RefreshTokenServiceResponseStatus.ProcessFaild);
             }
-            catch
+            catch(Exception ex)
             {
+                _logger.LogError("RefreshTokenService : {Message}",ex.Message);
+
                 return new RefreshTokenServiceResponse(
                      RefreshTokenServiceResponseStatus.InternalError);
             }

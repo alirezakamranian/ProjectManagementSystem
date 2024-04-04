@@ -7,6 +7,7 @@ using Domain.Services.ApiServices;
 using Domain.Services.InternalServices;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,13 @@ using System.Threading.Tasks;
 
 namespace Application.Services.ApiServices
 {
-    public class OrganizationInvitationService(IInvitationPendingManager pendingManager, DataContext context) : IOrganizationInvitationService
+    public class OrganizationInvitationService(DataContext context,
+        IInvitationPendingManager pendingManager,
+        ILogger<AuthenticationService> logger) : IOrganizationInvitationService
     {
-        private readonly IInvitationPendingManager _pendingManager = pendingManager;
         private readonly DataContext _context = context;
+        private readonly ILogger<AuthenticationService> _logger = logger;
+        private readonly IInvitationPendingManager _pendingManager = pendingManager;
 
         public async Task<SearchUserServiceResponse> SearchUser(SearchUserRequst requst)
         {
@@ -32,9 +36,10 @@ namespace Application.Services.ApiServices
                              u.FullName.ToLower().Contains(requst.Query.ToLower())).ToListAsync()
                 };
             }
-
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError("SearchUserService {Message}", ex.Message);
+
                 return new SearchUserServiceResponse(
                      SearchUserServiceResponseStatus.InternalError);
             }
@@ -78,8 +83,10 @@ namespace Application.Services.ApiServices
                 return new InviteEmployeeServiceResponse(
                      InviteEmployeeServiceResponseStatus.Success);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError("InviteEmployeeService {Message}", ex.Message);
+
                 return new InviteEmployeeServiceResponse(
                      InviteEmployeeServiceResponseStatus.InternalError);
             }
@@ -124,8 +131,10 @@ namespace Application.Services.ApiServices
                 return new AcceptOrganizationInvitationServiceResponse(
                      AcceptOrganizationInvitationServiceResponseStatus.Success);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError("AccpetInvitationService : {Message}", ex.Message);
+
                 return new AcceptOrganizationInvitationServiceResponse(
                      AcceptOrganizationInvitationServiceResponseStatus.InternalError);
             }
@@ -171,8 +180,10 @@ namespace Application.Services.ApiServices
                 return new RejectOrganizationInvitationServiceResponse(
                      RejectOrganizationInvitationServiceResponseStatus.Success);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError("RejectInvitationService : {Message}", ex.Message);
+
                 return new RejectOrganizationInvitationServiceResponse(
                      RejectOrganizationInvitationServiceResponseStatus.InternalError);
             }

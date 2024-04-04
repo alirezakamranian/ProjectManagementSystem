@@ -4,6 +4,7 @@ using Domain.Models.ServiceResponses.Project;
 using Domain.Services.ApiServices;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,12 @@ using System.Threading.Tasks;
 
 namespace Application.Services.ApiServices
 {
-    public class ProjectService(DataContext context) : IProjectService
+    public class ProjectService(DataContext context,
+        ILogger<AuthenticationService> logger) : IProjectService
     {
 
         private readonly DataContext _context = context;
+        private readonly ILogger<AuthenticationService> _logger = logger;
 
         public async Task<CreateProjectServiceResponse> CreateProject(CreateProjectRequest request, string userId)
         {
@@ -41,8 +44,8 @@ namespace Application.Services.ApiServices
                     Name = request.Name,
                     Description = request.Description,
                     DeadLine = request.DeadLine,
-                    StartDate=DateTime.Now,
-                    Status="proccesing"
+                    StartDate = DateTime.Now,
+                    Status = "proccesing"
                 });
 
                 await _context.SaveChangesAsync();
@@ -50,8 +53,10 @@ namespace Application.Services.ApiServices
                 return new CreateProjectServiceResponse(
                      CreateProjectServiceResponseStatus.Success);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError($"CreateProjectService : {ex.Message}");
+
                 return new CreateProjectServiceResponse(
                      CreateProjectServiceResponseStatus.InternalError);
             }
