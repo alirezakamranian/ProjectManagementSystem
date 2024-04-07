@@ -1,6 +1,5 @@
 ﻿using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
-using Domain.Entities.HumanResource;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -10,6 +9,7 @@ using Application.Services.ApiServices;
 using Application.Services.InternalServices;
 using Domain.Services.InternalServices;
 using Serilog;
+using Domain.Entities.HumanResource;
 namespace ProjectManagementSystem.ServiceExtension
 {
     public static class ServiceConfigurationExtensions
@@ -87,6 +87,8 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddTransient<IOrganizationEmployeeService, OrganizationEmployeeService>();
             //NotificationService
             services.AddTransient<IUserNotificationService, UserNotificationService>();
+            //ProjectMemberService
+            services.AddTransient<IProjectMemberService, ProjectMemberService>();
 
             /*InternalServices*/
 

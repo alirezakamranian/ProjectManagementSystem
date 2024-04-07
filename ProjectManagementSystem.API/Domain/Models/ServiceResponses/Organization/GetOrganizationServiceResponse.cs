@@ -1,5 +1,4 @@
-﻿using Domain.Entities.Project;
-using Domain.Models.ServiceResponses.Base;
+﻿using Domain.Models.ServiceResponses.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,7 +11,7 @@ namespace Domain.Models.ServiceResponses.Organization
     public class GetOrganizationServiceResponse(string status) : ServiceResponseBase(status)
     {
         public string Name { get; set; }
-        public List<Domain.Entities.Project.Project> Projects { get; set; }
+        public List<Entities.Project.Project> Projects { get; set; }
     }
     public class GetOrganizationServiceResponseStatus : ServiceResponseStatusBase
     {

@@ -27,7 +27,5 @@ namespace Domain.Entities.Project.ProjectTask
         [ForeignKey(nameof(ProjectTaskListId))]
         public ProjectTaskList ProjectTaskList { get; set; }
 
-        //ProjTaskExecAgentRel
-        public List<ProjectTaskExecutiveAgent> projectTaskExecutiveAgents { get; set; }
     }
 }
