@@ -30,16 +30,17 @@ namespace Domain.Entities.Project
         public DateTime EndDate { get; set; }
 
         public string Status { get; set; }
- 
+
+        public string LeaderId { get; set; }
         //OrgRel
         public Guid OrganizationId { get; set; }
         [ForeignKey(nameof(OrganizationId))]
-        public Organization Organization{ get; set; }
+        public Organization Organization { get; set; }
 
         //PorjTaskRel
         public List<ProjectTaskList> ProjectTaskLists { get; set; }
 
         //ProjMemberRel
-        public List<ProjectMember> ProjectMembers{ get; set; }
+        public List<ProjectMember> ProjectMembers { get; set; }
     }
 }

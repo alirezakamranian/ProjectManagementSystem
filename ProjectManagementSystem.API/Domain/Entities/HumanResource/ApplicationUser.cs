@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.HumanResource
 {
-    public class ApplicationUser:IdentityUser
+    public class ApplicationUser : IdentityUser
     {
         public string FullName { get; set; }
 

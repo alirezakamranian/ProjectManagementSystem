@@ -25,7 +25,7 @@ namespace Application.Services.ApiServices
             try
             {
                 var org = await _context.Organizations
-                    .Include(o => o.Projects)
+                    .Include(o => o.Projects).ThenInclude(p => p.ProjectMembers)
                        .Include(o => o.OrganizationEmployees)
                           .FirstOrDefaultAsync(o => o.Id.ToString()
                               .Equals(request.OrganizationId));
@@ -33,9 +33,11 @@ namespace Application.Services.ApiServices
                     return new CreateProjectServiceResponse(
                          CreateProjectServiceResponseStatus.OrganizationNotExists);
 
-                if (!org.OrganizationEmployees
-                    .Where(e => e.UserId.Equals(userId))
-                    .Any(o => o.Role.Equals(OrganizationEmployeesRoles.Admin)))
+                var employee = org.OrganizationEmployees
+                    .Where(e => e.UserId.Equals(userId)).FirstOrDefault();
+
+                if (employee == null || employee.Role
+                .Equals(OrganizationEmployeesRoles.Member))
                     return new CreateProjectServiceResponse(
                          CreateProjectServiceResponseStatus.AccessDenied);
 
@@ -45,7 +47,20 @@ namespace Application.Services.ApiServices
                     Description = request.Description,
                     DeadLine = request.DeadLine,
                     StartDate = DateTime.Now,
-                    Status = "proccesing"
+                    Status = "proccesing",
+                    LeaderId = userId
+                });
+
+                await _context.SaveChangesAsync();
+
+                var project = await _context.Projects.Include(p=>p.ProjectMembers)
+                .FirstOrDefaultAsync(p => p.LeaderId.Equals(userId));
+
+                project.ProjectMembers.Add(new()
+                {
+                    Role = ProjectRoles.Leader,
+                    OrganizationEmployeeId = employee.Id,
+                    ProjectId = project.Id
                 });
 
                 await _context.SaveChangesAsync();
