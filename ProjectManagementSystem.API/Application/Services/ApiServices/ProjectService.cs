@@ -70,7 +70,7 @@ namespace Application.Services.ApiServices
             }
             catch (Exception ex)
             {
-                _logger.LogError($"CreateProjectService : {ex.Message}");
+                _logger.LogError("CreateProjectService : {Message}",ex.Message);
 
                 return new CreateProjectServiceResponse(
                      CreateProjectServiceResponseStatus.InternalError);
