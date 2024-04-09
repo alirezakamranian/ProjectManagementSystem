@@ -8,7 +8,7 @@ using Domain.Models.Dtos.Auth.Request;
 using Serilog;
 namespace ProjectManagementSystem.Controllers.Authentication
 {
-    [Route("api/user/auth")]
+    [Route("user/auth")]
     [ApiController]
     public class AuthenticationController(IAuthenticationService authenticationService) : ControllerBase
     {

@@ -75,7 +75,7 @@ namespace Application.Services.ApiServices
                 return new SignUpServiceResponse(
                      SignUpServiceResponseStatus.Success);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("SignUpService : {Message}", ex.Message);
 
@@ -91,7 +91,7 @@ namespace Application.Services.ApiServices
             {
                 var user = await _userManager.FindByEmailAsync(request.Email);
 
-                if (!user.Equals(null) && await _userManager
+                if (!(user == null) && await _userManager
                     .CheckPasswordAsync(user, request.Password))
                 {
                     var userRoles = await _userManager
@@ -123,7 +123,7 @@ namespace Application.Services.ApiServices
                 return new SignInServiceResponse(
                      SignInServiceResponseStatus.InvalidUserCredentials);
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogError("SignInService : {Message}", ex.Message);
 
@@ -139,7 +139,7 @@ namespace Application.Services.ApiServices
                 var user = await _userManager
                     .FindByEmailAsync(request.Email);
 
-                if (!user.Equals(null))
+                if (!(user == null))
                 {
                     var userRoles = await _userManager
                         .GetRolesAsync(user);
@@ -165,9 +165,9 @@ namespace Application.Services.ApiServices
                 return new RefreshTokenServiceResponse(
                      RefreshTokenServiceResponseStatus.ProcessFaild);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError("RefreshTokenService : {Message}",ex.Message);
+                _logger.LogError("RefreshTokenService : {Message}", ex.Message);
 
                 return new RefreshTokenServiceResponse(
                      RefreshTokenServiceResponseStatus.InternalError);

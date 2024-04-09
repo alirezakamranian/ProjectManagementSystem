@@ -10,6 +10,7 @@ using Application.Services.InternalServices;
 using Domain.Services.InternalServices;
 using Serilog;
 using Domain.Entities.HumanResource;
+using Npgsql;
 namespace ProjectManagementSystem.ServiceExtension
 {
     public static class ServiceConfigurationExtensions
@@ -28,8 +29,8 @@ namespace ProjectManagementSystem.ServiceExtension
         //DbContext
         public static void ConfigureDbContext(this IServiceCollection services, WebApplicationBuilder builder) =>
             services.AddDbContext<DataContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"),
-                    b => b.MigrationsAssembly("ProjectManagementSystem")));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("PGSQL"),
+                    o => o.MigrationsAssembly("ProjectManagementSystem")));
 
         //Swagger
         public static void ConfigureSwagger(this IServiceCollection services)
