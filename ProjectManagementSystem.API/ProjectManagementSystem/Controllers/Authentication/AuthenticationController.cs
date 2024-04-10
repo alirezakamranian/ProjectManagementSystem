@@ -85,7 +85,7 @@ namespace ProjectManagementSystem.Controllers.Authentication
 
         [HttpPost]
         [Authorize]
-        [Route("refresh")]
+        [Route("refreshtoken")]
         public async Task<IActionResult> Refresh()
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;

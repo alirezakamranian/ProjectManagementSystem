@@ -32,11 +32,9 @@ var app = builder.Build();
 
 /*----------                                 -_-_-_-- HTTP request pipeline --_-_-_-                                         --------- */
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
