@@ -21,7 +21,7 @@ namespace Domain.Entities.Project.ProjectTask
         public string Priority { get; set; }
 
         //ProjTaskRel
-        public List<ProjectTask> projectTasks { get; set; }
+        public List<ProjectTask> ProjectTasks { get; set; }
 
         //ProjectRel
         public Guid ProjectId { get; set; }
