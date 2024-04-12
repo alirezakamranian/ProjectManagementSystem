@@ -24,8 +24,12 @@ builder.Services.ConfigureSwagger();
 //Auth
 builder.Services.ConfigureAuth(builder);
 
+//Cors
+builder.Services.ConfigureCors();
+
 //AppServices
 builder.Services.ConfigureAppServices();
+
 
 
 var app = builder.Build();
@@ -37,6 +41,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+app.UseCors("reactApp");
 
 app.UseAuthentication();
 

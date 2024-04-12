@@ -11,6 +11,7 @@ using Domain.Services.InternalServices;
 using Serilog;
 using Domain.Entities.HumanResource;
 using Npgsql;
+using Microsoft.OpenApi.Models;
 namespace ProjectManagementSystem.ServiceExtension
 {
     public static class ServiceConfigurationExtensions
@@ -20,7 +21,7 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddControllers();
 
         //Logger
-        public static void ConfigureLogging(this IHostBuilder hostBuilder) 
+        public static void ConfigureLogging(this IHostBuilder hostBuilder)
         {
             hostBuilder.UseSerilog((context, configuration) =>
                 configuration.ReadFrom.Configuration(context.Configuration));
@@ -36,7 +37,47 @@ namespace ProjectManagementSystem.ServiceExtension
         public static void ConfigureSwagger(this IServiceCollection services)
         {
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(option =>
+            {
+                option.SwaggerDoc("v1", new OpenApiInfo { Title = "PMS API", Version = "v1" });
+                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter a valid token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                     {
+                        new OpenApiSecurityScheme
+                         {
+                             Reference = new OpenApiReference
+                             {
+                                 Type=ReferenceType.SecurityScheme,
+                                 Id="Bearer"
+                             }
+                        },
+                        new string[]{}
+                     }
+                });
+            });
+        }
+
+        //Cors
+        public static void ConfigureCors(this IServiceCollection services)
+        {
+            services.AddCors(option =>
+            {
+                option.AddPolicy("reactApp", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
         }
 
         //AuthAndIdentity
