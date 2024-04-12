@@ -90,6 +90,8 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddTransient<IUserNotificationService, UserNotificationService>();
             //ProjectMemberService
             services.AddTransient<IProjectMemberService, ProjectMemberService>();
+            //ProjectTaskListService
+            services.AddTransient<IProjectTaskListService, ProjectTaskListService>();
 
             /*InternalServices*/
 
