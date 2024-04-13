@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Domain.Models.Dtos.UserNotification.Response
@@ -10,6 +11,8 @@ namespace Domain.Models.Dtos.UserNotification.Response
     public class GetNotificationResponse
     {
         public string  Message { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<NotificationForResponseDto> Notificatins { get; set; }
     }
     public class NotificationForResponseDto

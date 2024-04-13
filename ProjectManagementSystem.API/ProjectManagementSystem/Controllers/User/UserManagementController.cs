@@ -26,12 +26,12 @@ namespace ProjectManagementSystem.Controllers.User
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new GetUserDetailsResponse
                         {
-                            Status = serviceResponse.Status
+                            Message = serviceResponse.Status
                         });
 
             return Ok(new GetUserDetailsResponse
             {
-                Status= serviceResponse.Status,
+                Message = serviceResponse.Status,
                 Notifications = serviceResponse.Notifications,
                 Id=userId,
                 Email = serviceResponse.User
