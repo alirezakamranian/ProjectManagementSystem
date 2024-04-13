@@ -78,7 +78,7 @@ namespace ProjectManagementSystem.Controllers.Authentication
             return Ok(new SignInResponse
             {
                 Message = serviceResponse.Status,
-                Token = serviceResponse.Token,
+                AccessToken = serviceResponse.Token,
                 RefrshToken = serviceResponse.RefrshToken
             });
         }
@@ -109,7 +109,7 @@ namespace ProjectManagementSystem.Controllers.Authentication
             return Ok(new RefreshTokenResponse
             {
                 Message = serviceResponse.Status,
-                Token = serviceResponse.Token
+                AccessToken = serviceResponse.Token
             });
         }
     }
