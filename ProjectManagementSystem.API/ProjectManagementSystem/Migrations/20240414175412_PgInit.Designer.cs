@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ProjectManagementSystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240409211913_PGinit")]
-    partial class PGinit
+    [Migration("20240414175412_PgInit")]
+    partial class PgInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,9 +61,8 @@ namespace ProjectManagementSystem.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserId")
                         .HasColumnType("text");
@@ -172,10 +171,9 @@ namespace ProjectManagementSystem.Migrations
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
+                    b.Property<int>("Role")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserId")
                         .HasColumnType("text");
@@ -201,10 +199,9 @@ namespace ProjectManagementSystem.Migrations
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
+                    b.Property<int>("Role")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -508,7 +505,7 @@ namespace ProjectManagementSystem.Migrations
             modelBuilder.Entity("Domain.Entities.Project.ProjectTask.ProjectTask", b =>
                 {
                     b.HasOne("Domain.Entities.Project.ProjectTask.ProjectTaskList", "ProjectTaskList")
-                        .WithMany("projectTasks")
+                        .WithMany("ProjectTasks")
                         .HasForeignKey("ProjectTaskListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -608,7 +605,7 @@ namespace ProjectManagementSystem.Migrations
 
             modelBuilder.Entity("Domain.Entities.Project.ProjectTask.ProjectTaskList", b =>
                 {
-                    b.Navigation("projectTasks");
+                    b.Navigation("ProjectTasks");
                 });
 #pragma warning restore 612, 618
         }

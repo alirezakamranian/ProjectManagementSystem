@@ -58,7 +58,7 @@ namespace Application.Services.ApiServices
 
                 project.ProjectMembers.Add(new()
                 {
-                    Role = ProjectRoles.Leader,
+                    Role = ProjectMemberRoles.Leader,
                     OrganizationEmployeeId = employee.Id,
                     ProjectId = project.Id
                 });

@@ -43,7 +43,7 @@ namespace Application.Services.ApiServices
                         .Equals(organization.OrganizationEmployees
                             .Where(e => e.UserId.ToString().Equals(userId))
                                 .Select(e => e.Id).FirstOrDefault()) && (p.Role.Equals(
-                                    ProjectRoles.Leader) || p.Role.Equals(ProjectRoles.Admin))))
+                                    ProjectMemberRoles.Leader) || p.Role.Equals(ProjectMemberRoles.Admin))))
                     return new AddMemberServiceResponse(
                          AddMemberServiceResponseStatus.AccessDenied);
 
@@ -56,7 +56,7 @@ namespace Application.Services.ApiServices
 
                 project.ProjectMembers.Add(new()
                 {
-                    Role = ProjectRoles.Member,
+                    Role = ProjectMemberRoles.Member,
                     OrganizationEmployeeId = employee.Id
                 });
                  await _context.SaveChangesAsync();

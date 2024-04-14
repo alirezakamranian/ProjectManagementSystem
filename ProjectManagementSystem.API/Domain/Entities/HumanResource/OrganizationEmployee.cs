@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Constants.Roles.OrganiationEmployees;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,7 +16,7 @@ namespace Domain.Entities.HumanResource
 
         [MaxLength(50)]
         [Required]
-        public string Role { get; set; }
+        public OrganizationEmployeesRoles Role { get; set; }
 
         //UserRel
         public string UserId { get; set; }
