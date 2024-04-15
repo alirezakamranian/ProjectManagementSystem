@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Constants.Notification
 {
-    public class NotificationTypes
+    public enum NotificationTypes
     {
-        public const string Invite = "Invite";
-        public const string Notice = "Notice";
+        Invite,
+        Notice
     }
 }

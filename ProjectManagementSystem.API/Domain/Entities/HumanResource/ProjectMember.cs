@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Project.ProjectTask;
+﻿using Domain.Constants.Roles.OrganiationEmployees;
+using Domain.Entities.Project.ProjectTask;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,7 +17,7 @@ namespace Domain.Entities.HumanResource
 
         [MaxLength(50)]
         [Required]
-        public string Role { get; set; }
+        public ProjectMemberRoles Role { get; set; }
 
         //ProjectRel
         public Guid ProjectId { get; set; }

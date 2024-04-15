@@ -1,4 +1,5 @@
-﻿using Domain.Entities.HumanResource;
+﻿using Domain.Constants.Notification;
+using Domain.Entities.HumanResource;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,7 +23,7 @@ namespace Domain.Entities.Common
         public string Description { get; set; }
 
         [Required]
-        public string Type { get; set; }
+        public NotificationTypes Type { get; set; }
 
         [Required]
         public string Issuer { get; set; }

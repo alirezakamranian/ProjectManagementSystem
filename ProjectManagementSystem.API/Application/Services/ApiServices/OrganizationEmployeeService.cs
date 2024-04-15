@@ -28,7 +28,7 @@ namespace Application.Services.ApiServices
                              .FirstOrDefaultAsync(o => o.Id.ToString()
                                  .Equals(request.OrganizationId));
 
-                if (org.Equals(null))
+                if (org == null)
                     return new ChangeEmployeeRoleServiceResponse(
                          ChangeEmployeeRoleServiceResponseStatus.OrganizationNotExists);
 
@@ -42,16 +42,16 @@ namespace Application.Services.ApiServices
                     .FirstOrDefault(e => e.Id.ToString()
                         .Equals(request.EmployeeId));
 
-                if (targetUser.Equals(null))
+                if (targetUser == null)
                     return new ChangeEmployeeRoleServiceResponse(
                          ChangeEmployeeRoleServiceResponseStatus.EmployeeNotExists);
 
-                if (request.Role.Trim().ToLower()
-                    .Equals(OrganizationEmployeesRoles.Member.ToLower()))
+                if (request.Role
+                    .Equals(OrganizationEmployeesRoles.Member))
                     targetUser.Role = OrganizationEmployeesRoles.Member;
 
-                if (request.Role.Trim().ToLower()
-                    .Equals(OrganizationEmployeesRoles.Admin.ToLower()))
+                if (request.Role
+                    .Equals(OrganizationEmployeesRoles.Admin))
                     targetUser.Role = OrganizationEmployeesRoles.Admin;
 
                 await _context.SaveChangesAsync();
@@ -60,7 +60,7 @@ namespace Application.Services.ApiServices
                 return new ChangeEmployeeRoleServiceResponse(
                       ChangeEmployeeRoleServiceResponseStatus.Success);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("ChangeEmployeeRole : {Message}", ex.Message);
 

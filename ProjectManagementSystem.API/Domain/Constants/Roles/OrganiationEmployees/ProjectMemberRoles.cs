@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Domain.Constants.Roles.OrganiationEmployees
 {
-    public enum OrganizationEmployeesRoles
+    public enum ProjectMemberRoles
     {
-       Member,
-       Admin
+        Member,
+        Modrator,
+        Admin,
+        Leader
     }
 }

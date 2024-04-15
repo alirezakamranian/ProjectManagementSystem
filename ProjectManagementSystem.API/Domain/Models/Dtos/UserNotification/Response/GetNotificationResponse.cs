@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Constants.Notification;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Domain.Models.Dtos.UserNotification.Response
 
         public string Description { get; set; }
 
-        public string Type { get; set; }
+        public NotificationTypes Type { get; set; }
 
         public string Issuer { get; set; }
     }

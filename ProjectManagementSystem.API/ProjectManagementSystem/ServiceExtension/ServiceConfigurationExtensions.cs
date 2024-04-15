@@ -12,13 +12,16 @@ using Serilog;
 using Domain.Entities.HumanResource;
 using Npgsql;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 namespace ProjectManagementSystem.ServiceExtension
 {
     public static class ServiceConfigurationExtensions
     {
         //Mvc
         public static void ConfigureMvc(this IServiceCollection services) =>
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+                options.JsonSerializerOptions.Converters
+                    .Add(new JsonStringEnumConverter()));
 
         //Logger
         public static void ConfigureLogging(this IHostBuilder hostBuilder)

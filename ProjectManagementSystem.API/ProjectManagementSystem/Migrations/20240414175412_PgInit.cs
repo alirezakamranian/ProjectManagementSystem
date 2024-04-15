@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ProjectManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class PGinit : Migration
+    public partial class PgInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -178,7 +178,7 @@ namespace ProjectManagementSystem.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "character varying(700)", maxLength: 700, nullable: true),
-                    Type = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
                     Issuer = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: true)
                 },
@@ -215,7 +215,7 @@ namespace ProjectManagementSystem.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Role = table.Column<int>(type: "integer", maxLength: 50, nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: true),
                     OrganizationId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
@@ -265,7 +265,7 @@ namespace ProjectManagementSystem.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Role = table.Column<int>(type: "integer", maxLength: 50, nullable: false),
                     ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     OrganizationEmployeeId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
