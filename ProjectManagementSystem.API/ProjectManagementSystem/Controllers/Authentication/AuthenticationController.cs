@@ -84,15 +84,12 @@ namespace ProjectManagementSystem.Controllers.Authentication
         }
 
         [HttpPost]
-        [Authorize]
         [Route("refreshtoken")]
-        public async Task<IActionResult> Refresh()
+        public async Task<IActionResult> Refresh(RefreshTokenRequest request)
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
+            var serviceResponse = await _authenticationService.RefreshToken(request);
 
-            var serviceResponse = await _authenticationService.RefreshToken(new RefreshTokenRequest(userId));
-
-            if (serviceResponse.Status.Equals(RefreshTokenServiceResponseStatus.ProcessFaild))
+            if (serviceResponse.Status.Equals(RefreshTokenServiceResponseStatus.InvalidRefreshToken))
                 return StatusCode(StatusCodes.Status400BadRequest,
                      new RefreshTokenResponse
                      {
