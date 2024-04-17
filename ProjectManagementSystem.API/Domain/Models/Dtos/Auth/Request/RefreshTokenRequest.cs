@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Domain.Models.Dtos.Auth.Request
 {
-    public class RefreshTokenRequest(string email)
+    public class RefreshTokenRequest
     {
-        public string Email { get; set; } = email;
+        [Required]
+        public string RefreshToken { get; set; } 
     }
 }

@@ -23,8 +23,11 @@ namespace Application.Services.ApiServices
 {
     public class AuthenticationService(UserManager<ApplicationUser> userManager,
         ITokenGenerator tokenGenerator,
+        DataContext context,
         ILogger<AuthenticationService> logger) : IAuthenticationService
     {
+
+        private readonly DataContext _context = context;
         private readonly ILogger<AuthenticationService> _logger = logger;
         private readonly ITokenGenerator _tokenGenerator = tokenGenerator;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
@@ -107,16 +110,34 @@ namespace Application.Services.ApiServices
                         authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                     }
 
+                    var token = new JwtSecurityTokenHandler()
+                         .WriteToken(_tokenGenerator
+                            .GetToken(DateTime.Now.AddHours(1), authClaims));
+
+                    var refreshToken = new JwtSecurityTokenHandler()
+                           .WriteToken(_tokenGenerator
+                               .GetToken(DateTime.Now.AddMonths(1), authClaims));
+
+                    var oldRefreshToken =await _context.UserTokens
+                        .FirstOrDefaultAsync(t => t.UserId.Equals(user.Id));
+
+                    _context.Remove(oldRefreshToken);
+
+                    _context.UserTokens.Add(new IdentityUserToken<string>
+                    {
+                        UserId = user.Id,
+                        Value = refreshToken,
+                        LoginProvider = "PmsAccountCenter",
+                        Name = "RefreshToken"
+                    });
+
+                    await _context.SaveChangesAsync();
+
                     return new SignInServiceResponse(
                          SignInServiceResponseStatus.Success)
                     {
-                        Token = new JwtSecurityTokenHandler()
-                          .WriteToken(_tokenGenerator
-                             .GetToken(DateTime.Now.AddHours(1), authClaims)),
-
-                        RefrshToken = new JwtSecurityTokenHandler()
-                            .WriteToken(_tokenGenerator
-                                .GetToken(DateTime.Now.AddMonths(1), authClaims))
+                        Token = token,
+                        RefrshToken = refreshToken
                     };
                 }
 
@@ -136,11 +157,13 @@ namespace Application.Services.ApiServices
         {
             try
             {
-                var user = await _userManager
-                    .FindByEmailAsync(request.Email);
+                var refreshToken = await _context.UserTokens
+                    .FirstOrDefaultAsync(t => t.Value == request.RefreshToken);
 
-                if (!(user == null))
+                if (refreshToken != null)
                 {
+                    var user = await _userManager.FindByIdAsync(refreshToken.UserId);
+
                     var userRoles = await _userManager
                         .GetRolesAsync(user);
 
@@ -163,7 +186,7 @@ namespace Application.Services.ApiServices
                     };
                 }
                 return new RefreshTokenServiceResponse(
-                     RefreshTokenServiceResponseStatus.ProcessFaild);
+                     RefreshTokenServiceResponseStatus.InvalidRefreshToken);
             }
             catch (Exception ex)
             {

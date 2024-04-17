@@ -14,7 +14,7 @@ namespace Domain.Models.ServiceResponses.Auth
     }
     public class RefreshTokenServiceResponseStatus : ServiceResponseStatusBase
     {
-        public const string ProcessFaild = "ProcessFaild";
+        public const string InvalidRefreshToken = "InvalidRefreshToken";
     }
 }
 
