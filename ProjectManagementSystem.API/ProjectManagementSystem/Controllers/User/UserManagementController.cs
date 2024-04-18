@@ -32,11 +32,14 @@ namespace ProjectManagementSystem.Controllers.User
             return Ok(new GetUserDetailsResponse
             {
                 Message = serviceResponse.Status,
-                Notifications = serviceResponse.Notifications,
-                Id=userId,
-                Email = serviceResponse.User
-                .Email.ToLower(),
-                FullName =serviceResponse.User.FullName
+                NotificationsCount = serviceResponse.NotificationsCount,
+                UserDetails = new UserForResponseDto()
+                {
+                    Id = serviceResponse.User.Id,
+                    Email = serviceResponse.User.Email,
+                    FullName = serviceResponse.User.FullName,
+                    Avatar = null
+                }
             });
         }
     }

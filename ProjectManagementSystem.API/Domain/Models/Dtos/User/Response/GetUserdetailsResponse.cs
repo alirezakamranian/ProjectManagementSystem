@@ -13,20 +13,19 @@ namespace Domain.Models.Dtos.User.Response
     {
         public string Message { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<NotificationForResponseDto> Notifications { get; set; }
+        public int NotificationsCount { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public UserForResponseDto UserDetails { get; set; }
+
+    }
+    public class UserForResponseDto
+    {
         public string Id { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Email { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string FullName { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Avatar { get; set; }
-        
     }
 }

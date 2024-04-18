@@ -23,33 +23,20 @@ namespace Application.Services.ApiServices
         {
             try
             {
-                var notifications = await _context.Notifications
-                    .AsNoTracking().Where(n => n.UserId.Equals(userId)).ToListAsync();
-
-                var resultNotifications = new List<NotificationForResponseDto>();
-                foreach (var notif in notifications)
-                {
-                    resultNotifications.Add(new NotificationForResponseDto
-                    {
-                        Id = notif.Id.ToString(),
-                        Type = notif.Type,
-                        Title = notif.Title,
-                        Description = notif.Description,
-                        Issuer = notif.Issuer
-                    });
-                }
+                var notificationsCount = await _context.Notifications
+                    .AsNoTracking().Where(n => n.UserId.Equals(userId)).CountAsync();
 
                 return new GetUserDetailsServiceResponse(
                      GetUserDetailsServiceResponseStatus.Success)
                 {
-                    Notifications = resultNotifications,
+                    NotificationsCount = notificationsCount,
                     User = await _context.Users.AsNoTracking()
                      .FirstOrDefaultAsync(u => u.Id.Equals(userId))
                 };
             }
             catch (Exception ex)
             {
-                _logger.LogError($"GetUserDetails : {ex.Message}");
+                _logger.LogError("GetUserDetails : {Message}", ex.Message);
 
                 return new GetUserDetailsServiceResponse(
                      GetUserDetailsServiceResponseStatus.InternalError);

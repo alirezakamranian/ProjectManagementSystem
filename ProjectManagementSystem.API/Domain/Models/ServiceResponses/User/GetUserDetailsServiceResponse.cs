@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.User
 {
-    public class GetUserDetailsServiceResponse(string status):ServiceResponseBase(status)
+    public class GetUserDetailsServiceResponse(string status) : ServiceResponseBase(status)
     {
-        public List<NotificationForResponseDto> Notifications { get; set; }
+        public int NotificationsCount { get; set; }
         public ApplicationUser User { get; set; }
     }
-    public class GetUserDetailsServiceResponseStatus:ServiceResponseStatusBase
+    public class GetUserDetailsServiceResponseStatus : ServiceResponseStatusBase
     {
     }
 }
