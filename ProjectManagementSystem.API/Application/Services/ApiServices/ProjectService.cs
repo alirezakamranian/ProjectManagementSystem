@@ -1,6 +1,7 @@
 ﻿using Domain.Constants.Roles.OrganiationEmployees;
 using Domain.Models.Dtos.Project.Request;
 using Domain.Models.ServiceResponses.Project;
+using Domain.Models.ServiceResponses.ProjectTask;
 using Domain.Services.ApiServices;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +54,7 @@ namespace Application.Services.ApiServices
 
                 await _context.SaveChangesAsync();
 
-                var project = await _context.Projects.Include(p=>p.ProjectMembers)
+                var project = await _context.Projects.Include(p => p.ProjectMembers)
                 .FirstOrDefaultAsync(p => p.LeaderId.Equals(userId));
 
                 project.ProjectMembers.Add(new()
@@ -70,10 +71,50 @@ namespace Application.Services.ApiServices
             }
             catch (Exception ex)
             {
-                _logger.LogError("CreateProjectService : {Message}",ex.Message);
+                _logger.LogError("CreateProjectService : {Message}", ex.Message);
 
                 return new CreateProjectServiceResponse(
                      CreateProjectServiceResponseStatus.InternalError);
+            }
+        }
+
+        public async Task<GetProjectServiceResponse> GetProject(GetProjectRequest request, string userId)
+        {
+            try
+            {
+                var project = await _context.Projects
+                    .AsNoTracking().Include(p => p.ProjectTaskLists)
+                        .ThenInclude(tl => tl.ProjectTasks)
+                            .FirstOrDefaultAsync(p => p.Id.ToString()
+                                .Equals(request.ProjectId));
+
+                if (project == null)
+                    return new GetProjectServiceResponse(
+                         GetProjectServiceResponseStatus.ProjectNotExists);
+
+                var org = await _context.Organizations.Include(o => o.OrganizationEmployees)
+                    .AsNoTracking().FirstOrDefaultAsync(o => o.Id
+                         .Equals(project.OrganizationId));
+
+                if (!project.ProjectMembers.Any(p =>
+                        p.OrganizationEmployeeId.Equals(
+                            org.OrganizationEmployees.Where(e =>
+                                e.UserId.Equals(userId)).Select(e => e.Id))))
+                    return new GetProjectServiceResponse(
+                         GetProjectServiceResponseStatus.AccessDenied);
+
+                return new GetProjectServiceResponse(
+                     GetProjectServiceResponseStatus.AccessDenied)
+                {
+                    Project = project
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("GetProjectService : {Message}", ex.Message);
+
+                return new GetProjectServiceResponse(
+                     GetProjectServiceResponseStatus.InternalError);
             }
         }
     }

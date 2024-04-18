@@ -11,5 +11,6 @@ namespace Domain.Services.ApiServices
     public interface IProjectService
     {
         public Task<CreateProjectServiceResponse> CreateProject(CreateProjectRequest request, string email);
+        public Task<GetProjectServiceResponse> GetProject(GetProjectRequest request, string userId);
     }
 }
