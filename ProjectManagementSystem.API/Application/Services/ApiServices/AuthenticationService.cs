@@ -137,7 +137,7 @@ namespace Application.Services.ApiServices
                          SignInServiceResponseStatus.Success)
                     {
                         Token = token,
-                        RefrshToken = refreshToken
+                        RefreshToken = refreshToken
                     };
                 }
 

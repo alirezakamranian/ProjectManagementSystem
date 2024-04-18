@@ -14,7 +14,7 @@ namespace Domain.Models.Dtos.UserNotification.Response
         public string  Message { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<NotificationForResponseDto> Notificatins { get; set; }
+        public List<NotificationForResponseDto> Notifications { get; set; }
     }
     public class NotificationForResponseDto
     {

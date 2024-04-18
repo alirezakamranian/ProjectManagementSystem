@@ -15,6 +15,6 @@ namespace Domain.Models.Dtos.Auth.Response
         public string AccessToken { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string RefrshToken { get; set; }
+        public string RefreshToken { get; set; }
     }
 }

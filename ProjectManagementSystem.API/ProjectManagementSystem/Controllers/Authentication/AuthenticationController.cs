@@ -79,7 +79,7 @@ namespace ProjectManagementSystem.Controllers.Authentication
             {
                 Message = serviceResponse.Status,
                 AccessToken = serviceResponse.Token,
-                RefrshToken = serviceResponse.RefrshToken
+                RefreshToken = serviceResponse.RefreshToken
             });
         }
 

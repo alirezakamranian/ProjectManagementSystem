@@ -48,7 +48,7 @@ namespace ProjectManagementSystem.Controllers.Notification
             return Ok(new GetNotificationResponse
             {
                 Message = serviceResponse.Status,
-                Notificatins = notifications
+                Notifications = notifications
             });
         }
 
