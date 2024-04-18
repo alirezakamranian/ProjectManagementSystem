@@ -118,10 +118,11 @@ namespace Application.Services.ApiServices
                            .WriteToken(_tokenGenerator
                                .GetToken(DateTime.Now.AddMonths(1), authClaims));
 
-                    var oldRefreshToken =await _context.UserTokens
+                    var oldRefreshToken = await _context.UserTokens
                         .FirstOrDefaultAsync(t => t.UserId.Equals(user.Id));
 
-                    _context.Remove(oldRefreshToken);
+                    if (oldRefreshToken != null)
+                        _context.Remove(oldRefreshToken);
 
                     _context.UserTokens.Add(new IdentityUserToken<string>
                     {
