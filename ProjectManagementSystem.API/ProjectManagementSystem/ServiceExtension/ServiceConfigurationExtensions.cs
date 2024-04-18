@@ -136,6 +136,8 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddTransient<IProjectMemberService, ProjectMemberService>();
             //ProjectTaskListService
             services.AddTransient<IProjectTaskListService, ProjectTaskListService>();
+            //ProjectTaskService
+            services.AddTransient<IProjectTaskService, ProjectTaskService>();
 
             /*InternalServices*/
 
