@@ -43,7 +43,7 @@ namespace Application.Services.ApiServices
 
                 if (!project.ProjectMembers.Any(p =>
                     p.OrganizationEmployeeId.Equals(
-                        org.OrganizationEmployees.Where(e => 
+                        org.OrganizationEmployees.Where(e =>
                             e.UserId.Equals(userId)).Select(e => e.Id)) && (
                                 p.Role.Equals(ProjectMemberRoles.Leader) ||
                                     p.Role.Equals(ProjectMemberRoles.Admin) ||
@@ -72,6 +72,53 @@ namespace Application.Services.ApiServices
                      CreateProjectTaskServiceResponseStatus.InternalError);
             }
 
+        }
+
+        public async Task<GetProjectTaskServiceResponse> GetTask(GetProjectTaskRequest request, string userId)
+        {
+            try
+            {
+                var task = await _context.ProjectTasks
+                               .FirstOrDefaultAsync(t => t.Id.ToString()
+                                   .Equals(request.TaskId));
+
+                if (task == null)
+                    return new GetProjectTaskServiceResponse(
+                         GetProjectTaskServiceResponseStatus.TaskNotExists);
+
+                var taskList = await _context.ProjectTaskLists
+                    .Include(tl => tl.ProjectTasks)
+                        .FirstOrDefaultAsync(tl => tl.Id.ToString()
+                             .Equals(task.ProjectTaskListId));
+
+                var project = await _context.Projects
+                    .AsNoTracking().Include(p => p.ProjectMembers)
+                        .FirstOrDefaultAsync(p => p.Id.Equals(taskList.ProjectId));
+
+                var org = await _context.Organizations.Include(o => o.OrganizationEmployees)
+                    .AsNoTracking().FirstOrDefaultAsync(o => o.Id
+                        .Equals(project.OrganizationId));
+
+                if (!project.ProjectMembers.Any(p =>
+                    p.OrganizationEmployeeId.Equals(
+                        org.OrganizationEmployees.Where(e =>
+                            e.UserId.Equals(userId)).Select(e => e.Id))))
+                    return new GetProjectTaskServiceResponse(
+                         GetProjectTaskServiceResponseStatus.AccessDenied);
+
+                return new GetProjectTaskServiceResponse(
+                     GetProjectTaskServiceResponseStatus.Success)
+                {
+                    Task = task
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("GetProjectTaskService : {Message}", ex.Message);
+
+                return new GetProjectTaskServiceResponse(
+                     GetProjectTaskServiceResponseStatus.InternalError);
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Domain.Services.ApiServices
 {
     public interface IProjectTaskService
     {
-        public Task<CreateProjectTaskServiceResponse> CreateTask(CreateProjectTaskRequest request,string userId);
+        public Task<CreateProjectTaskServiceResponse> CreateTask(CreateProjectTaskRequest request, string userId);
+        public Task<GetProjectTaskServiceResponse> GetTask(GetProjectTaskRequest request, string userId);
     }
 }
