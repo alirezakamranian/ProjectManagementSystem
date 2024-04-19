@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ProjectManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class PgInit : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -292,7 +292,7 @@ namespace ProjectManagementSystem.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Priority = table.Column<string>(type: "text", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
                     ProjectId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -313,7 +313,7 @@ namespace ProjectManagementSystem.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "character varying(700)", maxLength: 700, nullable: true),
-                    Priority = table.Column<string>(type: "text", nullable: true),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
                     ProjectTaskListId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>

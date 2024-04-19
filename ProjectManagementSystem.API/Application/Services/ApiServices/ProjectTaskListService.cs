@@ -37,13 +37,13 @@ namespace Application.Services.ApiServices
                          ProjectTaskListServiceResponseStatus.ProjectNotExists);
 
                 var lastPriority = project.ProjectTaskLists
-                    .Select(t => int.Parse(t.Priority))
+                    .Select(t => t.Priority)
                         .DefaultIfEmpty(0).Max();
 
                 project.ProjectTaskLists.Add(new()
                 {
                     Name = request.Name,
-                    Priority = (++lastPriority).ToString()
+                    Priority = (++lastPriority)
                 });
 
                 await _context.SaveChangesAsync();

@@ -74,10 +74,7 @@ namespace ProjectManagementSystem.Controllers.Project
                     Id = serviceResponse.Project.Id.ToString(),
                     Name = serviceResponse.Project.Name,
                     Description = serviceResponse.Project.Description,
-                    StartDate = serviceResponse.Project.StartDate,
-                    DeadLine = serviceResponse.Project.DeadLine,
-                    EndDate = serviceResponse.Project.EndDate,
-                    Status = serviceResponse.Status,
+                    Status = serviceResponse.Project.Status,
                     ProjectTaskLists = taskLists
                 }
             });

@@ -3,6 +3,7 @@ using System;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ProjectManagementSystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240419092034_dfgfd")]
+    partial class dfgfd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,12 +218,15 @@ namespace ProjectManagementSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Creationlevel")
-                        .HasColumnType("text");
+                    b.Property<DateTime>("DeadLine")
+                        .HasColumnType("timestamp(6)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(700)
                         .HasColumnType("character varying(700)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp(6)");
 
                     b.Property<string>("LeaderId")
                         .HasColumnType("text");
@@ -232,6 +238,9 @@ namespace ProjectManagementSystem.Migrations
 
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp(6)");
 
                     b.Property<string>("Status")
                         .HasColumnType("text");

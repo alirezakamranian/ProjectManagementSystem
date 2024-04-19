@@ -46,16 +46,17 @@ namespace Application.Services.ApiServices
                 {
                     Name = request.Name,
                     Description = request.Description,
-                    DeadLine = request.DeadLine,
-                    StartDate = DateTime.Now,
                     Status = "proccesing",
-                    LeaderId = userId
+                    LeaderId = userId,
+                    Creationlevel ="Pending"
                 });
 
+                
                 await _context.SaveChangesAsync();
 
                 var project = await _context.Projects.Include(p => p.ProjectMembers)
-                .FirstOrDefaultAsync(p => p.LeaderId.Equals(userId));
+                    .FirstOrDefaultAsync(p => p.LeaderId.Equals(userId)&&
+                        p.Creationlevel.Equals("Pending"));
 
                 project.ProjectMembers.Add(new()
                 {
@@ -63,6 +64,8 @@ namespace Application.Services.ApiServices
                     OrganizationEmployeeId = employee.Id,
                     ProjectId = project.Id
                 });
+
+                project.Creationlevel = "Final";
 
                 await _context.SaveChangesAsync();
 
@@ -83,10 +86,11 @@ namespace Application.Services.ApiServices
             try
             {
                 var project = await _context.Projects
-                    .AsNoTracking().Include(p => p.ProjectTaskLists)
-                        .ThenInclude(tl => tl.ProjectTasks)
-                            .FirstOrDefaultAsync(p => p.Id.ToString()
-                                .Equals(request.ProjectId));
+                    .AsNoTracking().Include(p=>p.ProjectMembers)
+                        .Include(p => p.ProjectTaskLists)
+                            .ThenInclude(tl => tl.ProjectTasks)
+                                .FirstOrDefaultAsync(p => p.Id.ToString()
+                                    .Equals(request.ProjectId));
 
                 if (project == null)
                     return new GetProjectServiceResponse(
@@ -96,15 +100,20 @@ namespace Application.Services.ApiServices
                     .AsNoTracking().FirstOrDefaultAsync(o => o.Id
                          .Equals(project.OrganizationId));
 
+                var orgEmployee = org.OrganizationEmployees
+                    .FirstOrDefault(e=>e.UserId.Equals(userId));
+
+                if(orgEmployee == null)
+                    return new GetProjectServiceResponse(
+                         GetProjectServiceResponseStatus.AccessDenied);
+
                 if (!project.ProjectMembers.Any(p =>
-                        p.OrganizationEmployeeId.Equals(
-                            org.OrganizationEmployees.Where(e =>
-                                e.UserId.Equals(userId)).Select(e => e.Id))))
+                        p.OrganizationEmployeeId.Equals(orgEmployee.Id)))
                     return new GetProjectServiceResponse(
                          GetProjectServiceResponseStatus.AccessDenied);
 
                 return new GetProjectServiceResponse(
-                     GetProjectServiceResponseStatus.AccessDenied)
+                     GetProjectServiceResponseStatus.Success)
                 {
                     Project = project
                 };

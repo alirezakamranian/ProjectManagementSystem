@@ -16,12 +16,15 @@ namespace ProjectManagementSystem.Controllers.ProjectTask
     {
         private readonly IProjectTaskService _taskService = taskService;
 
-        public async Task<IActionResult> Get(GetProjectTaskRequest request)
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] string Id)
         {
             var userId = HttpContext.User.Claims
                 .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
-            var serviceResponse = await _taskService.GetTask(request, userId);
+            var serviceResponse = await _taskService
+                .GetTask(new GetProjectTaskRequest { TaskId = Id }, userId);
 
             if (serviceResponse.Status.Equals(GetProjectTaskServiceResponseStatus.AccessDenied) ||
                 serviceResponse.Status.Equals(GetProjectTaskServiceResponseStatus.TaskNotExists))
@@ -40,13 +43,13 @@ namespace ProjectManagementSystem.Controllers.ProjectTask
 
             return Ok(new GetProjectTaskResponse
             {
-                Message=serviceResponse.Status,
-                Task = new() 
+                Message = serviceResponse.Status,
+                Task = new()
                 {
-                    Id=serviceResponse.Task.Id.ToString(),
-                    Title=serviceResponse.Task.Title,
-                    Description=serviceResponse.Task.Description,
-                    Priority=serviceResponse.Task.Priority
+                    Id = serviceResponse.Task.Id.ToString(),
+                    Title = serviceResponse.Task.Title,
+                    Description = serviceResponse.Task.Description,
+                    Priority = serviceResponse.Task.Priority
                 }
             });
         }
