@@ -15,19 +15,19 @@ using System.Threading.Tasks;
 namespace Application.Services.ApiServices
 {
     public class ProjectTaskService(DataContext context,
-    ILogger<AuthenticationService> logger) : IProjectTaskService
+    ILogger<ProjectTaskService> logger) : IProjectTaskService
     {
         private readonly DataContext _context = context;
-        private readonly ILogger<AuthenticationService> _logger = logger;
+        private readonly ILogger<ProjectTaskService> _logger = logger;
 
         public async Task<CreateProjectTaskServiceResponse> CreateTask(CreateProjectTaskRequest request, string userId)
         {
             try
             {
                 var taskList = await _context.ProjectTaskLists
-                .Include(tl => tl.ProjectTasks)
-                    .FirstOrDefaultAsync(tl => tl.Id.ToString()
-                         .Equals(request.TaskListId));
+                    .Include(tl => tl.ProjectTasks)
+                        .FirstOrDefaultAsync(tl => tl.Id.ToString()
+                            .Equals(request.TaskListId));
 
                 if (taskList == null)
                     return new CreateProjectTaskServiceResponse(
@@ -41,10 +41,10 @@ namespace Application.Services.ApiServices
                     .AsNoTracking().FirstOrDefaultAsync(o => o.Id
                         .Equals(project.OrganizationId));
 
-                var employee= org.OrganizationEmployees.Where(e =>
+                var employee = org.OrganizationEmployees.Where(e =>
                             e.UserId.Equals(userId)).FirstOrDefault();
 
-                if(employee == null)
+                if (employee == null)
                     return new CreateProjectTaskServiceResponse(
                          CreateProjectTaskServiceResponseStatus.AccessDenied);
 
@@ -79,13 +79,68 @@ namespace Application.Services.ApiServices
 
         }
 
+        public async Task<DeleteProjectTaskServiceResponse> DeleteTask(DeleteProjectTaskRequest request, string userId)
+        {
+            try
+            {
+                var task = await _context.ProjectTasks
+                    .FirstOrDefaultAsync(t => t.Id.ToString() == request.TaskId);
+                if (task == null)
+                    return new DeleteProjectTaskServiceResponse(
+                         DeleteProjectTaskServiceResponseStatus.TaskNotExists);
+
+                var taskList = await _context.ProjectTaskLists.AsNoTracking()
+                    .Include(tl => tl.ProjectTasks)
+                        .FirstOrDefaultAsync(tl => tl.Id
+                             .Equals(task.ProjectTaskListId));
+
+                var project = await _context.Projects
+                    .AsNoTracking().Include(p => p.ProjectMembers)
+                        .FirstOrDefaultAsync(p => p.Id.Equals(taskList.ProjectId));
+
+                var org = await _context.Organizations
+                    .Include(o => o.OrganizationEmployees)
+                        .AsNoTracking()
+                            .FirstOrDefaultAsync(o => o.Id
+                                .Equals(project.OrganizationId));
+
+                var employee = org.OrganizationEmployees
+                    .FirstOrDefault(e => e.UserId.Equals(userId));
+
+                if (employee == null)
+                    return new DeleteProjectTaskServiceResponse(
+                         DeleteProjectTaskServiceResponseStatus.AccessDenied);
+
+                if (!project.ProjectMembers.Any(p =>
+                    p.OrganizationEmployeeId.Equals(employee.Id)))
+                    return new DeleteProjectTaskServiceResponse(
+                         DeleteProjectTaskServiceResponseStatus.AccessDenied);
+
+                _context.ProjectTasks.Remove(task);
+
+                await _context.SaveChangesAsync();
+
+                return new DeleteProjectTaskServiceResponse(
+                     DeleteProjectTaskServiceResponseStatus.Success);
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("DeleteTaskTaskService : {Message}", ex.Message);
+
+                return new DeleteProjectTaskServiceResponse(
+                     DeleteProjectTaskServiceResponseStatus.InternalError);
+            }
+
+        }
+
         public async Task<GetProjectTaskServiceResponse> GetTask(GetProjectTaskRequest request, string userId)
         {
             try
             {
                 var task = await _context.ProjectTasks
-                               .FirstOrDefaultAsync(t => t.Id.ToString()
-                                   .Equals(request.TaskId));
+                    .FirstOrDefaultAsync(t => t.Id.ToString()
+                         .Equals(request.TaskId));
 
                 if (task == null)
                     return new GetProjectTaskServiceResponse(
@@ -107,7 +162,7 @@ namespace Application.Services.ApiServices
                 var employee = org.OrganizationEmployees.Where(e =>
                     e.UserId.Equals(userId)).FirstOrDefault();
 
-                if(employee == null)
+                if (employee == null)
                     return new GetProjectTaskServiceResponse(
                          GetProjectTaskServiceResponseStatus.AccessDenied);
 

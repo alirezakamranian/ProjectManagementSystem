@@ -24,7 +24,7 @@ namespace ProjectManagementSystem.Controllers.ProjectTask
                 .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _taskService
-                .GetTask(new GetProjectTaskRequest { TaskId = Id }, userId);
+                .GetTask(new() { TaskId = Id }, userId);
 
             if (serviceResponse.Status.Equals(GetProjectTaskServiceResponseStatus.AccessDenied) ||
                 serviceResponse.Status.Equals(GetProjectTaskServiceResponseStatus.TaskNotExists))
@@ -84,6 +84,37 @@ namespace ProjectManagementSystem.Controllers.ProjectTask
                 Message = serviceResponse.Status
             });
 
+        }
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery]string Id)
+        {
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse =await _taskService
+                .DeleteTask(new() {TaskId=Id },userId);
+
+            if (serviceResponse.Status.Equals(DeleteProjectTaskServiceResponseStatus.AccessDenied) ||
+               serviceResponse.Status.Equals(DeleteProjectTaskServiceResponseStatus.TaskNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new DeleteProjectTaskResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            if (serviceResponse.Status.Equals(DeleteProjectTaskServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new DeleteProjectTaskResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new DeleteProjectTaskResponse
+            {
+                Message=serviceResponse.Status
+            });
         }
     }
 }
