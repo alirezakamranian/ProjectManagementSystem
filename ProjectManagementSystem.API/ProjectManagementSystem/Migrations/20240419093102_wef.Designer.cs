@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ProjectManagementSystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240414175412_PgInit")]
-    partial class PgInit
+    [Migration("20240419093102_wef")]
+    partial class wef
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -218,15 +218,9 @@ namespace ProjectManagementSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("DeadLine")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Description")
                         .HasMaxLength(700)
                         .HasColumnType("character varying(700)");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LeaderId")
                         .HasColumnType("text");
@@ -238,9 +232,6 @@ namespace ProjectManagementSystem.Migrations
 
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")
                         .HasColumnType("text");
@@ -262,8 +253,8 @@ namespace ProjectManagementSystem.Migrations
                         .HasMaxLength(700)
                         .HasColumnType("character varying(700)");
 
-                    b.Property<string>("Priority")
-                        .HasColumnType("text");
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("ProjectTaskListId")
                         .HasColumnType("uuid");
@@ -291,9 +282,8 @@ namespace ProjectManagementSystem.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("Priority")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");

@@ -22,16 +22,10 @@ namespace Domain.Entities.Project
         [MaxLength(700)]
         public string Description { get; set; }
 
-        [Required]
-        public DateTime StartDate { get; set; }
-
-        public DateTime DeadLine { get; set; }
-
-        public DateTime EndDate { get; set; }
-
         public string Status { get; set; }
 
         public string LeaderId { get; set; }
+        
         //OrgRel
         public Guid OrganizationId { get; set; }
         [ForeignKey(nameof(OrganizationId))]
@@ -42,5 +36,7 @@ namespace Domain.Entities.Project
 
         //ProjMemberRel
         public List<ProjectMember> ProjectMembers { get; set; }
+
+        public string Creationlevel { get; set; }
     }
 }

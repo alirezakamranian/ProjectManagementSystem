@@ -41,13 +41,18 @@ namespace Application.Services.ApiServices
                     .AsNoTracking().FirstOrDefaultAsync(o => o.Id
                         .Equals(project.OrganizationId));
 
+                var employee= org.OrganizationEmployees.Where(e =>
+                            e.UserId.Equals(userId)).FirstOrDefault();
+
+                if(employee == null)
+                    return new CreateProjectTaskServiceResponse(
+                         CreateProjectTaskServiceResponseStatus.AccessDenied);
+
                 if (!project.ProjectMembers.Any(p =>
-                    p.OrganizationEmployeeId.Equals(
-                        org.OrganizationEmployees.Where(e =>
-                            e.UserId.Equals(userId)).Select(e => e.Id)) && (
-                                p.Role.Equals(ProjectMemberRoles.Leader) ||
-                                    p.Role.Equals(ProjectMemberRoles.Admin) ||
-                                        p.Role.Equals(ProjectMemberRoles.Modrator))))
+                    p.OrganizationEmployeeId.Equals(employee.Id) && (
+                         p.Role.Equals(ProjectMemberRoles.Leader) ||
+                              p.Role.Equals(ProjectMemberRoles.Admin) ||
+                                   p.Role.Equals(ProjectMemberRoles.Modrator))))
                     return new CreateProjectTaskServiceResponse(
                          CreateProjectTaskServiceResponseStatus.AccessDenied);
 
@@ -86,9 +91,9 @@ namespace Application.Services.ApiServices
                     return new GetProjectTaskServiceResponse(
                          GetProjectTaskServiceResponseStatus.TaskNotExists);
 
-                var taskList = await _context.ProjectTaskLists
+                var taskList = await _context.ProjectTaskLists.AsNoTracking()
                     .Include(tl => tl.ProjectTasks)
-                        .FirstOrDefaultAsync(tl => tl.Id.ToString()
+                        .FirstOrDefaultAsync(tl => tl.Id
                              .Equals(task.ProjectTaskListId));
 
                 var project = await _context.Projects
@@ -99,10 +104,15 @@ namespace Application.Services.ApiServices
                     .AsNoTracking().FirstOrDefaultAsync(o => o.Id
                         .Equals(project.OrganizationId));
 
+                var employee = org.OrganizationEmployees.Where(e =>
+                    e.UserId.Equals(userId)).FirstOrDefault();
+
+                if(employee == null)
+                    return new GetProjectTaskServiceResponse(
+                         GetProjectTaskServiceResponseStatus.AccessDenied);
+
                 if (!project.ProjectMembers.Any(p =>
-                    p.OrganizationEmployeeId.Equals(
-                        org.OrganizationEmployees.Where(e =>
-                            e.UserId.Equals(userId)).Select(e => e.Id))))
+                    p.OrganizationEmployeeId.Equals(employee.Id)))
                     return new GetProjectTaskServiceResponse(
                          GetProjectTaskServiceResponseStatus.AccessDenied);
 

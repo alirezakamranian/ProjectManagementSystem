@@ -125,9 +125,6 @@ namespace ProjectManagementSystem.Controllers.Organization
                     Name = p.Name,
                     Description = p.Description,
                     Status = p.Status,
-                    StartDate = p.StartDate,
-                    DeadLine = p.DeadLine,
-                    EndDate = p.EndDate,
                 });
             }
 

@@ -30,7 +30,7 @@ builder.Services.ConfigureCors();
 //AppServices
 builder.Services.ConfigureAppServices();
 
-
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var app = builder.Build();
 
