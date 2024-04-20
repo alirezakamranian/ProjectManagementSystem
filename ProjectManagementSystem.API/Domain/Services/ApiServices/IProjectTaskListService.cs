@@ -11,5 +11,6 @@ namespace Domain.Services.ApiServices
     public interface IProjectTaskListService
     {
         public Task<ProjectTaskListServiceResponse> CreateTaskList(CreateTaskListRequest request);
+        public Task<ChangeTaskListPriorityServiceResponse> ChangeTaskListPriority(ChangeTaskListPriorityRequest request,string userId);
     }
 }
