@@ -72,7 +72,7 @@ namespace Application.Services.ApiServices
                     .Where(o => o.Id.ToString().Equals(request.OrganizationId) &&
                          o.OwnerId.Equals(userId)).FirstOrDefault();
 
-                if (org.Equals(null))
+                if (org == null)
                     return new UpdateOrganizationServiceResponse(
                          UpdateOrganizationServiceResponseStatus.OrganizationNotExists);
 
@@ -100,7 +100,7 @@ namespace Application.Services.ApiServices
                     .Include(o => o.OrganizationEmployees)
                         .FirstOrDefaultAsync(o => o.Id.ToString().Equals(request.OrganizationId));
 
-                if (org.Equals(null))
+                if (org == null)
                     return new GetOrganizationServiceResponse(
                          GetOrganizationServiceResponseStatus.OrganizationNotExists);
 

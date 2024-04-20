@@ -22,6 +22,66 @@ namespace Application.Services.ApiServices
         private readonly DataContext _context = context;
         private readonly ILogger<AuthenticationService> _logger = logger;
 
+        public async Task<ChangeTaskListPriorityServiceResponse> ChangeTaskListPriority(ChangeTaskListPriorityRequest request, string userId)
+        {
+            try
+            {
+                var currentTaskList = await _context.ProjectTaskLists
+              .FirstOrDefaultAsync(tl => tl.Id.ToString().Equals(request.TaskListId));
+
+                if (currentTaskList == null)
+                    return new ChangeTaskListPriorityServiceResponse(
+                         ChangeTaskListPriorityServiceResponseStatus.TaskListNotExists);
+
+                var project =  _context.Projects.Include(p => p.ProjectMembers)
+                    .FirstOrDefault(p => p.Id.Equals(currentTaskList.ProjectId));
+
+                var org = await _context.Organizations.AsNoTracking()
+                    .Include(o => o.OrganizationEmployees)
+                        .FirstOrDefaultAsync(o => o.Id
+                            .Equals(project.OrganizationId));
+
+                var employee = org.OrganizationEmployees
+                    .FirstOrDefault(e => e.UserId.Equals(userId));
+
+                if (employee == null)
+                    return new ChangeTaskListPriorityServiceResponse(
+                         ChangeTaskListPriorityServiceResponseStatus.AccessDenied);
+
+                if (!project.ProjectMembers.Any(m =>
+                m.OrganizationEmployeeId.Equals(employee.Id) &&
+                    (m.Role.Equals(ProjectMemberRoles.Leader) ||
+                        m.Role.Equals(ProjectMemberRoles.Admin) ||
+                            m.Role.Equals(ProjectMemberRoles.Modrator))))
+                    return new ChangeTaskListPriorityServiceResponse(
+                         ChangeTaskListPriorityServiceResponseStatus.AccessDenied);
+
+                var targetTaskList =await _context.ProjectTaskLists
+                    .FirstOrDefaultAsync(tl => tl.Priority  
+                        .Equals(request.NewPriority)&&tl.ProjectId.Equals(project.Id));
+
+                if (targetTaskList == null )
+                    return new ChangeTaskListPriorityServiceResponse(
+                         ChangeTaskListPriorityServiceResponseStatus.InvalidPriority);
+
+                targetTaskList.Priority = request.OldPriority;
+                currentTaskList.Priority = request.NewPriority;
+
+                await _context.SaveChangesAsync();
+
+                return new ChangeTaskListPriorityServiceResponse(
+                     ChangeTaskListPriorityServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("ChangeTaskListPriorityService : {Message}", ex.Message);
+
+                return new ChangeTaskListPriorityServiceResponse(
+                     ChangeTaskListPriorityServiceResponseStatus.InternalError);
+            }
+          
+        }
+
         public async Task<ProjectTaskListServiceResponse> CreateTaskList(CreateTaskListRequest request)
         {
             try
@@ -58,7 +118,6 @@ namespace Application.Services.ApiServices
                 return new ProjectTaskListServiceResponse(
                      ProjectTaskListServiceResponseStatus.InternalError);
             }
-            
         }
     }
 }

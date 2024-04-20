@@ -17,7 +17,7 @@ namespace ProjectManagementSystem.Controllers.ProjectTaskList
         private readonly IProjectTaskListService _taskListService = taskListService;
 
         [Authorize]
-        [HttpPost]   
+        [HttpPost]
         public async Task<IActionResult> CreateTaskList(CreateTaskListRequest request)
         {
             if (!ModelState.IsValid)
@@ -27,7 +27,7 @@ namespace ProjectManagementSystem.Controllers.ProjectTaskList
                            Message = "DetailsAreRequired!"
                        });
 
-          var serviceResponse = await _taskListService.CreateTaskList(request);
+            var serviceResponse = await _taskListService.CreateTaskList(request);
 
             if (serviceResponse.Status.Equals(ProjectTaskListServiceResponseStatus.ProjectNotExists))
                 return StatusCode(StatusCodes.Status400BadRequest,
@@ -44,6 +44,38 @@ namespace ProjectManagementSystem.Controllers.ProjectTaskList
                      });
 
             return Ok(new CreateTaskListResponse
+            {
+                Message = serviceResponse.Status
+            });
+        }
+
+        [Authorize]
+        [HttpPatch]
+        public async Task<IActionResult> ChangePriority(ChangeTaskListPriorityRequest request)
+        {
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _taskListService
+                .ChangeTaskListPriority(request, userId);
+
+            if (serviceResponse.Status.Equals(ChangeTaskListPriorityServiceResponseStatus.AccessDenied) ||
+                serviceResponse.Status.Equals(ChangeTaskListPriorityServiceResponseStatus.InvalidPriority) ||
+                serviceResponse.Status.Equals(ChangeTaskListPriorityServiceResponseStatus.TaskListNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                     new ChangeTaskListPriorityResponse
+                     {
+                         Message = serviceResponse.Status
+                     });
+
+            if (serviceResponse.Status.Equals(ProjectTaskListServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                     new ChangeTaskListPriorityResponse
+                     {
+                         Message = serviceResponse.Status
+                     });
+
+            return Ok(new ChangeTaskListPriorityResponse
             {
                 Message = serviceResponse.Status
             });
