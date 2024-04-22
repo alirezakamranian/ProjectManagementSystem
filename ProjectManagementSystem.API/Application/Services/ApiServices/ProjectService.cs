@@ -30,7 +30,7 @@ namespace Application.Services.ApiServices
                        .Include(o => o.OrganizationEmployees)
                           .FirstOrDefaultAsync(o => o.Id.ToString()
                               .Equals(request.OrganizationId));
-                if (org.Equals(null))
+                if (org == null)
                     return new CreateProjectServiceResponse(
                          CreateProjectServiceResponseStatus.OrganizationNotExists);
 
@@ -48,14 +48,14 @@ namespace Application.Services.ApiServices
                     Description = request.Description,
                     Status = "proccesing",
                     LeaderId = userId,
-                    Creationlevel ="Pending"
+                    Creationlevel = "Pending"
                 });
 
-                
+
                 await _context.SaveChangesAsync();
 
                 var project = await _context.Projects.Include(p => p.ProjectMembers)
-                    .FirstOrDefaultAsync(p => p.LeaderId.Equals(userId)&&
+                    .FirstOrDefaultAsync(p => p.LeaderId.Equals(userId) &&
                         p.Creationlevel.Equals("Pending"));
 
                 project.ProjectMembers.Add(new()
@@ -86,7 +86,7 @@ namespace Application.Services.ApiServices
             try
             {
                 var project = await _context.Projects
-                    .AsNoTracking().Include(p=>p.ProjectMembers)
+                    .AsNoTracking().Include(p => p.ProjectMembers)
                         .Include(p => p.ProjectTaskLists)
                             .ThenInclude(tl => tl.ProjectTasks)
                                 .FirstOrDefaultAsync(p => p.Id.ToString()
@@ -101,9 +101,9 @@ namespace Application.Services.ApiServices
                          .Equals(project.OrganizationId));
 
                 var orgEmployee = org.OrganizationEmployees
-                    .FirstOrDefault(e=>e.UserId.Equals(userId));
+                    .FirstOrDefault(e => e.UserId.Equals(userId));
 
-                if(orgEmployee == null)
+                if (orgEmployee == null)
                     return new GetProjectServiceResponse(
                          GetProjectServiceResponseStatus.AccessDenied);
 
