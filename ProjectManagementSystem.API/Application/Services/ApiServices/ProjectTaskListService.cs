@@ -33,7 +33,7 @@ namespace Application.Services.ApiServices
                     return new ChangeTaskListPriorityServiceResponse(
                          ChangeTaskListPriorityServiceResponseStatus.TaskListNotExists);
 
-                var project =  _context.Projects.Include(p => p.ProjectMembers)
+                var project = _context.Projects.Include(p => p.ProjectMembers)
                     .FirstOrDefault(p => p.Id.Equals(currentTaskList.ProjectId));
 
                 var org = await _context.Organizations.AsNoTracking()
@@ -56,11 +56,11 @@ namespace Application.Services.ApiServices
                     return new ChangeTaskListPriorityServiceResponse(
                          ChangeTaskListPriorityServiceResponseStatus.AccessDenied);
 
-                var targetTaskList =await _context.ProjectTaskLists
-                    .FirstOrDefaultAsync(tl => tl.Priority  
-                        .Equals(request.NewPriority)&&tl.ProjectId.Equals(project.Id));
+                var targetTaskList = await _context.ProjectTaskLists
+                    .FirstOrDefaultAsync(tl => tl.Priority
+                        .Equals(request.NewPriority) && tl.ProjectId.Equals(project.Id));
 
-                if (targetTaskList == null )
+                if (targetTaskList == null)
                     return new ChangeTaskListPriorityServiceResponse(
                          ChangeTaskListPriorityServiceResponseStatus.InvalidPriority);
 
@@ -79,7 +79,7 @@ namespace Application.Services.ApiServices
                 return new ChangeTaskListPriorityServiceResponse(
                      ChangeTaskListPriorityServiceResponseStatus.InternalError);
             }
-          
+
         }
 
         public async Task<ProjectTaskListServiceResponse> CreateTaskList(CreateTaskListRequest request)
@@ -87,10 +87,10 @@ namespace Application.Services.ApiServices
             try
             {
                 var project = await _context.Projects
-                               .Include(p => p.ProjectMembers)
-                                    .Include(p => p.ProjectTaskLists)
-                                        .FirstOrDefaultAsync(p =>
-                                             p.Id.ToString().Equals(request.ProjectId));
+                    .Include(p => p.ProjectMembers)
+                        .Include(p => p.ProjectTaskLists)
+                            .FirstOrDefaultAsync(p =>
+                                 p.Id.ToString().Equals(request.ProjectId));
 
                 if (project == null)
                     return new ProjectTaskListServiceResponse(

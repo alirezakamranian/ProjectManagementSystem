@@ -27,6 +27,11 @@ namespace Infrastructure.DataAccess
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<InvitationPending> InvitationPendings { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {           
             modelBuilder.Entity<Project>()
