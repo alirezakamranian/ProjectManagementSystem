@@ -33,7 +33,7 @@ namespace Application.Services.ApiServices
                 {
                     Users = await _context.Users.AsNoTracking()
                         .Where(u => u.Email.Contains(requst.Query.ToLower().Trim()) ||
-                             u.FullName.ToLower().Contains(requst.Query.ToLower())).ToListAsync()
+                             u.FullName.Contains(requst.Query, StringComparison.CurrentCultureIgnoreCase)).ToListAsync()
                 };
             }
             catch (Exception ex)
@@ -55,7 +55,7 @@ namespace Application.Services.ApiServices
                 var targetUser = await _context.Users.Include(u => u.Notifications)
                     .FirstOrDefaultAsync(u => u.Email.Equals(request.UserEmail.ToLower()));
 
-                if (targetUser.Equals(null))
+                if (targetUser == null)
                     return new InviteEmployeeServiceResponse(
                          InviteEmployeeServiceResponseStatus.UserNotExists);
 
@@ -103,7 +103,7 @@ namespace Application.Services.ApiServices
                     .Where(n => n.UserId.Equals(userId))
                         .FirstOrDefaultAsync(n => n.Id.ToString() == request.InviteId);
 
-                if (notification.Equals(null))
+                if (notification == null)
                     return new AcceptOrganizationInvitationServiceResponse(
                          AcceptOrganizationInvitationServiceResponseStatus.NotificationNotExists);
 

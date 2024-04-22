@@ -135,13 +135,25 @@ namespace Application.Services.ApiServices
 
                 foreach (var e in memberOf)
                 {
-                    var org = await _context.Organizations
+                    var org = await _context.Organizations.Include(o => o.Projects).AsNoTracking()
                         .Where(o => o.Id.Equals(e.OrganizationId)).FirstOrDefaultAsync();
+
+                    List<MinimumValueProjectDto> projects = [];
+
+                    foreach (var p in org.Projects)
+                    {
+                        projects.Add(new()
+                        {
+                            Id = p.Id.ToString(),
+                            Name = p.Name,
+                        });
+                    }
 
                     userOrgs.Add(new OrganizationForResponsteDto()
                     {
                         Id = org.Id.ToString(),
-                        Name = org.Name
+                        Name = org.Name,
+                        Projects = projects
                     });
                 }
 
