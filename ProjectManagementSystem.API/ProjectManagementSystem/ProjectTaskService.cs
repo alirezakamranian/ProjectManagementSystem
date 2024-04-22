@@ -125,14 +125,11 @@ namespace Application.Services.ApiServices
                     return new CreateProjectTaskServiceResponse(
                          CreateProjectTaskServiceResponseStatus.AccessDenied);
 
-                var lastPriority = taskList.ProjectTasks
-                    .Select(t => t.Priority).DefaultIfEmpty(0).Max();
-
                 taskList.ProjectTasks.Add(new()
                 {
                     Title = request.Name,
                     Description = request.Description,
-                    Priority = ++lastPriority
+                    Priority = taskList.ProjectTasks.Count + 1
                 });
 
                 await _context.SaveChangesAsync();
