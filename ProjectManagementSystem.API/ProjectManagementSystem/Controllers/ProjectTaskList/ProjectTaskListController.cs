@@ -45,7 +45,8 @@ namespace ProjectManagementSystem.Controllers.ProjectTaskList
 
             return Ok(new CreateTaskListResponse
             {
-                Message = serviceResponse.Status
+                Message = serviceResponse.Status,
+                TaskList= serviceResponse.TaskList
             });
         }
 

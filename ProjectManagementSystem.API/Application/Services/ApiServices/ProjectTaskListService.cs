@@ -108,8 +108,21 @@ namespace Application.Services.ApiServices
 
                 await _context.SaveChangesAsync();
 
+                var taskListId = await _context.ProjectTaskLists
+                    .Where(tl => tl.ProjectId.Equals(project.Id) && 
+                        tl.Priority.Equals(lastPriority))
+                            .Select(tl => tl.Id).FirstAsync();
+
                 return new ProjectTaskListServiceResponse(
-                     ProjectTaskListServiceResponseStatus.Success);
+                     ProjectTaskListServiceResponseStatus.Success)
+                {
+                    TaskList = new()
+                    {
+                        Id = taskListId.ToString(),
+                        Name = request.Name,
+                        Priority = lastPriority
+                    }
+                };
             }
             catch (Exception ex)
             {
