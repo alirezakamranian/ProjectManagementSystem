@@ -119,6 +119,37 @@ namespace ProjectManagementSystem.Controllers.ProjectTask
         }
 
         [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> Update(UpdateProjectTaskRequest request)
+        {
+            var userId = HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _taskService
+                .UpdateTask(request,userId);
+
+            if (serviceResponse.Status.Equals(UpdateProjectTaskServiceResponseStatus.AccessDenied) ||
+               serviceResponse.Status.Equals(UpdateProjectTaskServiceResponseStatus.TaskNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new UpdateProjectTaskResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            if (serviceResponse.Status.Equals(UpdateProjectTaskServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new UpdateProjectTaskResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new UpdateProjectTaskResponse
+            {
+                Message = serviceResponse.Status
+            });
+        }
+
+        [Authorize]
         [HttpPatch]
         public async Task<IActionResult> ChangePriority(ChangeProjectTaskPriorityRequest request)
         {

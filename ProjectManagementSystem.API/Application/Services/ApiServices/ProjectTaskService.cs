@@ -80,7 +80,7 @@ namespace Application.Services.ApiServices
             }
             catch (Exception ex)
             {
-                _logger.LogError("ChangeProjectTaskPriorityService : {Message}", ex.Message);
+                _logger.LogError("ChangeTaskPriorityService : {Message}", ex.Message);
 
                 return new ChangeProjectTaskPriorityServiceResponse(
                      ChangeProjectTaskPriorityServiceResponseStatus.InternalError);
@@ -140,24 +140,24 @@ namespace Application.Services.ApiServices
                 var id = await _context.ProjectTasks
                     .AsNoTracking().Where(t => t.ProjectTaskListId
                         .Equals(taskList.Id) && t.Priority == lastPriority)
-                            .Select(t=>t.Id).FirstOrDefaultAsync();
+                            .Select(t => t.Id).FirstOrDefaultAsync();
 
                 return new CreateProjectTaskServiceResponse(
                      CreateProjectTaskServiceResponseStatus.Success)
                 {
                     NewTask = new()
                     {
-                        Id=id.ToString(),
-                        Title=request.Name,
+                        Id = id.ToString(),
+                        Title = request.Name,
                         Description = request.Description,
-                        Priority= lastPriority
+                        Priority = lastPriority
                     }
                 };
 
             }
             catch (Exception ex)
             {
-                _logger.LogError("CreateProjectTaskService : {Message}", ex.Message);
+                _logger.LogError("CreateTaskService : {Message}", ex.Message);
 
                 return new CreateProjectTaskServiceResponse(
                      CreateProjectTaskServiceResponseStatus.InternalError);
@@ -170,7 +170,8 @@ namespace Application.Services.ApiServices
             try
             {
                 var task = await _context.ProjectTasks
-                    .FirstOrDefaultAsync(t => t.Id.ToString() == request.TaskId);
+                    .FirstOrDefaultAsync(t => t.Id.ToString().Equals(request.TaskId));
+
                 if (task == null)
                     return new DeleteProjectTaskServiceResponse(
                          DeleteProjectTaskServiceResponseStatus.TaskNotExists);
@@ -218,7 +219,7 @@ namespace Application.Services.ApiServices
             }
             catch (Exception ex)
             {
-                logger.LogError("DeleteTaskTaskService : {Message}", ex.Message);
+                logger.LogError("DeleteTaskService : {Message}", ex.Message);
 
                 return new DeleteProjectTaskServiceResponse(
                      DeleteProjectTaskServiceResponseStatus.InternalError);
@@ -271,11 +272,71 @@ namespace Application.Services.ApiServices
             }
             catch (Exception ex)
             {
-                _logger.LogError("GetProjectTaskService : {Message}", ex.Message);
+                _logger.LogError("GetTaskService : {Message}", ex.Message);
 
                 return new GetProjectTaskServiceResponse(
                      GetProjectTaskServiceResponseStatus.InternalError);
             }
+        }
+
+        public async Task<UpdateProjectTaskServiceResponse> UpdateTask(UpdateProjectTaskRequest request, string userId)
+        {
+            try
+            {
+                var task = await _context.ProjectTasks
+                    .FirstOrDefaultAsync(t => t.Id.ToString().Equals(request.TaskId));
+
+                if (task == null)
+                    return new UpdateProjectTaskServiceResponse(
+                         UpdateProjectTaskServiceResponseStatus.TaskNotExists);
+
+                var taskList = await _context.ProjectTaskLists.AsNoTracking()
+                    .Include(tl => tl.ProjectTasks)
+                        .FirstOrDefaultAsync(tl => tl.Id
+                             .Equals(task.ProjectTaskListId));
+
+                var project = await _context.Projects.AsNoTracking()
+                      .FirstOrDefaultAsync(p => p.Id.Equals(taskList.ProjectId));
+
+                var org = await _context.Organizations
+                    .Include(o => o.OrganizationEmployees)
+                        .AsNoTracking()
+                            .FirstOrDefaultAsync(o => o.Id
+                                .Equals(project.OrganizationId));
+
+                var employee = org.OrganizationEmployees
+                    .FirstOrDefault(e => e.UserId.Equals(userId));
+
+                if (employee == null)
+                    return new UpdateProjectTaskServiceResponse(
+                         UpdateProjectTaskServiceResponseStatus.AccessDenied);
+
+                await _context.Entry(project)
+                  .Collection(p => p.ProjectMembers).LoadAsync();
+
+                if (!project.ProjectMembers.Any(p =>
+                   p.OrganizationEmployeeId.Equals(employee.Id) && (
+                        p.Role.Equals(ProjectMemberRoles.Leader) ||
+                             p.Role.Equals(ProjectMemberRoles.Admin) ||
+                                  p.Role.Equals(ProjectMemberRoles.Modrator))))
+                    return new UpdateProjectTaskServiceResponse(
+                         UpdateProjectTaskServiceResponseStatus.AccessDenied);
+
+                task.Title = request.Title;
+                task.Description = request.Description;
+
+                await _context.SaveChangesAsync();
+
+                return new UpdateProjectTaskServiceResponse(
+                     UpdateProjectTaskServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("UpdateTaskService : {Message}", ex.Message);
+
+                return new UpdateProjectTaskServiceResponse(
+                     UpdateProjectTaskServiceResponseStatus.InternalError);
+            } 
         }
     }
 }
