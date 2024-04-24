@@ -1,4 +1,5 @@
-﻿using Domain.Models.Dtos.ProjectTaskList.Request;
+﻿using Domain.Models.Dtos.ProjectTask.Request;
+using Domain.Models.Dtos.ProjectTaskList.Request;
 using Domain.Models.ServiceResponses.ProjectTaskList;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Domain.Services.ApiServices
     public interface IProjectTaskListService
     {
         public Task<ProjectTaskListServiceResponse> CreateTaskList(CreateTaskListRequest request);
-        public Task<ChangeTaskListPriorityServiceResponse> ChangeTaskListPriority(ChangeTaskListPriorityRequest request,string userId);
+        public Task<ChangeTaskListPriorityServiceResponse> ChangeTaskListPriority(ChangeTaskListPriorityRequest request, string userId);
+        public Task<DeleteTaskListServiceResponse> DeleteTaskList(DeleteTaskListRequest request, string userId);
     }
 }

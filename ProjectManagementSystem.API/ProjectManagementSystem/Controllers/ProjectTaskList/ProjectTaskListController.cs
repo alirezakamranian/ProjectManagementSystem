@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Domain.Models.ServiceResponses.ProjectTaskList;
 using Microsoft.AspNetCore.Authorization;
+using Domain.Models.Dtos.ProjectTask.Response;
 namespace ProjectManagementSystem.Controllers.ProjectTaskList
 {
     [Route("organization/project/tasklist")]
@@ -46,7 +47,7 @@ namespace ProjectManagementSystem.Controllers.ProjectTaskList
             return Ok(new CreateTaskListResponse
             {
                 Message = serviceResponse.Status,
-                TaskList= serviceResponse.TaskList
+                TaskList = serviceResponse.TaskList
             });
         }
 
@@ -77,6 +78,37 @@ namespace ProjectManagementSystem.Controllers.ProjectTaskList
                      });
 
             return Ok(new ChangeTaskListPriorityResponse
+            {
+                Message = serviceResponse.Status
+            });
+        }
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery] string id)
+        {
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _taskListService
+                .DeleteTaskList(new() { TaskListId = id }, userId);
+
+            if (serviceResponse.Status.Equals(DeleteTaskListServiceResponseStatus.AccessDenied) ||
+               serviceResponse.Status.Equals(DeleteTaskListServiceResponseStatus.TaskListNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                     new DeleteTaskListResponse
+                     {
+                         Message = serviceResponse.Status
+                     });
+
+            if (serviceResponse.Status.Equals(DeleteTaskListServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                     new DeleteTaskListResponse
+                     {
+                         Message = serviceResponse.Status
+                     });
+
+            return Ok(new DeleteTaskListResponse
             {
                 Message = serviceResponse.Status
             });
