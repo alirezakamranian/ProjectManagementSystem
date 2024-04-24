@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.Dtos.ProjectTask.Request
 {
-    public class DeleteTaskListRequest
+    public class UpdateProjectTaskRequest
     {
-        public string TaskListId{ get; set; }
+        public string TaskId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
     }
 }

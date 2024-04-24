@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.Dtos.ProjectTask.Response
 {
-    public class DeleteTaskListResponse
+    public class UpdateProjectTaskResponse
     {
         public string Message { get; set; }
     }
