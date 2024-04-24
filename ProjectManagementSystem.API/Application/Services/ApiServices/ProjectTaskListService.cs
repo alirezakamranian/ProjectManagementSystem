@@ -1,5 +1,6 @@
 ﻿using Domain.Constants.Roles.OrganiationEmployees;
 using Domain.Entities.HumanResource;
+using Domain.Models.Dtos.ProjectTask.Request;
 using Domain.Models.Dtos.ProjectTaskList.Request;
 using Domain.Models.ServiceResponses.ProjectMember;
 using Domain.Models.ServiceResponses.ProjectTaskList;
@@ -130,6 +131,53 @@ namespace Application.Services.ApiServices
 
                 return new ProjectTaskListServiceResponse(
                      ProjectTaskListServiceResponseStatus.InternalError);
+            }
+        }
+
+        public async Task<DeleteTaskListServiceResponse> DeleteTaskList(DeleteTaskListRequest request, string userId)
+        {
+            try
+            {
+                var taskList = await _context.ProjectTaskLists
+            .FirstOrDefaultAsync(tl => tl.Id.ToString().Equals(request.TaskListId));
+
+                if (taskList == null)
+                    return new DeleteTaskListServiceResponse(
+                         DeleteTaskListServiceResponseStatus.TaskListNotExists);
+
+                var project = _context.Projects
+                    .AsNoTracking().Include(p => p.ProjectMembers)
+                        .FirstOrDefault(p => p.Id.Equals(taskList.ProjectId));
+
+                var org = await _context.Organizations.AsNoTracking()
+                    .Include(o => o.OrganizationEmployees)
+                        .FirstOrDefaultAsync(o => o.Id
+                            .Equals(project.OrganizationId));
+
+                var employee = org.OrganizationEmployees
+                    .FirstOrDefault(e => e.UserId.Equals(userId));
+
+                if (!project.ProjectMembers.Any(m =>
+                   m.OrganizationEmployeeId.Equals(employee.Id) &&
+                       (m.Role.Equals(ProjectMemberRoles.Leader) ||
+                           m.Role.Equals(ProjectMemberRoles.Admin) ||
+                               m.Role.Equals(ProjectMemberRoles.Modrator))))
+                    return new DeleteTaskListServiceResponse(
+                         DeleteTaskListServiceResponseStatus.AccessDenied);
+
+                _context.ProjectTaskLists.Remove(taskList);
+
+                await _context.SaveChangesAsync();
+
+                return new DeleteTaskListServiceResponse(
+                     DeleteTaskListServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("DeleteTaskListService : {Message}", ex.Message);
+
+                return new DeleteTaskListServiceResponse(
+                     DeleteTaskListServiceResponseStatus.InternalError);
             }
         }
     }
