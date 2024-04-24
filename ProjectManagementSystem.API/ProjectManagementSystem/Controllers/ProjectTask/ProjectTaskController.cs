@@ -81,7 +81,8 @@ namespace ProjectManagementSystem.Controllers.ProjectTask
 
             return Ok(new CreateProjectTaskResponse
             {
-                Message = serviceResponse.Status
+                Message = serviceResponse.Status,
+                NewTask=serviceResponse.NewTask
             });
 
         }

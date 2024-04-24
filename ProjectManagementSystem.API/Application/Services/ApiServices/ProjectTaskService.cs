@@ -137,8 +137,22 @@ namespace Application.Services.ApiServices
 
                 await _context.SaveChangesAsync();
 
+                var id = await _context.ProjectTasks
+                    .AsNoTracking().Where(t => t.ProjectTaskListId
+                        .Equals(taskList.Id) && t.Priority == lastPriority)
+                            .Select(t=>t.Id).FirstOrDefaultAsync();
+
                 return new CreateProjectTaskServiceResponse(
-                     CreateProjectTaskServiceResponseStatus.Success);
+                     CreateProjectTaskServiceResponseStatus.Success)
+                {
+                    NewTask = new()
+                    {
+                        Id=id.ToString(),
+                        Title=request.Name,
+                        Description = request.Description,
+                        Priority= lastPriority
+                    }
+                };
 
             }
             catch (Exception ex)

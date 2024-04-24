@@ -1,4 +1,5 @@
-﻿using Domain.Models.ServiceResponses.Base;
+﻿using Domain.Models.Dtos.Project.Response;
+using Domain.Models.ServiceResponses.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Domain.Models.ServiceResponses.ProjectTask
 {
     public class CreateProjectTaskServiceResponse(string status) : ServiceResponseBase(status)
     {
+        public ProjectTaskForResponseDto NewTask{ get; set; }
     }
     public class CreateProjectTaskServiceResponseStatus : ServiceResponseStatusBase
     {
