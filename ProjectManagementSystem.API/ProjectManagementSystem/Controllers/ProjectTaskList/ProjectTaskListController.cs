@@ -113,5 +113,37 @@ namespace ProjectManagementSystem.Controllers.ProjectTaskList
                 Message = serviceResponse.Status
             });
         }
+
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> Update(UpdateTaskListRequest request)
+        {
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _taskListService
+                .UpdateTaskList(request, userId);
+
+            if (serviceResponse.Status.Equals(UpdateTaskListServiceResponseStatus.AccessDenied) ||
+              serviceResponse.Status.Equals(UpdateTaskListServiceResponseStatus.TaskListNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                     new UpdateTaskListResponse
+                     {
+                         Message = serviceResponse.Status
+                     });
+
+            if (serviceResponse.Status.Equals(UpdateTaskListServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                     new UpdateTaskListResponse
+                     {
+                         Message = serviceResponse.Status
+                     });
+
+            return Ok(new UpdateTaskListResponse
+            {
+                Message = serviceResponse.Status
+            });
+
+        }
     }
 }

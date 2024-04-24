@@ -28,7 +28,8 @@ namespace Application.Services.ApiServices
             try
             {
                 var currentTaskList = await _context.ProjectTaskLists
-              .FirstOrDefaultAsync(tl => tl.Id.ToString().Equals(request.TaskListId));
+                    .FirstOrDefaultAsync(tl => tl.Id.ToString()
+                        .Equals(request.TaskListId));
 
                 if (currentTaskList == null)
                     return new ChangeTaskListPriorityServiceResponse(
@@ -139,7 +140,8 @@ namespace Application.Services.ApiServices
             try
             {
                 var taskList = await _context.ProjectTaskLists
-            .FirstOrDefaultAsync(tl => tl.Id.ToString().Equals(request.TaskListId));
+                    .FirstOrDefaultAsync(tl => tl.Id.ToString()
+                        .Equals(request.TaskListId));
 
                 if (taskList == null)
                     return new DeleteTaskListServiceResponse(
@@ -156,6 +158,10 @@ namespace Application.Services.ApiServices
 
                 var employee = org.OrganizationEmployees
                     .FirstOrDefault(e => e.UserId.Equals(userId));
+
+                if(employee == null)
+                    return new DeleteTaskListServiceResponse(
+                        DeleteTaskListServiceResponseStatus.AccessDenied);
 
                 if (!project.ProjectMembers.Any(m =>
                    m.OrganizationEmployeeId.Equals(employee.Id) &&
@@ -178,6 +184,58 @@ namespace Application.Services.ApiServices
 
                 return new DeleteTaskListServiceResponse(
                      DeleteTaskListServiceResponseStatus.InternalError);
+            }
+        }
+
+        public async Task<UpdateTaskListServiceResponse> UpdateTaskList(UpdateTaskListRequest request, string userId)
+        {
+            try
+            {
+                var taskList = await _context.ProjectTaskLists
+               .FirstOrDefaultAsync(tl => tl.Id.ToString()
+                   .Equals(request.TaskListId));
+
+                if (taskList == null)
+                    return new UpdateTaskListServiceResponse(
+                        UpdateTaskListServiceResponseStatus.TaskListNotExists);
+
+                var project = _context.Projects
+                    .AsNoTracking().Include(p => p.ProjectMembers)
+                        .FirstOrDefault(p => p.Id.Equals(taskList.ProjectId));
+
+                var org = await _context.Organizations.AsNoTracking()
+                    .Include(o => o.OrganizationEmployees)
+                        .FirstOrDefaultAsync(o => o.Id
+                            .Equals(project.OrganizationId));
+
+                var employee = org.OrganizationEmployees
+                    .FirstOrDefault(e => e.UserId.Equals(userId));
+
+                if (employee == null)
+                    return new UpdateTaskListServiceResponse(
+                          UpdateTaskListServiceResponseStatus.AccessDenied);
+
+                if (!project.ProjectMembers.Any(m =>
+                   m.OrganizationEmployeeId.Equals(employee.Id) &&
+                       (m.Role.Equals(ProjectMemberRoles.Leader) ||
+                           m.Role.Equals(ProjectMemberRoles.Admin) ||
+                               m.Role.Equals(ProjectMemberRoles.Modrator))))
+                    return new UpdateTaskListServiceResponse(
+                         UpdateTaskListServiceResponseStatus.AccessDenied);
+
+                taskList.Name = request.Title;
+
+                await _context.SaveChangesAsync();
+
+                return new UpdateTaskListServiceResponse(
+                     UpdateTaskListServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("UpdateTaskListService : {Message}", ex.Message);
+
+                return new UpdateTaskListServiceResponse(
+                     UpdateTaskListServiceResponseStatus.InternalError);
             }
         }
     }
