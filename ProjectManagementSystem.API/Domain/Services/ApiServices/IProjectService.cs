@@ -12,5 +12,6 @@ namespace Domain.Services.ApiServices
     {
         public Task<CreateProjectServiceResponse> CreateProject(CreateProjectRequest request, string email);
         public Task<GetProjectServiceResponse> GetProject(GetProjectRequest request, string userId);
+        public Task<DeleteProjectServiceResponse> DeleteProject(DeleteProjectRequest request, string userId);
     }
 }
