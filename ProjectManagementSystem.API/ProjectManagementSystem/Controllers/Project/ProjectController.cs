@@ -20,7 +20,8 @@ namespace ProjectManagementSystem.Controllers.Project
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string id)
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _projectService
                 .GetProject(new() { ProjectId = id }, userId);
@@ -91,7 +92,8 @@ namespace ProjectManagementSystem.Controllers.Project
                         Message = "ProjectDetailsAreRequired!"
                     });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _projectService.CreateProject(request, userId);
 
@@ -111,6 +113,37 @@ namespace ProjectManagementSystem.Controllers.Project
                     });
 
             return Ok(new CreateProjectResponse
+            {
+                Message = serviceResponse.Status
+            });
+        }
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery] string id)
+        {
+            var userId = HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _projectService
+                .DeleteProject(new() { ProjectId = id }, userId);
+
+            if (serviceResponse.Status.Equals(DeleteProjectServiceResponseStatus.ProjectNotExists) ||
+               serviceResponse.Status.Equals(DeleteProjectServiceResponseStatus.AccessDenied))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                    new DeleteProjectResponse
+                    {
+                        Message = serviceResponse.Status
+                    });
+
+            if (serviceResponse.Status.Equals(DeleteProjectServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new DeleteProjectResponse
+                    {
+                        Message = serviceResponse.Status
+                    });
+
+            return Ok(new DeleteProjectResponse
             {
                 Message = serviceResponse.Status
             });

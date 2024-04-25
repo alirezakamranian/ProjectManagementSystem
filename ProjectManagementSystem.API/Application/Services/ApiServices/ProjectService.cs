@@ -81,6 +81,60 @@ namespace Application.Services.ApiServices
             }
         }
 
+        public async Task<DeleteProjectServiceResponse> DeleteProject(DeleteProjectRequest request, string userId)
+        {
+            try
+            {
+                var project = await _context.Projects
+                    .AsNoTracking().Include(p => p.ProjectTaskLists)
+                        .ThenInclude(tl => tl.ProjectTasks)
+                            .FirstOrDefaultAsync(p => p.Id.ToString()
+                                .Equals(request.ProjectId));
+
+                if (project == null)
+                    return new DeleteProjectServiceResponse(
+                         DeleteProjectServiceResponseStatus.ProjectNotExists);
+
+                var org = await _context.Organizations.Include(o => o.OrganizationEmployees)
+                    .AsNoTracking().FirstOrDefaultAsync(o => o.Id
+                         .Equals(project.OrganizationId));
+
+                var orgEmployee = org.OrganizationEmployees
+                    .FirstOrDefault(e => e.UserId.Equals(userId));
+
+                if (orgEmployee == null)
+                    return new DeleteProjectServiceResponse(
+                         DeleteProjectServiceResponseStatus.AccessDenied);
+
+                var members = await _context.ProjectMembers
+                   .AsNoTracking().Where(m => m.ProjectId
+                       .Equals(project.Id)).ToListAsync();
+
+                if (!members.Any(p =>
+                    p.OrganizationEmployeeId.Equals(orgEmployee.Id) &&
+                        (p.Role.Equals(ProjectMemberRoles.Leader) ||
+                             p.Role.Equals(ProjectMemberRoles.Admin))))
+                    return new DeleteProjectServiceResponse(
+                         DeleteProjectServiceResponseStatus.AccessDenied);
+
+                _context.ProjectMembers.RemoveRange(members);
+
+                _context.Projects.Remove(project);
+
+                await _context.SaveChangesAsync();
+
+                return new DeleteProjectServiceResponse(
+                     DeleteProjectServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("DeleteProjectService : {Message}", ex.Message);
+
+                return new DeleteProjectServiceResponse(
+                     DeleteProjectServiceResponseStatus.InternalError);
+            }
+        }
+
         public async Task<GetProjectServiceResponse> GetProject(GetProjectRequest request, string userId)
         {
             try
