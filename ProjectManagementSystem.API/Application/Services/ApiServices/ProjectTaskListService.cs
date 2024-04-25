@@ -51,10 +51,10 @@ namespace Application.Services.ApiServices
                          ChangeTaskListPriorityServiceResponseStatus.AccessDenied);
 
                 if (!project.ProjectMembers.Any(m =>
-                m.OrganizationEmployeeId.Equals(employee.Id) &&
-                    (m.Role.Equals(ProjectMemberRoles.Leader) ||
-                        m.Role.Equals(ProjectMemberRoles.Admin) ||
-                            m.Role.Equals(ProjectMemberRoles.Modrator))))
+                    m.OrganizationEmployeeId.Equals(employee.Id) &&
+                        (m.Role.Equals(ProjectMemberRoles.Leader) ||
+                            m.Role.Equals(ProjectMemberRoles.Admin) ||
+                                m.Role.Equals(ProjectMemberRoles.Modrator))))
                     return new ChangeTaskListPriorityServiceResponse(
                          ChangeTaskListPriorityServiceResponseStatus.AccessDenied);
 
@@ -66,7 +66,7 @@ namespace Application.Services.ApiServices
                     return new ChangeTaskListPriorityServiceResponse(
                          ChangeTaskListPriorityServiceResponseStatus.InvalidPriority);
 
-                targetTaskList.Priority = request.OldPriority;
+                targetTaskList.Priority = currentTaskList.Priority;
                 currentTaskList.Priority = request.NewPriority;
 
                 await _context.SaveChangesAsync();
