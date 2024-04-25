@@ -336,6 +336,93 @@ namespace Application.Services.ApiServices
 
                 return new UpdateProjectTaskServiceResponse(
                      UpdateProjectTaskServiceResponseStatus.InternalError);
+            }
+        }
+
+        public async Task<ChangeProjectTasksTaskListServiceResponse> ChangeTaskList(ChangeProjectTasksTaskListRequest request, string userId)
+        {
+            try
+            {
+                var task = await _context.ProjectTasks
+                .FirstOrDefaultAsync(t => t.Id.ToString().Equals(request.TaskId));
+
+                if (task == null)
+                    return new ChangeProjectTasksTaskListServiceResponse(
+                         ChangeProjectTasksTaskListServiceResponseStatus.TaskNotExists);
+
+                var taskList = await _context.ProjectTaskLists
+                    .Include(tl => tl.ProjectTasks)
+                        .FirstOrDefaultAsync(tl => tl.Id
+                             .Equals(task.ProjectTaskListId));
+
+                var project = await _context.Projects.AsNoTracking()
+                      .FirstOrDefaultAsync(p => p.Id.Equals(taskList.ProjectId));
+
+                var org = await _context.Organizations
+                    .Include(o => o.OrganizationEmployees)
+                        .AsNoTracking()
+                            .FirstOrDefaultAsync(o => o.Id
+                                .Equals(project.OrganizationId));
+
+                var employee = org.OrganizationEmployees
+                    .FirstOrDefault(e => e.UserId.Equals(userId));
+
+                if (employee == null)
+                    return new ChangeProjectTasksTaskListServiceResponse(
+                         ChangeProjectTasksTaskListServiceResponseStatus.AccessDenied);
+
+                await _context.Entry(project)
+                  .Collection(p => p.ProjectMembers).LoadAsync();
+
+                if (!project.ProjectMembers.Any(p =>
+                   p.OrganizationEmployeeId.Equals(employee.Id) && (
+                        p.Role.Equals(ProjectMemberRoles.Leader) ||
+                             p.Role.Equals(ProjectMemberRoles.Admin) ||
+                                  p.Role.Equals(ProjectMemberRoles.Modrator))))
+                    return new ChangeProjectTasksTaskListServiceResponse(
+                         ChangeProjectTasksTaskListServiceResponseStatus.AccessDenied);
+
+                var targetTaskList = await _context.ProjectTaskLists.Include(t => t.ProjectTasks)
+                    .FirstOrDefaultAsync(tl => tl.Id.ToString().Equals(request.TargetTaskListId));
+
+                if (targetTaskList == null)
+                    return new ChangeProjectTasksTaskListServiceResponse(
+                         ChangeProjectTasksTaskListServiceResponseStatus.TaskListNotExists);
+
+                foreach (var t in targetTaskList.ProjectTasks)
+                {
+                    if (t.Priority >= request.TargetPriority)
+                    {
+                        t.Priority += 1;
+                    }
+                }
+
+                task.ProjectTaskListId = targetTaskList.Id;
+
+                await _context.Entry(taskList)
+                    .Collection(tl => tl.ProjectTasks).LoadAsync();
+
+                foreach (var t in taskList.ProjectTasks)
+                {
+                    if (t.Priority > task.Priority)
+                    {
+                        t.Priority -= 1;
+                    }
+                }
+
+                task.Priority = request.TargetPriority;
+
+                await _context.SaveChangesAsync();
+
+                return new ChangeProjectTasksTaskListServiceResponse(
+                     ChangeProjectTasksTaskListServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("UpdateTaskService : {Message}", ex.Message);
+
+                return new ChangeProjectTasksTaskListServiceResponse(
+                     ChangeProjectTasksTaskListServiceResponseStatus.InternalError);
             } 
         }
     }

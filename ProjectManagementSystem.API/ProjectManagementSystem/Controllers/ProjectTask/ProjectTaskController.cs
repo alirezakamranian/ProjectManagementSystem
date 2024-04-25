@@ -29,10 +29,10 @@ namespace ProjectManagementSystem.Controllers.ProjectTask
             if (serviceResponse.Status.Equals(GetProjectTaskServiceResponseStatus.AccessDenied) ||
                 serviceResponse.Status.Equals(GetProjectTaskServiceResponseStatus.TaskNotExists))
                 return StatusCode(StatusCodes.Status400BadRequest,
-                        new GetProjectTaskResponse
-                        {
-                            Message = serviceResponse.Status
-                        });
+                       new GetProjectTaskResponse
+                       {
+                           Message = serviceResponse.Status
+                       });
 
             if (serviceResponse.Status.Equals(GetProjectTaskServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
@@ -82,20 +82,20 @@ namespace ProjectManagementSystem.Controllers.ProjectTask
             return Ok(new CreateProjectTaskResponse
             {
                 Message = serviceResponse.Status,
-                NewTask=serviceResponse.NewTask
+                NewTask = serviceResponse.NewTask
             });
 
         }
 
         [Authorize]
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery]string Id)
+        public async Task<IActionResult> Delete([FromQuery] string Id)
         {
             var userId = HttpContext.User.Claims
                 .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
-            var serviceResponse =await _taskService
-                .DeleteTask(new() {TaskId=Id },userId);
+            var serviceResponse = await _taskService
+                .DeleteTask(new() { TaskId = Id }, userId);
 
             if (serviceResponse.Status.Equals(DeleteProjectTaskServiceResponseStatus.AccessDenied) ||
                serviceResponse.Status.Equals(DeleteProjectTaskServiceResponseStatus.TaskNotExists))
@@ -114,7 +114,7 @@ namespace ProjectManagementSystem.Controllers.ProjectTask
 
             return Ok(new DeleteProjectTaskResponse
             {
-                Message=serviceResponse.Status
+                Message = serviceResponse.Status
             });
         }
 
@@ -126,7 +126,7 @@ namespace ProjectManagementSystem.Controllers.ProjectTask
                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _taskService
-                .UpdateTask(request,userId);
+                .UpdateTask(request, userId);
 
             if (serviceResponse.Status.Equals(UpdateProjectTaskServiceResponseStatus.AccessDenied) ||
                serviceResponse.Status.Equals(UpdateProjectTaskServiceResponseStatus.TaskNotExists))
@@ -170,6 +170,38 @@ namespace ProjectManagementSystem.Controllers.ProjectTask
             if (serviceResponse.Status.Equals(ChangeProjectTaskPriorityServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                         new ChangeProjectTaskPriorityResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new ChangeProjectTaskPriorityResponse
+            {
+                Message = serviceResponse.Status
+            });
+        }
+
+        [Authorize]
+        [HttpPatch("changetasklist")]
+        public async Task<IActionResult> ChangeTaskList(ChangeProjectTasksTaskListRequest request)
+        {
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _taskService
+                .ChangeTaskList(request, userId);
+
+            if (serviceResponse.Status.Equals(ChangeProjectTasksTaskListServiceResponseStatus.AccessDenied) ||
+             serviceResponse.Status.Equals(ChangeProjectTasksTaskListServiceResponseStatus.TaskNotExists)||
+             serviceResponse.Status.Equals(ChangeProjectTasksTaskListServiceResponseStatus.TaskListNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new ChangeProjectTasksTaskListResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            if (serviceResponse.Status.Equals(ChangeProjectTasksTaskListServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new ChangeProjectTasksTaskListResponse
                         {
                             Message = serviceResponse.Status
                         });
