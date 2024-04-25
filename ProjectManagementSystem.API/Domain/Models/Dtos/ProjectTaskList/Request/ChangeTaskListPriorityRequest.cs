@@ -11,8 +11,7 @@ namespace Domain.Models.Dtos.ProjectTaskList.Request
     {
         [Required]
         public string TaskListId { get; set; }
-        [Required]
-        public int OldPriority { get; set; }
+
         [Required]
         public int NewPriority { get; set; }
     }

@@ -33,7 +33,7 @@ namespace Application.Services.ApiServices
                 {
                     Users = await _context.Users.AsNoTracking()
                         .Where(u => u.Email.Contains(requst.Query.ToLower().Trim()) ||
-                             u.FullName.Contains(requst.Query, StringComparison.CurrentCultureIgnoreCase)).ToListAsync()
+                             u.FullName.Contains(requst.Query.ToLower().Trim())).ToListAsync()
                 };
             }
             catch (Exception ex)
@@ -107,7 +107,8 @@ namespace Application.Services.ApiServices
                     return new AcceptOrganizationInvitationServiceResponse(
                          AcceptOrganizationInvitationServiceResponseStatus.NotificationNotExists);
 
-                var serviceResault = await _pendingManager.AcceptPending(notification.Id.ToString(), userId);
+                var serviceResault = await _pendingManager
+                    .AcceptPending(notification.Id.ToString(), userId);
 
                 if (serviceResault == "error")
                     return new AcceptOrganizationInvitationServiceResponse(
