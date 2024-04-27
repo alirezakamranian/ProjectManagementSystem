@@ -97,7 +97,10 @@ namespace Application.Services.ApiServices
             {
                 var org = await _context.Organizations.Include(o => o.Projects)
                     .Include(o => o.OrganizationEmployees)
-                        .FirstOrDefaultAsync(o => o.Id.ToString().Equals(request.OrganizationId));
+                        .Include(o=>o.OrganizationEmployees)
+                            .ThenInclude(e=>e.User).AsNoTracking()
+                                .FirstOrDefaultAsync(o => o.Id.ToString()
+                                    .Equals(request.OrganizationId));
 
                 if (org == null)
                     return new GetOrganizationServiceResponse(
@@ -111,7 +114,8 @@ namespace Application.Services.ApiServices
                      GetOrganizationServiceResponseStatus.Success)
                 {
                     Name = org.Name,
-                    Projects = org.Projects
+                    Projects = org.Projects,
+                    Employees = org.OrganizationEmployees
                 };
             }
             catch (Exception ex)
