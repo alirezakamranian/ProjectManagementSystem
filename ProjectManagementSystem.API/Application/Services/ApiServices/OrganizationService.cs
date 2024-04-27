@@ -44,8 +44,7 @@ namespace Application.Services.ApiServices
                 org.OrganizationEmployees.Add(new OrganizationEmployee
                 {
                     UserId = userId,
-                    Role = OrganizationEmployeesRoles.Admin,
-
+                    Role = OrganizationEmployeesRoles.Leader            
                 });
 
                 await _context.SaveChangesAsync();
