@@ -18,5 +18,8 @@ namespace Domain.Models.Dtos.Organization.Response
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<ProjectForResponseDto> Projects { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<OrganizationEmployeeForResponseDto> Employees { get; set; }
     }
 }
