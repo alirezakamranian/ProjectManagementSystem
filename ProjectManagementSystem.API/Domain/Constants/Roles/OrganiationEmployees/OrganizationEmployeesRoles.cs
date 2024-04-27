@@ -9,6 +9,7 @@ namespace Domain.Constants.Roles.OrganiationEmployees
     public enum OrganizationEmployeesRoles
     {
        Member,
-       Admin
+       Admin,
+       Leader
     }
 }

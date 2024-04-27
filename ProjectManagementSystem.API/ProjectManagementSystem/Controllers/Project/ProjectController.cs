@@ -123,7 +123,7 @@ namespace ProjectManagementSystem.Controllers.Project
         public async Task<IActionResult> Delete([FromQuery] string id)
         {
             var userId = HttpContext.User.Claims
-               .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _projectService
                 .DeleteProject(new() { ProjectId = id }, userId);
@@ -144,6 +144,38 @@ namespace ProjectManagementSystem.Controllers.Project
                     });
 
             return Ok(new DeleteProjectResponse
+            {
+                Message = serviceResponse.Status
+            });
+        }
+
+        [Authorize]
+        [HttpPatch]
+        public async Task<IActionResult> ChangeLeader(ChangeProjectLeaderRequest request)
+        {
+            var userId = HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _projectService
+                .ChangeLeadr(request, userId);
+
+            if (serviceResponse.Status.Equals(ChangeProjectLeaderServiceResponseStatus.ProjectNotExists) ||
+               serviceResponse.Status.Equals(ChangeProjectLeaderServiceResponseStatus.AccessDenied)||
+               serviceResponse.Status.Equals(ChangeProjectLeaderServiceResponseStatus.LeaderNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                    new ChangeProjectLeaderResponse
+                    {
+                        Message = serviceResponse.Status
+                    });
+
+            if (serviceResponse.Status.Equals(ChangeProjectLeaderServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new ChangeProjectLeaderResponse
+                    {
+                        Message = serviceResponse.Status
+                    });
+
+            return Ok(new ChangeProjectLeaderResponse
             {
                 Message = serviceResponse.Status
             });

@@ -47,15 +47,14 @@ namespace Application.Services.ApiServices
                     Name = request.Name,
                     Description = request.Description,
                     Status = "proccesing",
-                    LeaderId = userId,
+                    LeaderId = employee.Id.ToString(),
                     Creationlevel = "Pending"
                 });
-
 
                 await _context.SaveChangesAsync();
 
                 var project = await _context.Projects.Include(p => p.ProjectMembers)
-                    .FirstOrDefaultAsync(p => p.LeaderId.Equals(userId) &&
+                    .FirstOrDefaultAsync(p => p.LeaderId.Equals(employee.Id.ToString()) &&
                         p.Creationlevel.Equals("Pending"));
 
                 project.ProjectMembers.Add(new()
@@ -178,6 +177,65 @@ namespace Application.Services.ApiServices
 
                 return new GetProjectServiceResponse(
                      GetProjectServiceResponseStatus.InternalError);
+            }
+        }
+
+        public async Task<ChangeProjectLeaderServiceResponse> ChangeLeadr(ChangeProjectLeaderRequest request, string userId)
+        {
+            try
+            {
+                var project = await _context.Projects
+                .Include(p => p.ProjectMembers)
+                    .FirstOrDefaultAsync(p => p.Id.ToString()
+                        .Equals(request.ProjectId));
+
+                if (project == null)
+                    return new ChangeProjectLeaderServiceResponse(
+                         ChangeProjectLeaderServiceResponseStatus.ProjectNotExists);
+
+                var org = await _context.Organizations
+                    .Include(o => o.OrganizationEmployees).AsNoTracking()
+                        .FirstOrDefaultAsync(o => o.Id
+                            .Equals(project.OrganizationId));
+
+                var employee = org.OrganizationEmployees
+                    .FirstOrDefault(e => e.UserId.Equals(userId) &&
+                        e.Role.Equals(OrganizationEmployeesRoles.Leader));
+
+                if (employee == null)
+                    return new ChangeProjectLeaderServiceResponse(
+                         ChangeProjectLeaderServiceResponseStatus.AccessDenied);
+
+                var oldLeadr = project.ProjectMembers
+                    .FirstOrDefault(p => p.Role
+                        .Equals(ProjectMemberRoles.Leader));
+
+                var newLeader = project.ProjectMembers
+                    .FirstOrDefault(m => m.Id.ToString()
+                        .Equals(request.NewLeaderMemberId));
+
+                if (newLeader == null)
+                    return new ChangeProjectLeaderServiceResponse(
+                         ChangeProjectLeaderServiceResponseStatus.LeaderNotExists);
+
+                newLeader.Role = ProjectMemberRoles.Leader;
+
+                project.LeaderId = newLeader
+                    .OrganizationEmployeeId.ToString();
+
+                oldLeadr.Role = ProjectMemberRoles.Admin;
+
+                await _context.SaveChangesAsync();
+
+                return new ChangeProjectLeaderServiceResponse(
+                     ChangeProjectLeaderServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("ChangeProjectLeadrService : {Message}", ex.Message);
+
+                return new ChangeProjectLeaderServiceResponse(
+                     ChangeProjectLeaderServiceResponseStatus.InternalError);
             }
         }
     }
