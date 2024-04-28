@@ -139,11 +139,13 @@ namespace Application.Services.ApiServices
             try
             {
                 var project = await _context.Projects
-                    .AsNoTracking().Include(p => p.ProjectMembers)
-                        .Include(p => p.ProjectTaskLists)
-                            .ThenInclude(tl => tl.ProjectTasks)
-                                .FirstOrDefaultAsync(p => p.Id.ToString()
-                                    .Equals(request.ProjectId));
+                    .Include(p => p.ProjectMembers)
+                        .ThenInclude(pm=>pm.OrganizationEmployee)
+                            .ThenInclude(e=>e.User)
+                                .Include(p => p.ProjectTaskLists)
+                                    .ThenInclude(tl => tl.ProjectTasks)
+                                        .AsNoTracking().FirstOrDefaultAsync
+                                            (p => p.Id.ToString().Equals(request.ProjectId));
 
                 if (project == null)
                     return new GetProjectServiceResponse(

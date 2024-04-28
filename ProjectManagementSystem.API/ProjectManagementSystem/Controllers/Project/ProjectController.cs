@@ -41,7 +41,7 @@ namespace ProjectManagementSystem.Controllers.Project
                         Message = serviceResponse.Status
                     });
 
-            var taskLists = new List<ProjectTaskListForResponseDto>();
+            List<ProjectTaskListForResponseDto> taskLists = [];
 
             foreach (var tl in serviceResponse.Project.ProjectTaskLists)
             {
@@ -67,6 +67,18 @@ namespace ProjectManagementSystem.Controllers.Project
                 });
             }
 
+            List<ProjectMemberForResponseDto> members = [];
+
+            foreach (var m in serviceResponse.Project.ProjectMembers)
+            {
+                members.Add(new()
+                {
+                    Id = m.Id.ToString(),
+                    Name = m.OrganizationEmployee.User.FullName,
+                    Role = m.Role
+                });
+            }
+
             return Ok(new GetProjectResponse
             {
                 Message = serviceResponse.Status,
@@ -76,7 +88,8 @@ namespace ProjectManagementSystem.Controllers.Project
                     Name = serviceResponse.Project.Name,
                     Description = serviceResponse.Project.Description,
                     Status = serviceResponse.Project.Status,
-                    ProjectTaskLists = taskLists
+                    ProjectTaskLists = taskLists,
+                    Members =members
                 }
             });
         }
@@ -160,7 +173,7 @@ namespace ProjectManagementSystem.Controllers.Project
                 .ChangeLeadr(request, userId);
 
             if (serviceResponse.Status.Equals(ChangeProjectLeaderServiceResponseStatus.ProjectNotExists) ||
-               serviceResponse.Status.Equals(ChangeProjectLeaderServiceResponseStatus.AccessDenied)||
+               serviceResponse.Status.Equals(ChangeProjectLeaderServiceResponseStatus.AccessDenied) ||
                serviceResponse.Status.Equals(ChangeProjectLeaderServiceResponseStatus.LeaderNotExists))
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new ChangeProjectLeaderResponse
