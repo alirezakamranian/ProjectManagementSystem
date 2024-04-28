@@ -14,5 +14,6 @@ namespace Domain.Models.ServiceResponses.Organization
     public class CreateOrganizationServiceResponseStatus : ServiceResponseStatusBase
     {
         public const string CreationFaild = "CreationFaild";
+        public const string OrganizationExists = "OrganizationExists";
     }
 }

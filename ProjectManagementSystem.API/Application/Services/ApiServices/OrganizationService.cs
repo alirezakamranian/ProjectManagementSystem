@@ -27,6 +27,12 @@ namespace Application.Services.ApiServices
         {
             try
             {
+                if(await _context.Organizations
+                    .AnyAsync(o => o.OwnerId.Equals(userId) && 
+                        o.Name.Equals(request.Name)))
+                     return new CreateOrganizationServiceResponse(
+                     CreateOrganizationServiceResponseStatus.OrganizationExists);
+
                 var user = await _context.Users.Include(u => u.Organizations)
                     .FirstOrDefaultAsync(u => u.Id.Equals(userId));
 
@@ -39,12 +45,13 @@ namespace Application.Services.ApiServices
 
                 var org = await _context.Organizations
                     .Include(o => o.OrganizationEmployees)
-                        .FirstOrDefaultAsync(o => o.OwnerId.Equals(userId));
+                        .FirstOrDefaultAsync(o => o.OwnerId
+                            .Equals(userId) && o.Name.Equals(request.Name));
 
                 org.OrganizationEmployees.Add(new OrganizationEmployee
                 {
                     UserId = userId,
-                    Role = OrganizationEmployeesRoles.Leader            
+                    Role = OrganizationEmployeesRoles.Leader
                 });
 
                 await _context.SaveChangesAsync();
@@ -97,8 +104,8 @@ namespace Application.Services.ApiServices
             {
                 var org = await _context.Organizations.Include(o => o.Projects)
                     .Include(o => o.OrganizationEmployees)
-                        .Include(o=>o.OrganizationEmployees)
-                            .ThenInclude(e=>e.User).AsNoTracking()
+                        .Include(o => o.OrganizationEmployees)
+                            .ThenInclude(e => e.User).AsNoTracking()
                                 .FirstOrDefaultAsync(o => o.Id.ToString()
                                     .Equals(request.OrganizationId));
 
