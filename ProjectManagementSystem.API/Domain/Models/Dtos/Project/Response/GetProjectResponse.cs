@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Constants.Roles.OrganiationEmployees;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace Domain.Models.Dtos.Project.Response
         public string Status { get; set; }
 
         public List<ProjectTaskListForResponseDto> ProjectTaskLists { get; set; }
+        public List<ProjectMemberForResponseDto> Members { get; set; }
     }
     public class ProjectTaskListForResponseDto
     {
@@ -47,5 +49,11 @@ namespace Domain.Models.Dtos.Project.Response
         public string Description { get; set; }
 
         public int Priority { get; set; }
+    }
+    public class ProjectMemberForResponseDto
+    {
+        public string Id { get; set; }
+        public ProjectMemberRoles Role { get; set; }
+        public string Name { get; set; } 
     }
 }
