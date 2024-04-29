@@ -39,11 +39,11 @@ namespace Application.Services.ApiServices
                             .Equals(project.OrganizationId));
 
                 if (!project.ProjectMembers
-                    .Any(p => p.OrganizationEmployeeId
+                    .Any(pm => pm.OrganizationEmployeeId
                         .Equals(organization.OrganizationEmployees
                             .Where(e => e.UserId.ToString().Equals(userId))
-                                .Select(e => e.Id).FirstOrDefault()) && (p.Role.Equals(
-                                    ProjectMemberRoles.Leader) || p.Role.Equals(ProjectMemberRoles.Admin))))
+                                .Select(e => e.Id).FirstOrDefault()) && (pm.Role.Equals(
+                                    ProjectMemberRoles.Leader) || pm.Role.Equals(ProjectMemberRoles.Admin))))
                     return new AddMemberServiceResponse(
                          AddMemberServiceResponseStatus.AccessDenied);
 

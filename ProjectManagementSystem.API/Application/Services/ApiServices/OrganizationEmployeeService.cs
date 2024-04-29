@@ -24,9 +24,9 @@ namespace Application.Services.ApiServices
             try
             {
                 var org = await _context.Organizations
-                         .Include(o => o.OrganizationEmployees)
-                             .FirstOrDefaultAsync(o => o.Id.ToString()
-                                 .Equals(request.OrganizationId));
+                    .Include(o => o.OrganizationEmployees)
+                         .FirstOrDefaultAsync(o => o.Id.ToString()
+                              .Equals(request.OrganizationId));
 
                 if (org == null)
                     return new ChangeEmployeeRoleServiceResponse(

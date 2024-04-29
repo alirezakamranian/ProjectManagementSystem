@@ -344,7 +344,8 @@ namespace Application.Services.ApiServices
             try
             {
                 var task = await _context.ProjectTasks
-                .FirstOrDefaultAsync(t => t.Id.ToString().Equals(request.TaskId));
+                    .FirstOrDefaultAsync(t => t.Id.ToString()
+                        .Equals(request.TaskId));
 
                 if (task == null)
                     return new ChangeProjectTasksTaskListServiceResponse(
@@ -355,8 +356,9 @@ namespace Application.Services.ApiServices
                         .FirstOrDefaultAsync(tl => tl.Id
                              .Equals(task.ProjectTaskListId));
 
-                var project = await _context.Projects.AsNoTracking()
-                      .FirstOrDefaultAsync(p => p.Id.Equals(taskList.ProjectId));
+                var project = await _context.Projects
+                    .AsNoTracking().FirstOrDefaultAsync(p => p.Id
+                        .Equals(taskList.ProjectId));
 
                 var org = await _context.Organizations
                     .Include(o => o.OrganizationEmployees)
