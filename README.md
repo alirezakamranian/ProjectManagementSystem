@@ -1,6 +1,6 @@
 🔸🔷Project Management System With Asp.Net Core 8🔷🔸
 
-               ◾ ◼ ⬛   completed:4️⃣0️⃣%  ⬛ ◼ ◾
+               ◾ ◼ ⬛   completed:7️⃣0️⃣%  ⬛ ◼ ◾
 
 🔹🔷
 
