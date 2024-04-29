@@ -11,5 +11,6 @@ namespace Domain.Services.ApiServices
     public interface IOrganizationEmployeeService
     {
         public Task<ChangeEmployeeRoleServiceResponse> ChangeEmployeeRole(ChangeEmployeeRoleRequest request, string email);
+        public Task<RemoveEmployeeServiceResponse> RemoveEmployee(RemoveEmployeeRequest request, string userId);
     }
 }
