@@ -75,8 +75,9 @@ namespace Application.Services.ApiServices
             {
 
                 var org = _context.Organizations
-                    .Where(o => o.Id.ToString().Equals(request.OrganizationId) &&
-                         o.OwnerId.Equals(userId)).FirstOrDefault();
+                    .Where(o => o.Id.ToString()
+                        .Equals(request.OrganizationId) &&
+                             o.OwnerId.Equals(userId)).FirstOrDefault();
 
                 if (org == null)
                     return new UpdateOrganizationServiceResponse(
@@ -113,7 +114,8 @@ namespace Application.Services.ApiServices
                     return new GetOrganizationServiceResponse(
                          GetOrganizationServiceResponseStatus.OrganizationNotExists);
 
-                if (!org.OrganizationEmployees.Any(e => e.UserId.Equals(request.UserId)))
+                if (!org.OrganizationEmployees
+                    .Any(e => e.UserId.Equals(request.UserId)))
                     return new GetOrganizationServiceResponse(
                          GetOrganizationServiceResponseStatus.AccessDenied);
 

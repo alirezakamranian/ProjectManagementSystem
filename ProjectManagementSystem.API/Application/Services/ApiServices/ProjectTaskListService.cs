@@ -84,7 +84,7 @@ namespace Application.Services.ApiServices
 
         }
 
-        public async Task<ProjectTaskListServiceResponse> CreateTaskList(CreateTaskListRequest request)
+        public async Task<ProjectTaskListServiceResponse> CreateTaskList(CreateTaskListRequest request,string userId)
         {
             try
             {
@@ -97,6 +97,26 @@ namespace Application.Services.ApiServices
                 if (project == null)
                     return new ProjectTaskListServiceResponse(
                          ProjectTaskListServiceResponseStatus.ProjectNotExists);
+
+                var org = await _context.Organizations.AsNoTracking()
+                    .Include(o => o.OrganizationEmployees)
+                        .FirstOrDefaultAsync(o => o.Id
+                            .Equals(project.OrganizationId));
+
+                var employee = org.OrganizationEmployees
+                    .FirstOrDefault(e => e.UserId.Equals(userId));
+
+                if (employee == null)
+                    return new ProjectTaskListServiceResponse(
+                         ProjectTaskListServiceResponseStatus.AccessDenied);
+
+                if (!project.ProjectMembers.Any(m =>
+                   m.OrganizationEmployeeId.Equals(employee.Id) &&
+                       (m.Role.Equals(ProjectMemberRoles.Leader) ||
+                           m.Role.Equals(ProjectMemberRoles.Admin) ||
+                               m.Role.Equals(ProjectMemberRoles.Modrator))))
+                    return new ProjectTaskListServiceResponse(
+                         ProjectTaskListServiceResponseStatus.AccessDenied);
 
                 var lastPriority = project.ProjectTaskLists
                     .Select(t => t.Priority)

@@ -15,11 +15,11 @@ using System.Threading.Tasks;
 namespace Application.Services.ApiServices
 {
     public class ProjectService(DataContext context,
-        ILogger<AuthenticationService> logger) : IProjectService
+        ILogger<ProjectService> logger) : IProjectService
     {
 
         private readonly DataContext _context = context;
-        private readonly ILogger<AuthenticationService> _logger = logger;
+        private readonly ILogger<ProjectService> _logger = logger;
 
         public async Task<CreateProjectServiceResponse> CreateProject(CreateProjectRequest request, string userId)
         {
@@ -162,8 +162,8 @@ namespace Application.Services.ApiServices
                     return new GetProjectServiceResponse(
                          GetProjectServiceResponseStatus.AccessDenied);
 
-                if (!project.ProjectMembers.Any(p =>
-                        p.OrganizationEmployeeId.Equals(orgEmployee.Id)))
+                if (!project.ProjectMembers.Any(pm =>
+                        pm.OrganizationEmployeeId.Equals(orgEmployee.Id)))
                     return new GetProjectServiceResponse(
                          GetProjectServiceResponseStatus.AccessDenied);
 
