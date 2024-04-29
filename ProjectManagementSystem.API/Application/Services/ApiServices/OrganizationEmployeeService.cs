@@ -34,7 +34,8 @@ namespace Application.Services.ApiServices
 
                 if (!org.OrganizationEmployees.Any(
                     e => e.UserId.Equals(userId) &&
-                    e.Role.Equals(OrganizationEmployeesRoles.Admin)))
+                        e.Role.Equals(OrganizationEmployeesRoles.Admin) ||
+                            e.Role.Equals(OrganizationEmployeesRoles.Leader)))
                     return new ChangeEmployeeRoleServiceResponse(
                       ChangeEmployeeRoleServiceResponseStatus.AccessDenied);
 
@@ -62,10 +63,58 @@ namespace Application.Services.ApiServices
             }
             catch (Exception ex)
             {
-                _logger.LogError("ChangeEmployeeRole : {Message}", ex.Message);
+                _logger.LogError("ChangeEmployeeRoleService : {Message}", ex.Message);
 
                 return new ChangeEmployeeRoleServiceResponse(
                      ChangeEmployeeRoleServiceResponseStatus.InternalError);
+            }
+        }
+
+        public async Task<RemoveEmployeeServiceResponse> RemoveEmployee(RemoveEmployeeRequest request, string userId)
+        {
+            try
+            {
+                var employee = await _context.OrganizationEmployees
+                    .FirstOrDefaultAsync(e => e.Id.ToString()
+                        .Equals(request.EmployeeId));
+
+                if (employee == null)
+                    return new RemoveEmployeeServiceResponse(
+                         RemoveEmployeeServiceResponseStatus.EmployeeNotExists);
+
+                var org = await _context.Organizations
+                    .Include(o => o.OrganizationEmployees)
+                        .AsNoTracking().FirstOrDefaultAsync(o => o.Id
+                            .Equals(employee.OrganizationId));
+
+                if (!org.OrganizationEmployees.Any(
+                    e => e.UserId.Equals(userId) &&
+                        e.Role.Equals(OrganizationEmployeesRoles.Leader)))
+                    return new RemoveEmployeeServiceResponse(
+                         RemoveEmployeeServiceResponseStatus.AccessDenied);
+
+                var con = await _context.Projects
+                    .FirstOrDefaultAsync(p => p.OrganizationId
+                        .Equals(org.Id) && p.LeaderId
+                            .Equals(employee.Id.ToString()));
+
+                if (con != null)
+                    return new RemoveEmployeeServiceResponse(
+                         RemoveEmployeeServiceResponseStatus.EmployeeIsBusy);
+
+                _context.OrganizationEmployees.Remove(employee);
+
+                await _context.SaveChangesAsync();
+
+                return new RemoveEmployeeServiceResponse(
+                     RemoveEmployeeServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("RemoveEmployeeService : {Message}", ex.Message);
+
+                return new RemoveEmployeeServiceResponse(
+                     RemoveEmployeeServiceResponseStatus.InternalError);
             }
         }
     }
