@@ -145,6 +145,8 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddTransient<ITokenGenerator, TokenGenerator>();
             //InvitationService
             services.AddTransient<IInvitationPendingManager, InvitationPendingManager>();
+            //AuthorizationService
+            services.AddTransient<IAuthorizationService, AuthorizationService>();
         }
     }
 }
