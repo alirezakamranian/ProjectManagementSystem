@@ -1,4 +1,4 @@
-﻿using Domain.Models.Dtos.Project.Request;
+﻿using Domain.Models.ApiModels.Project.Request;
 using Domain.Models.ServiceResponses.Project;
 using System;
 using System.Collections.Generic;

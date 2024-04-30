@@ -1,12 +1,13 @@
-﻿using Domain.Models.Dtos.Auth.Response;
-using Domain.Models.Dtos.Project.Request;
-using Domain.Models.Dtos.Project.Response;
+﻿using Domain.Models.ApiModels.Project.Request;
+using Domain.Models.ApiModels.Project.Response;
+using Domain.Models.ApiModels.Auth.Response;
 using Domain.Models.ServiceResponses.Project;
 using Domain.Services.ApiServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
+using Domain.Models.Dtos.Project;
 
 namespace ProjectManagementSystem.Controllers.Project
 {

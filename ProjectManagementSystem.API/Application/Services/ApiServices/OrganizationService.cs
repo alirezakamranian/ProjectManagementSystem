@@ -5,16 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities.HumanResource;
 using Domain.Entities.Common;
-using Domain.Models.Dtos.Organization.Response;
+using Domain.Models.ApiModels.Organization.Response;
 using Domain.Services.ApiServices;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Domain.Constants.Notification;
 using Domain.Models.ServiceResponses.Organization;
-using Domain.Models.Dtos.Organization.Request;
 using Domain.Constants.Roles.OrganiationEmployees;
 using Microsoft.Extensions.Logging;
+using Domain.Models.ApiModels.Organization.Request;
+using Domain.Models.Dtos.Project;
+using Domain.Models.Dtos.Organization;
 namespace Application.Services.ApiServices
 {
     public class OrganizationService(DataContext context,

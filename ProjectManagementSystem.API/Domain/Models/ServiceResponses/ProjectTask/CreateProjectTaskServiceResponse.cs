@@ -1,4 +1,5 @@
-﻿using Domain.Models.Dtos.Project.Response;
+﻿using Domain.Models.ApiModels.Project.Response;
+using Domain.Models.Dtos.Project;
 using Domain.Models.ServiceResponses.Base;
 using System;
 using System.Collections.Generic;

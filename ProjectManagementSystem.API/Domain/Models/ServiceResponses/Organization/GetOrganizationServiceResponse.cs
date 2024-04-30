@@ -21,21 +21,4 @@ namespace Domain.Models.ServiceResponses.Organization
         public const string OrganizationNotExists = "OrganizationNotExists";
         public const string AccessDenied = "AccessDenied";
     }
-    public class ProjectForResponseDto
-    {
-        public string Id { get; set; }
-
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        public string Status { get; set; }
-    }
-    public class OrganizationEmployeeForResponseDto
-    {
-        public string Id { get; set; }
-        public OrganizationEmployeesRoles Role { get; set; }
-        public string Email { get; set; }
-        public string FullName { get; set; }
-    }
 }

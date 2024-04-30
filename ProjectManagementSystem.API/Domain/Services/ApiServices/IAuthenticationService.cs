@@ -1,4 +1,4 @@
-﻿using Domain.Models.Dtos.Auth.Request;
+﻿using Domain.Models.ApiModels.Auth.Request;
 using Domain.Models.ServiceResponses.Auth;
 using System;
 using System.Collections.Generic;

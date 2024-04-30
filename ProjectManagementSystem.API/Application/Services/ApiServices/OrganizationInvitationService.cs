@@ -1,7 +1,7 @@
 ﻿using Application.Services.InternalServices;
 using Domain.Constants.Notification;
 using Domain.Entities.Common;
-using Domain.Models.Dtos.OrganizationInvitation.Request;
+using Domain.Models.ApiModels.OrganizationInvitation.Request;
 using Domain.Models.ServiceResponses.OrganizationInvitation;
 using Domain.Services.ApiServices;
 using Domain.Services.InternalServices;

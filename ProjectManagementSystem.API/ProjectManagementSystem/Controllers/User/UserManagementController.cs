@@ -1,5 +1,6 @@
-﻿using Domain.Models.Dtos.Organization.Response;
-using Domain.Models.Dtos.User.Response;
+﻿using Domain.Models.ApiModels.Organization.Response;
+using Domain.Models.ApiModels.User.Response;
+using Domain.Models.Dtos.User;
 using Domain.Models.ServiceResponses.User;
 using Domain.Services.ApiServices;
 using Microsoft.AspNetCore.Authorization;

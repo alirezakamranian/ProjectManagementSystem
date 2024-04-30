@@ -1,7 +1,7 @@
-﻿using Domain.Models.Dtos.Auth.Response;
-using Domain.Models.Dtos.Organization.Response;
-using Domain.Models.Dtos.OrganizationEmployee.Request;
-using Domain.Models.Dtos.OrganizationEmployee.response;
+﻿using Domain.Models.ApiModels.OrganizationEmployee.Request;
+using Domain.Models.ApiModels.Auth.Response;
+using Domain.Models.ApiModels.Organization.Response;
+using Domain.Models.ApiModels.OrganizationEmployee.response;
 using Domain.Models.ServiceResponses.Organization;
 using Domain.Models.ServiceResponses.OrganizationEmployee;
 using Domain.Services.ApiServices;

@@ -1,4 +1,5 @@
-﻿using Domain.Models.ServiceResponses.Base;
+﻿using Domain.Models.Dtos.Project;
+using Domain.Models.ServiceResponses.Base;
 using Domain.Models.ServiceResponses.Organization;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,5 @@ namespace Domain.Models.ServiceResponses.ProjectTaskList
     {
         public const string AccessDenied = "AccessDenied";
         public const string ProjectNotExists = "OrganizationNotExists";
-    }
-    public class MinimumValueTaskListDto
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public int Priority { get; set; }
     }
 }

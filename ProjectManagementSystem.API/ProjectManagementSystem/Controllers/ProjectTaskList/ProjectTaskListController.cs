@@ -1,13 +1,13 @@
-﻿using Domain.Models.Dtos.OrganizationEmployee.response;
-using Domain.Models.Dtos.ProjectTaskList.Request;
-using Domain.Models.Dtos.ProjectTaskList.Response;
+﻿using Domain.Models.ApiModels.OrganizationEmployee.response;
+using Domain.Models.ApiModels.ProjectTaskList.Response;
 using Domain.Models.ServiceResponses.OrganizationEmployee;
 using Domain.Services.ApiServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Domain.Models.ServiceResponses.ProjectTaskList;
 using Microsoft.AspNetCore.Authorization;
-using Domain.Models.Dtos.ProjectTask.Response;
+using Domain.Models.ApiModels.ProjectTask.Response;
+using Domain.Models.ApiModels.ProjectTaskList.Request;
 namespace ProjectManagementSystem.Controllers.ProjectTaskList
 {
     [Route("organization/project/tasklist")]
@@ -21,6 +21,9 @@ namespace ProjectManagementSystem.Controllers.ProjectTaskList
         [HttpPost]
         public async Task<IActionResult> CreateTaskList(CreateTaskListRequest request)
         {
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
             if (!ModelState.IsValid)
                 return StatusCode(StatusCodes.Status400BadRequest,
                        new CreateTaskListResponse
@@ -28,7 +31,8 @@ namespace ProjectManagementSystem.Controllers.ProjectTaskList
                            Message = "DetailsAreRequired!"
                        });
 
-            var serviceResponse = await _taskListService.CreateTaskList(request);
+            var serviceResponse = await _taskListService
+                .CreateTaskList(request, userId);
 
             if (serviceResponse.Status.Equals(ProjectTaskListServiceResponseStatus.ProjectNotExists))
                 return StatusCode(StatusCodes.Status400BadRequest,

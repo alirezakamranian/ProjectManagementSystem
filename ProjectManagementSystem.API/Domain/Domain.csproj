@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Dtos\UserNotification\Request\" />
-    <Folder Include="Models\Dtos\User\Request\" />
+    <Folder Include="Models\ApiModels\UserNotification\Request\" />
+    <Folder Include="Models\ApiModels\User\Request\" />
   </ItemGroup>
 
 </Project>
