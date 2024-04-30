@@ -1,10 +1,9 @@
-﻿using Domain.Models.Dtos.Organization.Response;
-using Domain.Models.Dtos.OrganizationInvitation.Request;
-using Domain.Models.Dtos.OrganizationInvitation.Response;
+﻿using Domain.Models.ApiModels.OrganizationInvitation.Request;
+using Domain.Models.ApiModels.OrganizationInvitation.Response;
+using Domain.Models.Dtos.User;
 using Domain.Models.ServiceResponses.OrganizationInvitation;
 using Domain.Services.ApiServices;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -41,7 +40,7 @@ namespace ProjectManagementSystem.Controllers.Invitation
                            Message = serviceResponse.Status
                        });
 
-            List<UserForResponseDto> users = [];
+            List<MinimalValueUserForResponseDto> users = [];
             foreach (var user in serviceResponse.Users)
             {
                 users.Add(new()

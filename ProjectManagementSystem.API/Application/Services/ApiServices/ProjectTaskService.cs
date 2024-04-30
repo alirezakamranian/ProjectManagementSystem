@@ -1,5 +1,5 @@
 ﻿using Domain.Constants.Roles.OrganiationEmployees;
-using Domain.Models.Dtos.ProjectTask.Request;
+using Domain.Models.ApiModels.ProjectTask.Request;
 using Domain.Models.ServiceResponses.Organization;
 using Domain.Models.ServiceResponses.ProjectTask;
 using Domain.Services.ApiServices;
@@ -18,7 +18,10 @@ namespace Application.Services.ApiServices
     ILogger<ProjectTaskService> logger) : IProjectTaskService
     {
         private readonly DataContext _context = context;
+
+#pragma warning disable CS9124 // Parameter is captured into the state of the enclosing type and its value is also used to initialize a field, property, or event.
         private readonly ILogger<ProjectTaskService> _logger = logger;
+#pragma warning restore CS9124 // Parameter is captured into the state of the enclosing type and its value is also used to initialize a field, property, or event.
 
         public async Task<ChangeProjectTaskPriorityServiceResponse> ChangePriority(ChangeProjectTaskPriorityRequest request, string userId)
         {

@@ -1,5 +1,5 @@
-﻿using Domain.Models.Dtos.ProjectTask.Request;
-using Domain.Models.Dtos.ProjectTaskList.Request;
+﻿using Domain.Models.ApiModels.ProjectTaskList.Request;
+using Domain.Models.ApiModels.ProjectTask.Request;
 using Domain.Models.ServiceResponses.ProjectTaskList;
 using System;
 using System.Collections.Generic;

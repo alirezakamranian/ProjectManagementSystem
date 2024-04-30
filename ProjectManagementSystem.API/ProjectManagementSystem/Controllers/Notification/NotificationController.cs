@@ -1,11 +1,12 @@
-﻿using Domain.Models.Dtos.Auth.Response;
-using Domain.Models.Dtos.UserNotification.Response;
+﻿using Domain.Models.ApiModels.UserNotification.Response;
+using Domain.Models.ApiModels.Auth.Response;
 using Domain.Models.ServiceResponses.Organization;
 using Domain.Models.ServiceResponses.UserNotification;
 using Domain.Services.ApiServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Domain.Models.Dtos.Notification;
 
 namespace ProjectManagementSystem.Controllers.Notification
 {

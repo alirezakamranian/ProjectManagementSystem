@@ -1,5 +1,5 @@
 ﻿using Domain.Constants.Roles.OrganiationEmployees;
-using Domain.Models.Dtos.OrganizationEmployee.Request;
+using Domain.Models.ApiModels.OrganizationEmployee.Request;
 using Domain.Models.ServiceResponses.OrganizationEmployee;
 using Domain.Services.ApiServices;
 using Infrastructure.DataAccess;

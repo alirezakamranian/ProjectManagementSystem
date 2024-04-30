@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.HumanResource;
-using Domain.Models.Dtos.Organization.Request;
-using Domain.Models.Dtos.Organization.Response;
+using Domain.Models.ApiModels.Organization.Request;
+using Domain.Models.ApiModels.Organization.Response;
 using Domain.Models.ServiceResponses.Organization;
 using System;
 using System.Collections.Generic;

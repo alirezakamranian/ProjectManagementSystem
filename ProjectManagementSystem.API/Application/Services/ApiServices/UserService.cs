@@ -1,5 +1,5 @@
-﻿using Domain.Models.Dtos.User.Response;
-using Domain.Models.Dtos.UserNotification.Response;
+﻿using Domain.Models.ApiModels.User.Response;
+using Domain.Models.ApiModels.UserNotification.Response;
 using Domain.Models.ServiceResponses.User;
 using Domain.Services.ApiServices;
 using Infrastructure.DataAccess;

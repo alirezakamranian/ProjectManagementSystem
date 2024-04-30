@@ -1,4 +1,4 @@
-﻿using Domain.Models.Dtos.OrganizationEmployee.Request;
+﻿using Domain.Models.ApiModels.OrganizationEmployee.Request;
 using Domain.Models.ServiceResponses.OrganizationEmployee;
 using System;
 using System.Collections.Generic;

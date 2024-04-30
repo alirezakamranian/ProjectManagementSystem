@@ -1,4 +1,4 @@
-﻿using Domain.Models.Dtos.OrganizationInvitation.Request;
+﻿using Domain.Models.ApiModels.OrganizationInvitation.Request;
 using Domain.Models.ServiceResponses.OrganizationInvitation;
 using System;
 using System.Collections.Generic;

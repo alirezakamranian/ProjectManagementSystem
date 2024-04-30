@@ -1,6 +1,6 @@
-﻿using Domain.Models.Dtos.Organization.Response;
-using Domain.Models.Dtos.ProjectMember.Request;
-using Domain.Models.Dtos.ProjectMember.Response;
+﻿using Domain.Models.ApiModels.ProjectMember.Request;
+using Domain.Models.ApiModels.Organization.Response;
+using Domain.Models.ApiModels.ProjectMember.Response;
 using Domain.Models.ServiceResponses.Organization;
 using Domain.Models.ServiceResponses.ProjectMember;
 using Domain.Services.ApiServices;

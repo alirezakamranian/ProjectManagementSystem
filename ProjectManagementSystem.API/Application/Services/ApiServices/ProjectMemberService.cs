@@ -1,5 +1,4 @@
-﻿using Domain.Models.Dtos.ProjectMember.Request;
-using Domain.Models.ServiceResponses.ProjectMember;
+﻿using Domain.Models.ServiceResponses.ProjectMember;
 using Domain.Services.ApiServices;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +10,7 @@ using System.Threading.Tasks;
 using Domain.Entities.HumanResource;
 using Domain.Constants.Roles.OrganiationEmployees;
 using Microsoft.Extensions.Logging;
+using Domain.Models.ApiModels.ProjectMember.Request;
 namespace Application.Services.ApiServices
 {
     public class ProjectMemberService(DataContext context,

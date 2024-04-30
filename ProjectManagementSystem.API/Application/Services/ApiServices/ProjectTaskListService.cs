@@ -1,7 +1,7 @@
 ﻿using Domain.Constants.Roles.OrganiationEmployees;
 using Domain.Entities.HumanResource;
-using Domain.Models.Dtos.ProjectTask.Request;
-using Domain.Models.Dtos.ProjectTaskList.Request;
+using Domain.Models.ApiModels.ProjectTaskList.Request;
+using Domain.Models.ApiModels.ProjectTask.Request;
 using Domain.Models.ServiceResponses.ProjectMember;
 using Domain.Models.ServiceResponses.ProjectTaskList;
 using Domain.Services.ApiServices;

@@ -1,12 +1,14 @@
 ﻿using Azure.Core;
-using Domain.Models.Dtos.Auth.Response;
-using Domain.Models.Dtos.Organization.Request;
-using Domain.Models.Dtos.Organization.Response;
+using Domain.Models.ApiModels.Organization.Request;
+using Domain.Models.ApiModels.Auth.Response;
+using Domain.Models.ApiModels.Organization.Response;
 using Domain.Models.ServiceResponses.Organization;
 using Domain.Services.ApiServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Domain.Models.Dtos.Organization;
+using Domain.Models.Dtos.Project;
 
 namespace ProjectManagementSystem.Controllers.Organization
 {
@@ -115,7 +117,7 @@ namespace ProjectManagementSystem.Controllers.Organization
                             Message = serviceResponse.Status
                         });
 
-            List<ProjectForResponseDto> projects = [];
+            List<GetOrgProjectForResponseDto> projects = [];
 
             foreach (var p in serviceResponse.Projects)
             {
@@ -130,14 +132,14 @@ namespace ProjectManagementSystem.Controllers.Organization
 
             List<OrganizationEmployeeForResponseDto> employees = [];
 
-            foreach(var e in serviceResponse.Employees)
+            foreach (var e in serviceResponse.Employees)
             {
                 employees.Add(new()
                 {
-                    Id=e.Id.ToString(),
-                    Email=e.User.Email,
-                    Role=e.Role,
-                    FullName=e.User.FullName
+                    Id = e.Id.ToString(),
+                    Email = e.User.Email,
+                    Role = e.Role,
+                    FullName = e.User.FullName
                 });
             }
 
@@ -146,7 +148,7 @@ namespace ProjectManagementSystem.Controllers.Organization
                 Message = serviceResponse.Status,
                 Name = serviceResponse.Name,
                 Projects = projects,
-                Employees= employees
+                Employees = employees
             });
         }
 
