@@ -14,14 +14,19 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Services.InternalServices;
+using Domain.Constants.AuthorizationResponses;
+using Microsoft.Identity.Client;
 
 namespace Application.Services.ApiServices
 {
     public class ProjectTaskListService(DataContext context,
-        ILogger<AuthenticationService> logger) : IProjectTaskListService
+        ILogger<AuthenticationService> logger,
+        IAuthorizationService authService) : IProjectTaskListService
     {
         private readonly DataContext _context = context;
         private readonly ILogger<AuthenticationService> _logger = logger;
+        private readonly IAuthorizationService _authService = authService;
 
         public async Task<ChangeTaskListPriorityServiceResponse> ChangeTaskListPriority(ChangeTaskListPriorityRequest request, string userId)
         {
@@ -38,23 +43,10 @@ namespace Application.Services.ApiServices
                 var project = _context.Projects.Include(p => p.ProjectMembers)
                     .FirstOrDefault(p => p.Id.Equals(currentTaskList.ProjectId));
 
-                var org = await _context.Organizations.AsNoTracking()
-                    .Include(o => o.OrganizationEmployees)
-                        .FirstOrDefaultAsync(o => o.Id
-                            .Equals(project.OrganizationId));
+                var authResult = await _authService
+                   .AuthorizeByProjectId(project.Id, userId);
 
-                var employee = org.OrganizationEmployees
-                    .FirstOrDefault(e => e.UserId.Equals(userId));
-
-                if (employee == null)
-                    return new ChangeTaskListPriorityServiceResponse(
-                         ChangeTaskListPriorityServiceResponseStatus.AccessDenied);
-
-                if (!project.ProjectMembers.Any(m =>
-                    m.OrganizationEmployeeId.Equals(employee.Id) &&
-                        (m.Role.Equals(ProjectMemberRoles.Leader) ||
-                            m.Role.Equals(ProjectMemberRoles.Admin) ||
-                                m.Role.Equals(ProjectMemberRoles.Modrator))))
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new ChangeTaskListPriorityServiceResponse(
                          ChangeTaskListPriorityServiceResponseStatus.AccessDenied);
 
@@ -84,7 +76,7 @@ namespace Application.Services.ApiServices
 
         }
 
-        public async Task<ProjectTaskListServiceResponse> CreateTaskList(CreateTaskListRequest request,string userId)
+        public async Task<ProjectTaskListServiceResponse> CreateTaskList(CreateTaskListRequest request, string userId)
         {
             try
             {
@@ -98,23 +90,10 @@ namespace Application.Services.ApiServices
                     return new ProjectTaskListServiceResponse(
                          ProjectTaskListServiceResponseStatus.ProjectNotExists);
 
-                var org = await _context.Organizations.AsNoTracking()
-                    .Include(o => o.OrganizationEmployees)
-                        .FirstOrDefaultAsync(o => o.Id
-                            .Equals(project.OrganizationId));
-
-                var employee = org.OrganizationEmployees
-                    .FirstOrDefault(e => e.UserId.Equals(userId));
-
-                if (employee == null)
-                    return new ProjectTaskListServiceResponse(
-                         ProjectTaskListServiceResponseStatus.AccessDenied);
-
-                if (!project.ProjectMembers.Any(m =>
-                   m.OrganizationEmployeeId.Equals(employee.Id) &&
-                       (m.Role.Equals(ProjectMemberRoles.Leader) ||
-                           m.Role.Equals(ProjectMemberRoles.Admin) ||
-                               m.Role.Equals(ProjectMemberRoles.Modrator))))
+                var authResult = await _authService
+                    .AuthorizeByProjectId(project.Id, userId);
+                         
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new ProjectTaskListServiceResponse(
                          ProjectTaskListServiceResponseStatus.AccessDenied);
 
@@ -131,7 +110,7 @@ namespace Application.Services.ApiServices
                 await _context.SaveChangesAsync();
 
                 var taskListId = await _context.ProjectTaskLists
-                    .Where(tl => tl.ProjectId.Equals(project.Id) && 
+                    .Where(tl => tl.ProjectId.Equals(project.Id) &&
                         tl.Priority.Equals(lastPriority))
                             .Select(tl => tl.Id).FirstAsync();
 
@@ -171,23 +150,10 @@ namespace Application.Services.ApiServices
                     .AsNoTracking().Include(p => p.ProjectMembers)
                         .FirstOrDefault(p => p.Id.Equals(taskList.ProjectId));
 
-                var org = await _context.Organizations.AsNoTracking()
-                    .Include(o => o.OrganizationEmployees)
-                        .FirstOrDefaultAsync(o => o.Id
-                            .Equals(project.OrganizationId));
+                var authResult = await _authService
+                   .AuthorizeByProjectId(project.Id, userId);
 
-                var employee = org.OrganizationEmployees
-                    .FirstOrDefault(e => e.UserId.Equals(userId));
-
-                if(employee == null)
-                    return new DeleteTaskListServiceResponse(
-                        DeleteTaskListServiceResponseStatus.AccessDenied);
-
-                if (!project.ProjectMembers.Any(m =>
-                   m.OrganizationEmployeeId.Equals(employee.Id) &&
-                       (m.Role.Equals(ProjectMemberRoles.Leader) ||
-                           m.Role.Equals(ProjectMemberRoles.Admin) ||
-                               m.Role.Equals(ProjectMemberRoles.Modrator))))
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new DeleteTaskListServiceResponse(
                          DeleteTaskListServiceResponseStatus.AccessDenied);
 
@@ -223,23 +189,10 @@ namespace Application.Services.ApiServices
                     .AsNoTracking().Include(p => p.ProjectMembers)
                         .FirstOrDefault(p => p.Id.Equals(taskList.ProjectId));
 
-                var org = await _context.Organizations.AsNoTracking()
-                    .Include(o => o.OrganizationEmployees)
-                        .FirstOrDefaultAsync(o => o.Id
-                            .Equals(project.OrganizationId));
+                var authResult = await _authService
+                   .AuthorizeByProjectId(project.Id, userId);
 
-                var employee = org.OrganizationEmployees
-                    .FirstOrDefault(e => e.UserId.Equals(userId));
-
-                if (employee == null)
-                    return new UpdateTaskListServiceResponse(
-                          UpdateTaskListServiceResponseStatus.AccessDenied);
-
-                if (!project.ProjectMembers.Any(m =>
-                   m.OrganizationEmployeeId.Equals(employee.Id) &&
-                       (m.Role.Equals(ProjectMemberRoles.Leader) ||
-                           m.Role.Equals(ProjectMemberRoles.Admin) ||
-                               m.Role.Equals(ProjectMemberRoles.Modrator))))
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new UpdateTaskListServiceResponse(
                          UpdateTaskListServiceResponseStatus.AccessDenied);
 
