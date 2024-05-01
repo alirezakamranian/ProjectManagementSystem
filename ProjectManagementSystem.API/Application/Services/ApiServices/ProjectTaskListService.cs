@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Domain.Services.InternalServices;
 using Domain.Constants.AuthorizationResponses;
 using Microsoft.Identity.Client;
+using System.Diagnostics;
 
 namespace Application.Services.ApiServices
 {
@@ -44,7 +45,8 @@ namespace Application.Services.ApiServices
                     .FirstOrDefault(p => p.Id.Equals(currentTaskList.ProjectId));
 
                 var authResult = await _authService
-                   .AuthorizeByProjectId(project.Id, userId);
+                     .AuthorizeByProjectId(project.Id, userId,
+                         [ProjectMemberRoles.Member]);
 
                 if (authResult.Equals(AuthorizationResponse.Deny))
                     return new ChangeTaskListPriorityServiceResponse(
@@ -91,8 +93,9 @@ namespace Application.Services.ApiServices
                          ProjectTaskListServiceResponseStatus.ProjectNotExists);
 
                 var authResult = await _authService
-                    .AuthorizeByProjectId(project.Id, userId);
-                         
+                     .AuthorizeByProjectId(project.Id, userId,
+                         [ProjectMemberRoles.Member]);
+
                 if (authResult.Equals(AuthorizationResponse.Deny))
                     return new ProjectTaskListServiceResponse(
                          ProjectTaskListServiceResponseStatus.AccessDenied);
@@ -151,7 +154,8 @@ namespace Application.Services.ApiServices
                         .FirstOrDefault(p => p.Id.Equals(taskList.ProjectId));
 
                 var authResult = await _authService
-                   .AuthorizeByProjectId(project.Id, userId);
+                    .AuthorizeByProjectId(project.Id, userId,
+                        [ProjectMemberRoles.Member]);
 
                 if (authResult.Equals(AuthorizationResponse.Deny))
                     return new DeleteTaskListServiceResponse(
@@ -190,7 +194,8 @@ namespace Application.Services.ApiServices
                         .FirstOrDefault(p => p.Id.Equals(taskList.ProjectId));
 
                 var authResult = await _authService
-                   .AuthorizeByProjectId(project.Id, userId);
+                    .AuthorizeByProjectId(project.Id, userId,
+                        [ProjectMemberRoles.Member]);
 
                 if (authResult.Equals(AuthorizationResponse.Deny))
                     return new UpdateTaskListServiceResponse(
