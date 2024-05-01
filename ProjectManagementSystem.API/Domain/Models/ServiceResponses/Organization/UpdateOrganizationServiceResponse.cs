@@ -13,5 +13,6 @@ namespace Domain.Models.ServiceResponses.Organization
     public class UpdateOrganizationServiceResponseStatus : ServiceResponseStatusBase
     {
         public const string OrganizationNotExists = "OrganizationNotExists";
+        public const string AccessDenied = "AccessDenied";
     }
 }

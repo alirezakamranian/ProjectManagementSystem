@@ -1,7 +1,10 @@
-﻿using Domain.Constants.Roles.OrganiationEmployees;
+﻿using Domain.Constants.AuthorizationResponses;
+using Domain.Constants.Roles.OrganiationEmployees;
 using Domain.Models.ApiModels.OrganizationEmployee.Request;
+using Domain.Models.ServiceResponses.Organization;
 using Domain.Models.ServiceResponses.OrganizationEmployee;
 using Domain.Services.ApiServices;
+using Domain.Services.InternalServices;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,10 +17,12 @@ using System.Threading.Tasks;
 namespace Application.Services.ApiServices
 {
     public class OrganizationEmployeeService(DataContext context,
-        ILogger<AuthenticationService> logger) : IOrganizationEmployeeService
+        ILogger<AuthenticationService> logger,
+            IAuthorizationService authService) : IOrganizationEmployeeService
     {
         private readonly DataContext _context = context;
         private readonly ILogger<AuthenticationService> _logger = logger;
+        private readonly IAuthorizationService _authService = authService;
 
         public async Task<ChangeEmployeeRoleServiceResponse> ChangeEmployeeRole(ChangeEmployeeRoleRequest request, string userId)
         {
@@ -32,12 +37,13 @@ namespace Application.Services.ApiServices
                     return new ChangeEmployeeRoleServiceResponse(
                          ChangeEmployeeRoleServiceResponseStatus.OrganizationNotExists);
 
-                if (!org.OrganizationEmployees.Any(
-                    e => e.UserId.Equals(userId) &&
-                        e.Role.Equals(OrganizationEmployeesRoles.Admin) ||
-                            e.Role.Equals(OrganizationEmployeesRoles.Leader)))
+                var authResult = await _authService
+                    .AuthorizeByOrganizationId(org.Id, userId,
+                        [OrganizationEmployeesRoles.Member]);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new ChangeEmployeeRoleServiceResponse(
-                      ChangeEmployeeRoleServiceResponseStatus.AccessDenied);
+                         ChangeEmployeeRoleServiceResponseStatus.AccessDenied);
 
                 var targetUser = org.OrganizationEmployees
                     .FirstOrDefault(e => e.Id.ToString()
@@ -87,9 +93,11 @@ namespace Application.Services.ApiServices
                         .AsNoTracking().FirstOrDefaultAsync(o => o.Id
                             .Equals(employee.OrganizationId));
 
-                if (!org.OrganizationEmployees.Any(
-                    e => e.UserId.Equals(userId) &&
-                        e.Role.Equals(OrganizationEmployeesRoles.Leader)))
+                var authResult = await _authService
+                    .AuthorizeByOrganizationId(org.Id, userId,
+                        [OrganizationEmployeesRoles.Member]);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new RemoveEmployeeServiceResponse(
                          RemoveEmployeeServiceResponseStatus.AccessDenied);
 

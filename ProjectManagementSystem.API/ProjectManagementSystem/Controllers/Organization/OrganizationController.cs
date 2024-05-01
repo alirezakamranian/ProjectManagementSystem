@@ -30,9 +30,11 @@ namespace ProjectManagementSystem.Controllers.Organization
                             Message = "OrganizationDetailIsInvalid"
                         });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
-            var serviceResponse = await _organizationService.CreateOrganization(request, userId);
+            var serviceResponse = await _organizationService
+                .CreateOrganization(request, userId);
 
             if (serviceResponse.Status.Equals(CreateOrganizationServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,
@@ -58,11 +60,14 @@ namespace ProjectManagementSystem.Controllers.Organization
                             Message = "OrganizationDetailsIsRequired"
                         });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
-            var serviceResponse = await _organizationService.UpdateOrganization(request, userId);
+            var serviceResponse = await _organizationService
+                .UpdateOrganization(request, userId);
 
-            if (serviceResponse.Status.Equals(UpdateOrganizationServiceResponseStatus.OrganizationNotExists))
+            if (serviceResponse.Status.Equals(UpdateOrganizationServiceResponseStatus.OrganizationNotExists) ||
+                serviceResponse.Status.Equals(UpdateOrganizationServiceResponseStatus.AccessDenied))
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new UpdateOrganizationResponse
                         {
@@ -93,7 +98,8 @@ namespace ProjectManagementSystem.Controllers.Organization
                             Message = "OrganizationDetailsIsRequired"
                         });
 
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
             var serviceResponse = await _organizationService
                 .GetOrganization(new GetOrganizationRequest
@@ -156,9 +162,11 @@ namespace ProjectManagementSystem.Controllers.Organization
         [HttpGet("all")]
         public async Task<IActionResult> GetSubscribedOrganizations()
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type.Equals("Id")).Value;
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
-            var serviceResponse = await _organizationService.GetSubscribedOrganizations(userId);
+            var serviceResponse = await _organizationService
+                .GetSubscribedOrganizations(userId);
 
             if (serviceResponse.Status.Equals(GetSubscribedOrganizationsServiceResponseStatus.InternalError))
                 return StatusCode(StatusCodes.Status500InternalServerError,

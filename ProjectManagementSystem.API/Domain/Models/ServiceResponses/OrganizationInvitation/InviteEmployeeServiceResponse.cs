@@ -14,5 +14,6 @@ namespace Domain.Models.ServiceResponses.OrganizationInvitation
     public class InviteEmployeeServiceResponseStatus : ServiceResponseStatusBase
     {
         public const string UserNotExists = "UserNotExists";
+        public const string AccessDenied = "AccessDenied";
     }
 }

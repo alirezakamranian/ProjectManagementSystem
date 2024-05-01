@@ -1,25 +1,31 @@
-﻿using Domain.Constants.Roles.OrganiationEmployees;
+﻿using Domain.Constants.AuthorizationResponses;
+using Domain.Constants.Roles.OrganiationEmployees;
 using Domain.Models.ApiModels.Project.Request;
 using Domain.Models.ServiceResponses.Project;
 using Domain.Models.ServiceResponses.ProjectTask;
 using Domain.Services.ApiServices;
+using Domain.Services.InternalServices;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Services.ApiServices
 {
     public class ProjectService(DataContext context,
-        ILogger<ProjectService> logger) : IProjectService
+        ILogger<ProjectService> logger,
+            IAuthorizationService authService) : IProjectService
     {
 
         private readonly DataContext _context = context;
         private readonly ILogger<ProjectService> _logger = logger;
+        private readonly IAuthorizationService _authService = authService;
 
         public async Task<CreateProjectServiceResponse> CreateProject(CreateProjectRequest request, string userId)
         {
@@ -30,17 +36,21 @@ namespace Application.Services.ApiServices
                        .Include(o => o.OrganizationEmployees)
                           .FirstOrDefaultAsync(o => o.Id.ToString()
                               .Equals(request.OrganizationId));
+
                 if (org == null)
                     return new CreateProjectServiceResponse(
                          CreateProjectServiceResponseStatus.OrganizationNotExists);
 
-                var employee = org.OrganizationEmployees
-                    .Where(e => e.UserId.Equals(userId)).FirstOrDefault();
+                var authResult = await _authService
+                    .AuthorizeByOrganizationId(org.Id, userId,
+                         [OrganizationEmployeesRoles.Member]);
 
-                if (employee == null || employee.Role
-                .Equals(OrganizationEmployeesRoles.Member))
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new CreateProjectServiceResponse(
                          CreateProjectServiceResponseStatus.AccessDenied);
+
+                var employee = org.OrganizationEmployees
+                    .FirstOrDefault(e => e.UserId.Equals(userId));
 
                 org.Projects.Add(new()
                 {
@@ -53,9 +63,11 @@ namespace Application.Services.ApiServices
 
                 await _context.SaveChangesAsync();
 
-                var project = await _context.Projects.Include(p => p.ProjectMembers)
-                    .FirstOrDefaultAsync(p => p.LeaderId.Equals(employee.Id.ToString()) &&
-                        p.Creationlevel.Equals("Pending"));
+                var project = await _context.Projects
+                    .Include(p => p.ProjectMembers)
+                        .FirstOrDefaultAsync(p => p.LeaderId
+                            .Equals(employee.Id.ToString()) &&
+                                p.Creationlevel.Equals("Pending"));
 
                 project.ProjectMembers.Add(new()
                 {
@@ -94,25 +106,15 @@ namespace Application.Services.ApiServices
                     return new DeleteProjectServiceResponse(
                          DeleteProjectServiceResponseStatus.ProjectNotExists);
 
-                var org = await _context.Organizations.Include(o => o.OrganizationEmployees)
-                    .AsNoTracking().FirstOrDefaultAsync(o => o.Id
-                         .Equals(project.OrganizationId));
-
-                var orgEmployee = org.OrganizationEmployees
-                    .FirstOrDefault(e => e.UserId.Equals(userId));
-
-                if (orgEmployee == null)
-                    return new DeleteProjectServiceResponse(
-                         DeleteProjectServiceResponseStatus.AccessDenied);
-
                 var members = await _context.ProjectMembers
                    .AsNoTracking().Where(m => m.ProjectId
                        .Equals(project.Id)).ToListAsync();
 
-                if (!members.Any(p =>
-                    p.OrganizationEmployeeId.Equals(orgEmployee.Id) &&
-                        (p.Role.Equals(ProjectMemberRoles.Leader) ||
-                             p.Role.Equals(ProjectMemberRoles.Admin))))
+                var authResult = await _authService
+                   .AuthorizeByProjectId(project.Id, userId,
+                       [ProjectMemberRoles.Member]);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new DeleteProjectServiceResponse(
                          DeleteProjectServiceResponseStatus.AccessDenied);
 
@@ -140,8 +142,8 @@ namespace Application.Services.ApiServices
             {
                 var project = await _context.Projects
                     .Include(p => p.ProjectMembers)
-                        .ThenInclude(pm=>pm.OrganizationEmployee)
-                            .ThenInclude(e=>e.User)
+                        .ThenInclude(pm => pm.OrganizationEmployee)
+                            .ThenInclude(e => e.User)
                                 .Include(p => p.ProjectTaskLists)
                                     .ThenInclude(tl => tl.ProjectTasks)
                                         .AsNoTracking().FirstOrDefaultAsync
@@ -151,19 +153,11 @@ namespace Application.Services.ApiServices
                     return new GetProjectServiceResponse(
                          GetProjectServiceResponseStatus.ProjectNotExists);
 
-                var org = await _context.Organizations.Include(o => o.OrganizationEmployees)
-                    .AsNoTracking().FirstOrDefaultAsync(o => o.Id
-                         .Equals(project.OrganizationId));
+                var authResult = await _authService
+                   .AuthorizeByOrganizationId(project.OrganizationId, userId,
+                        [OrganizationEmployeesRoles.Member]);
 
-                var orgEmployee = org.OrganizationEmployees
-                    .FirstOrDefault(e => e.UserId.Equals(userId));
-
-                if (orgEmployee == null)
-                    return new GetProjectServiceResponse(
-                         GetProjectServiceResponseStatus.AccessDenied);
-
-                if (!project.ProjectMembers.Any(pm =>
-                        pm.OrganizationEmployeeId.Equals(orgEmployee.Id)))
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new GetProjectServiceResponse(
                          GetProjectServiceResponseStatus.AccessDenied);
 
@@ -195,16 +189,12 @@ namespace Application.Services.ApiServices
                     return new ChangeProjectLeaderServiceResponse(
                          ChangeProjectLeaderServiceResponseStatus.ProjectNotExists);
 
-                var org = await _context.Organizations
-                    .Include(o => o.OrganizationEmployees).AsNoTracking()
-                        .FirstOrDefaultAsync(o => o.Id
-                            .Equals(project.OrganizationId));
+                var authResult = await _authService
+                    .AuthorizeByOrganizationId(project.OrganizationId, userId,
+                        [OrganizationEmployeesRoles.Member,
+                            OrganizationEmployeesRoles.Admin]);
 
-                var employee = org.OrganizationEmployees
-                    .FirstOrDefault(e => e.UserId.Equals(userId) &&
-                        e.Role.Equals(OrganizationEmployeesRoles.Leader));
-
-                if (employee == null)
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new ChangeProjectLeaderServiceResponse(
                          ChangeProjectLeaderServiceResponseStatus.AccessDenied);
 
