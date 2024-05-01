@@ -72,7 +72,8 @@ namespace ProjectManagementSystem.Controllers.Invitation
 
             var serviceResponse = await _invitationService.InviteEmployee(request, userId);
 
-            if (serviceResponse.Status.Equals(InviteEmployeeServiceResponseStatus.InternalError))
+            if (serviceResponse.Status.Equals(InviteEmployeeServiceResponseStatus.InternalError)||
+                serviceResponse.Status.Equals(InviteEmployeeServiceResponseStatus.AccessDenied))
                 return StatusCode(StatusCodes.Status500InternalServerError,
                         new InviteEmployeeResponse
                         {

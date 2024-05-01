@@ -1,7 +1,10 @@
 ﻿using Application.Services.InternalServices;
+using Domain.Constants.AuthorizationResponses;
 using Domain.Constants.Notification;
+using Domain.Constants.Roles.OrganiationEmployees;
 using Domain.Entities.Common;
 using Domain.Models.ApiModels.OrganizationInvitation.Request;
+using Domain.Models.ServiceResponses.Organization;
 using Domain.Models.ServiceResponses.OrganizationInvitation;
 using Domain.Services.ApiServices;
 using Domain.Services.InternalServices;
@@ -18,11 +21,13 @@ namespace Application.Services.ApiServices
 {
     public class OrganizationInvitationService(DataContext context,
         IInvitationPendingManager pendingManager,
-        ILogger<AuthenticationService> logger) : IOrganizationInvitationService
+            ILogger<AuthenticationService> logger,
+                IAuthorizationService authService) : IOrganizationInvitationService
     {
         private readonly DataContext _context = context;
         private readonly ILogger<AuthenticationService> _logger = logger;
         private readonly IInvitationPendingManager _pendingManager = pendingManager;
+        private readonly IAuthorizationService _authService = authService;
 
         public async Task<SearchUserServiceResponse> SearchUser(SearchUserRequst requst)
         {
@@ -51,6 +56,14 @@ namespace Application.Services.ApiServices
         {
             try
             {
+                var authResult = await _authService
+                    .AuthorizeByOrganizationId(Guid.Parse(request.OrganizationId), userId,
+                        [OrganizationEmployeesRoles.Member]);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
+                    return new InviteEmployeeServiceResponse(
+                         InviteEmployeeServiceResponseStatus.AccessDenied);
+
                 var issuerUser = await _context.Users
                     .Include(u => u.Notifications)
                         .FirstOrDefaultAsync(u => u.Id.Equals(userId));

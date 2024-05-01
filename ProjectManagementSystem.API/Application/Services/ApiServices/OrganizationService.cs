@@ -17,13 +17,17 @@ using Microsoft.Extensions.Logging;
 using Domain.Models.ApiModels.Organization.Request;
 using Domain.Models.Dtos.Project;
 using Domain.Models.Dtos.Organization;
+using Domain.Constants.AuthorizationResponses;
+using Domain.Services.InternalServices;
 namespace Application.Services.ApiServices
 {
     public class OrganizationService(DataContext context,
-       ILogger<AuthenticationService> logger) : IOrganizationService
+        ILogger<AuthenticationService> logger,
+            IAuthorizationService authService) : IOrganizationService
     {
         private readonly DataContext _context = context;
         private readonly ILogger<AuthenticationService> _logger = logger;
+        private readonly IAuthorizationService _authService = authService;
 
         public async Task<CreateOrganizationServiceResponse> CreateOrganization(CreateOrganizationRequest request, string userId)
         {
@@ -33,10 +37,12 @@ namespace Application.Services.ApiServices
                     .AnyAsync(o => o.OwnerId.Equals(userId) && 
                         o.Name.Equals(request.Name)))
                      return new CreateOrganizationServiceResponse(
-                     CreateOrganizationServiceResponseStatus.OrganizationExists);
+                          CreateOrganizationServiceResponseStatus.OrganizationExists);
 
-                var user = await _context.Users.Include(u => u.Organizations)
-                    .FirstOrDefaultAsync(u => u.Id.Equals(userId));
+                var user = await _context.Users
+                    .Include(u => u.Organizations)
+                        .FirstOrDefaultAsync(u => u.Id
+                            .Equals(userId));
 
                 user.Organizations.Add(new Organization
                 {
@@ -85,7 +91,17 @@ namespace Application.Services.ApiServices
                     return new UpdateOrganizationServiceResponse(
                          UpdateOrganizationServiceResponseStatus.OrganizationNotExists);
 
-                org.Name = request.NewName;
+                var authResult = await _authService
+                    .AuthorizeByOrganizationId(org.Id, userId,
+                        [OrganizationEmployeesRoles.Member,
+                            OrganizationEmployeesRoles.Admin]);
+
+                if(authResult.Equals(AuthorizationResponse.Deny))
+                    return new UpdateOrganizationServiceResponse(
+                         UpdateOrganizationServiceResponseStatus.AccessDenied);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
+                    org.Name = request.NewName;
 
                 await _context.SaveChangesAsync();
 

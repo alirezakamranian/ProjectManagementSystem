@@ -11,23 +11,27 @@ using Domain.Entities.HumanResource;
 using Domain.Constants.Roles.OrganiationEmployees;
 using Microsoft.Extensions.Logging;
 using Domain.Models.ApiModels.ProjectMember.Request;
+using Domain.Services.InternalServices;
+using Domain.Constants.AuthorizationResponses;
 namespace Application.Services.ApiServices
 {
     public class ProjectMemberService(DataContext context,
-    ILogger<AuthenticationService> logger) : IProjectMemberService
+        ILogger<AuthenticationService> logger,
+            IAuthorizationService authService) : IProjectMemberService
     {
 
         private readonly DataContext _context = context;
         private readonly ILogger<AuthenticationService> _logger = logger;
+        private readonly IAuthorizationService _authService = authService;
 
         public async Task<AddMemberServiceResponse> AddMember(AddMemberRequest request, string userId)
         {
             try
             {
                 var project = await _context.Projects
-               .Include(p => p.ProjectMembers)
-                   .FirstOrDefaultAsync(p =>
-                       p.Id.ToString().Equals(request.ProjectId));
+                    .Include(p => p.ProjectMembers)
+                        .FirstOrDefaultAsync(p =>
+                            p.Id.ToString().Equals(request.ProjectId));
 
                 if (project == null)
                     return new AddMemberServiceResponse(
@@ -38,12 +42,11 @@ namespace Application.Services.ApiServices
                         .FirstOrDefaultAsync(o => o.Id
                             .Equals(project.OrganizationId));
 
-                if (!project.ProjectMembers
-                    .Any(pm => pm.OrganizationEmployeeId
-                        .Equals(organization.OrganizationEmployees
-                            .Where(e => e.UserId.ToString().Equals(userId))
-                                .Select(e => e.Id).FirstOrDefault()) && (pm.Role.Equals(
-                                    ProjectMemberRoles.Leader) || pm.Role.Equals(ProjectMemberRoles.Admin))))
+                var authResult = await _authService
+                    .AuthorizeByProjectId(project.Id, userId,
+                        [ProjectMemberRoles.Member]);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new AddMemberServiceResponse(
                          AddMemberServiceResponseStatus.AccessDenied);
 
@@ -71,7 +74,6 @@ namespace Application.Services.ApiServices
                 return new AddMemberServiceResponse(
                      AddMemberServiceResponseStatus.InternalError);
             }
-
         }
     }
 }
