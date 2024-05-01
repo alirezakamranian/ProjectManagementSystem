@@ -18,11 +18,11 @@ namespace Application.Services.InternalServices
 
         private readonly DataContext _context = context;
 
-        public async Task<AuthorizationResponse> AuthorizeByProjectId(Guid projectId, string userId)
+        public async Task<AuthorizationResponse> AuthorizeByProjectId(Guid projectId, string userId, params ProjectMemberRoles[] deniedRoles)
         {
             var project = _context.Projects
                 .Include(p => p.ProjectMembers)
-                    .AsNoTracking().FirstOrDefault(p => 
+                    .AsNoTracking().FirstOrDefault(p =>
                         p.Id.Equals(projectId));
 
             var org = await _context.Organizations.AsNoTracking()
@@ -36,12 +36,18 @@ namespace Application.Services.InternalServices
             if (employee == null)
                 return AuthorizationResponse.Deny;
 
-            if (!project.ProjectMembers.Any(m =>
-                m.OrganizationEmployeeId.Equals(employee.Id) &&
-                    (m.Role.Equals(ProjectMemberRoles.Leader) ||
-                        m.Role.Equals(ProjectMemberRoles.Admin) ||
-                            m.Role.Equals(ProjectMemberRoles.Modrator))))
-                return AuthorizationResponse.Deny;
+            if (deniedRoles.Length.Equals(0) &&
+                project.ProjectMembers.Any(m =>
+                    m.OrganizationEmployeeId.Equals(employee.Id)))
+                return AuthorizationResponse.Allow;
+
+            foreach (var r in deniedRoles)
+            {
+                if (!project.ProjectMembers.Any(m =>
+                    m.OrganizationEmployeeId.Equals(employee.Id) && (
+                       !m.Role.Equals(r))))
+                    return AuthorizationResponse.Deny;
+            }
 
             return AuthorizationResponse.Allow;
         }
