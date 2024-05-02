@@ -12,5 +12,6 @@ namespace Domain.Services.ApiServices
     {
         public Task<ChangeEmployeeRoleServiceResponse> ChangeEmployeeRole(ChangeEmployeeRoleRequest request, string email);
         public Task<RemoveEmployeeServiceResponse> RemoveEmployee(RemoveEmployeeRequest request, string userId);
+        public Task<SearchEmployeeServiceResponse> SearchEmployee(SearchEmployeeRequest request, string userId);
     }
 }

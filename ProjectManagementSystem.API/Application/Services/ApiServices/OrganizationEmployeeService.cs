@@ -125,5 +125,41 @@ namespace Application.Services.ApiServices
                      RemoveEmployeeServiceResponseStatus.InternalError);
             }
         }
+
+        public async Task<SearchEmployeeServiceResponse> SearchEmployee(SearchEmployeeRequest request, string userId)
+        {
+            try
+            {
+                var authResult = await _authService
+                    .AuthorizeByOrganizationId(Guid.Parse
+                        (request.OrganizationId), userId);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
+                    return new SearchEmployeeServiceResponse(
+                         SearchEmployeeServiceResponseStatus.AccessDenied);
+
+                var employees = await _context.OrganizationEmployees
+                    .Include(e => e.User).AsNoTracking()
+                        .Where(e => e.OrganizationId.ToString()
+                            .Equals(request.OrganizationId) &&
+                                (e.User.Email.Contains(request.Query
+                                    .ToLower().Trim()) || e.User.FullName
+                                        .ToLower().Contains(request.Query
+                                            .ToLower().Trim()))).ToListAsync();
+
+                return new SearchEmployeeServiceResponse(
+                     SearchEmployeeServiceResponseStatus.Success)
+                {
+                    Emloyees = employees
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("SearchEmployeeService : {Message}", ex.Message);
+
+                return new SearchEmployeeServiceResponse(
+                     SearchEmployeeServiceResponseStatus.InternalError);
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ using Domain.Services.ApiServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Domain.Models.Dtos.Organization;
 
 namespace ProjectManagementSystem.Controllers.Employee
 {
@@ -84,6 +85,54 @@ namespace ProjectManagementSystem.Controllers.Employee
             return Ok(new RemoveEmployeeResponse
             {
                 Message = serviceResponse.Status
+            });
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Search([FromQuery] string organizationId, [FromQuery] string query)
+        {
+            var userId = HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _employeeService
+                .SearchEmployee(new()
+                {
+                    OrganizationId
+                    = organizationId,
+                    Query = query
+                }, userId);
+
+            if (serviceResponse.Status.Equals(RemoveEmployeeServiceResponseStatus.AccessDenied))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                     new RemoveEmployeeResponse
+                     {
+                         Message = serviceResponse.Status,
+                     });
+
+            if (serviceResponse.Status.Equals(RemoveEmployeeServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                     new RemoveEmployeeResponse
+                     {
+                         Message = serviceResponse.Status,
+                     });
+
+            List<OrganizationEmployeeForResponseDto> employees = [];
+            foreach (var e in serviceResponse.Emloyees)
+            {
+                employees.Add(new()
+                {
+                    Id = e.Id.ToString(),
+                    Role = e.Role,
+                    Email = e.User.Email,
+                    FullName = e.User.FullName
+                });
+            }
+
+            return Ok(new RemoveEmployeeResponse
+            {
+                Message = serviceResponse.Status,
+                Employees = employees
             });
         }
     }
