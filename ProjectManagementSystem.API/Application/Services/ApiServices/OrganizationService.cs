@@ -165,8 +165,10 @@ namespace Application.Services.ApiServices
 
                 foreach (var e in memberOf)
                 {
-                    var org = await _context.Organizations.Include(o => o.Projects).AsNoTracking()
-                        .Where(o => o.Id.Equals(e.OrganizationId)).FirstOrDefaultAsync();
+                    var org = await _context.Organizations
+                        .Include(o => o.Projects).AsNoTracking()
+                            .Where(o => o.Id.Equals(e.OrganizationId))
+                                .FirstOrDefaultAsync();
 
                     List<MinimumValueProjectDto> projects = [];
 
@@ -183,7 +185,8 @@ namespace Application.Services.ApiServices
                     {
                         Id = org.Id.ToString(),
                         Name = org.Name,
-                        Projects = projects
+                        Projects = projects,
+                        LeaderId = org.OwnerId
                     });
                 }
 
