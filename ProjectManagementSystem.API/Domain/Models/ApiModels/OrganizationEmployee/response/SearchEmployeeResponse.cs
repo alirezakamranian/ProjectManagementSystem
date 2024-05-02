@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ApiModels.OrganizationEmployee.response
 {
-    public class RemoveEmployeeResponse
+    public class SearchEmployeeResponse
     {
-        public string Message { get; set; }
-        public List<OrganizationEmployeeForResponseDto> Employees { get; set; }
+        public OrganizationEmployeeForResponseDto Employees { get; set; }
     }
 }
