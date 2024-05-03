@@ -1,4 +1,5 @@
-﻿using Domain.Models.ServiceResponses.Base;
+﻿using Domain.Entities.HumanResource;
+using Domain.Models.ServiceResponses.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Domain.Models.ServiceResponses.ProjectMember
 {
     public class AddMemberServiceResponse(string status) : ServiceResponseBase(status)
     {
+        public Domain.Entities.HumanResource.ProjectMember Member { get; set; }
     }
     public class AddMemberServiceResponseStatus : ServiceResponseStatusBase
     {

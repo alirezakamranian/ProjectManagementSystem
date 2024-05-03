@@ -51,7 +51,13 @@ namespace ProjectManagementSystem.Controllers.ProjectMember
 
             return Ok(new AddMemberResponse
             {
-                Message= serviceResponse.Status
+                Message = serviceResponse.Status,
+                Member = new()
+                {
+                    Id = serviceResponse.Member.Id.ToString(),
+                    Name = serviceResponse.Member.OrganizationEmployee.User.FullName,
+                    Role = serviceResponse.Member.Role,
+                }
             });
         }
     }

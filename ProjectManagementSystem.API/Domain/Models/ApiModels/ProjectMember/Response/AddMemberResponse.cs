@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Models.Dtos.Project;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
@@ -10,5 +11,6 @@ namespace Domain.Models.ApiModels.ProjectMember.Response
     public class AddMemberResponse
     {
         public string Message { get; set; }
+        public ProjectMemberForResponseDto Member { get; set; }
     }
 }
