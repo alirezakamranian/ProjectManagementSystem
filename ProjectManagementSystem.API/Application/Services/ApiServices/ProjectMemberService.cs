@@ -62,10 +62,17 @@ namespace Application.Services.ApiServices
                     Role = ProjectMemberRoles.Member,
                     OrganizationEmployeeId = employee.Id
                 });
-                 await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
                 return new AddMemberServiceResponse(
-                     AddMemberServiceResponseStatus.Success);
+                     AddMemberServiceResponseStatus.Success)
+                {
+                    Member = await _context.ProjectMembers
+                        .Include(m => m.OrganizationEmployee)   
+                            .ThenInclude(e => e.User).AsNoTracking()
+                                .FirstOrDefaultAsync(pm => pm.OrganizationEmployeeId
+                                    .Equals(employee.Id))
+                };
             }
             catch (Exception ex)
             {
