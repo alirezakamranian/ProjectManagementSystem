@@ -7,6 +7,7 @@ using Domain.Services.ApiServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace ProjectManagementSystem.Controllers.ProjectMember
 {
@@ -58,6 +59,39 @@ namespace ProjectManagementSystem.Controllers.ProjectMember
                     Name = serviceResponse.Member.OrganizationEmployee.User.FullName,
                     Role = serviceResponse.Member.Role,
                 }
+            });
+        }
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> Remove(RemoveProjectMemberRequest request)
+        {
+            var userId = HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _projectMemberService
+                .RemoveMember(request, userId);
+
+            if (serviceResponse.Status.Equals(RemoveProjectMemberServiceResponseStatus.ProjectNotExists) ||
+               serviceResponse.Status.Equals(RemoveProjectMemberServiceResponseStatus.MemberNotExists) ||
+               serviceResponse.Status.Equals(RemoveProjectMemberServiceResponseStatus.AccessDenied)||
+               serviceResponse.Status.Equals(RemoveProjectMemberServiceResponseStatus.LeaderCanNotRemoved))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new RemoveProjectMemberResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            if (serviceResponse.Status.Equals(AddMemberServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new RemoveProjectMemberResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new RemoveProjectMemberResponse
+            {
+                Message = serviceResponse.Status
             });
         }
     }

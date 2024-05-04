@@ -68,7 +68,7 @@ namespace Application.Services.ApiServices
                      AddMemberServiceResponseStatus.Success)
                 {
                     Member = await _context.ProjectMembers
-                        .Include(m => m.OrganizationEmployee)   
+                        .Include(m => m.OrganizationEmployee)
                             .ThenInclude(e => e.User).AsNoTracking()
                                 .FirstOrDefaultAsync(pm => pm.OrganizationEmployeeId
                                     .Equals(employee.Id))
@@ -76,10 +76,61 @@ namespace Application.Services.ApiServices
             }
             catch (Exception ex)
             {
-                _logger.LogError("AddMemberService : {Message}", ex.Message);
+                _logger.LogError("AddProjectMemberService : {Message}", ex.Message);
 
                 return new AddMemberServiceResponse(
                      AddMemberServiceResponseStatus.InternalError);
+            }
+        }
+
+        public async Task<RemoveProjectMemberServiceResponse> RemoveMember(RemoveProjectMemberRequest request, string userId)
+        {
+            try
+            {
+                var project = await _context.Projects
+                .Include(p => p.ProjectMembers).AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.Id
+                        .ToString().Equals(request.ProjectId));
+
+                if (project == null)
+                    return new RemoveProjectMemberServiceResponse(
+                         RemoveProjectMemberServiceResponseStatus.ProjectNotExists);
+
+                var authResult = await _authService
+                       .AuthorizeByProjectId(project.Id, userId,
+                           [ProjectMemberRoles.Member,
+                           ProjectMemberRoles.Admin]);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
+                    return new RemoveProjectMemberServiceResponse(
+                         RemoveProjectMemberServiceResponseStatus.AccessDenied);
+
+                var member = project.ProjectMembers
+                    .FirstOrDefault(m => m.Id.ToString()
+                        .Equals(request.MemberId));
+
+                if (member == null)
+                    return new RemoveProjectMemberServiceResponse(
+                         RemoveProjectMemberServiceResponseStatus.MemberNotExists);
+
+                if (member.Role.Equals(ProjectMemberRoles.Leader))
+                    return new RemoveProjectMemberServiceResponse(
+                         RemoveProjectMemberServiceResponseStatus.LeaderCanNotRemoved);
+
+                _context.ProjectMembers.Remove(member);
+
+                await _context.SaveChangesAsync();
+
+                return new RemoveProjectMemberServiceResponse(
+                     RemoveProjectMemberServiceResponseStatus.Success);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("RemoveProjectMemberService : {Message}", ex.Message);
+
+                return new RemoveProjectMemberServiceResponse(
+                     RemoveProjectMemberServiceResponseStatus.InternalError);
             }
         }
     }
