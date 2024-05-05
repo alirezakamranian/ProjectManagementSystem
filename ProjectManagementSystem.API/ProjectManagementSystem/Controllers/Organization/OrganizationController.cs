@@ -182,5 +182,39 @@ namespace ProjectManagementSystem.Controllers.Organization
             });
 
         }
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> Remove([FromQuery] string organizationId)
+        {
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _organizationService
+                .RemoveOrganization(new()
+                {
+                    OrganizationId = organizationId
+                }, userId);
+
+            if (serviceResponse.Status.Equals(RemoveOrganizationServiceResponseStatus.OrganizationNotExists) ||
+                serviceResponse.Status.Equals(RemoveOrganizationServiceResponseStatus.AccessDenied))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new RemoveOrganiztionResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            if (serviceResponse.Status.Equals(RemoveOrganizationServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new RemoveOrganiztionResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new RemoveOrganiztionResponse
+            {
+                Message = serviceResponse.Status
+            });
+        }
     }
 }
