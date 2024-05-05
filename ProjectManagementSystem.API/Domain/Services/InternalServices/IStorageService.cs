@@ -11,5 +11,6 @@ namespace Domain.Services.InternalServices
     public interface IStorageService
     {
         public Task<UploadFileServiceResponse> Upload(UploadFileRequest request);
+        public Task<GetFileUrlServiceResponse> GetUrl(GetFileUrlRequest request);
     }
 }

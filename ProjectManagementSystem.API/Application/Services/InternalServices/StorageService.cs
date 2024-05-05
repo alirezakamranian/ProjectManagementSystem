@@ -1,4 +1,5 @@
 ﻿using Amazon.S3;
+using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Application.Services.ApiServices;
 using Domain.Models.InternalSerives.Storage.Request;
@@ -61,6 +62,48 @@ namespace Application.Services.InternalServices
 
                 return new UploadFileServiceResponse(
                      UploadFileServiceResponseStatus.InternalError);
+            }
+        }
+
+
+        public async Task<GetFileUrlServiceResponse> GetUrl(GetFileUrlRequest request)
+        {
+            try
+            {
+                var awsCredentials = new Amazon.Runtime
+                   .BasicAWSCredentials(
+                   _configuration["AwsS3:AccessKey"],
+                   _configuration["AwsS3:SecretKey"]);
+
+                var config = new AmazonS3Config
+                { ServiceURL = _configuration["AwsS3:UrlAdress"] };
+
+                _s3Client = new AmazonS3Client
+                    (awsCredentials, config);
+
+                var getRequest = new GetPreSignedUrlRequest()
+                {
+                    BucketName = "projectmanagementsystem",
+                    Key = request.FileKey,
+                    Expires = DateTime.Now
+                        .AddHours(request.LeaseTime)
+                };
+
+                var response = await _s3Client
+                    .GetPreSignedURLAsync(getRequest);
+
+                return new GetFileUrlServiceResponse(
+                     GetFileUrlServiceResponseStatus.Success)
+                {
+                    Url = response
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("GetFileUrlService : {Message}", ex.Message);
+
+                return new GetFileUrlServiceResponse(
+                     GetFileUrlServiceResponseStatus.InternalError);
             }
         }
     }
