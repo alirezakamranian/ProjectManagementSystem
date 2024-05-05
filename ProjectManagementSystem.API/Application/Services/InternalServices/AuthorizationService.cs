@@ -74,16 +74,20 @@ namespace Application.Services.InternalServices
                 if (employee == null)
                     return AuthorizationResponse.Deny;
 
-                if (deniedRoles.Length.Equals(0) &&
-                    project.ProjectMembers.Any(m =>
-                        m.OrganizationEmployeeId.Equals(employee.Id)))
+                var isProjectMember = project.ProjectMembers.Any(m =>
+                    m.OrganizationEmployeeId.Equals(employee.Id));
+
+                if (!isProjectMember)
+                    return AuthorizationResponse.Deny;
+
+                if (deniedRoles.Length.Equals(0))
                     return AuthorizationResponse.Allow;
 
                 foreach (var r in deniedRoles)
                 {
-                    if (!project.ProjectMembers.Any(m =>
-                        m.OrganizationEmployeeId.Equals(employee.Id) && (
-                           !m.Role.Equals(r))))
+                    if (project.ProjectMembers
+                        .Where(m=>m.OrganizationEmployeeId
+                            .Equals(employee.Id)).Any(m=> m.Role.Equals(r)))
                         return AuthorizationResponse.Deny;
                 }
 

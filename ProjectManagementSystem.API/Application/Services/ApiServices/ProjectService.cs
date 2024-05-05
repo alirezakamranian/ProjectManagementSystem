@@ -154,7 +154,7 @@ namespace Application.Services.ApiServices
                          GetProjectServiceResponseStatus.ProjectNotExists);
 
                 var authResult = await _authService
-                   .AuthorizeByOrganizationId(project.OrganizationId, userId);
+                   .AuthorizeByProjectId(project.Id, userId);
 
                 if (authResult.Equals(AuthorizationResponse.Deny))
                     return new GetProjectServiceResponse(
