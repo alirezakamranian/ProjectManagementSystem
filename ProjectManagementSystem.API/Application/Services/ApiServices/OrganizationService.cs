@@ -100,7 +100,6 @@ namespace Application.Services.ApiServices
                     return new UpdateOrganizationServiceResponse(
                          UpdateOrganizationServiceResponseStatus.AccessDenied);
 
-                if (authResult.Equals(AuthorizationResponse.Deny))
                     org.Name = request.NewName;
 
                 await _context.SaveChangesAsync();
