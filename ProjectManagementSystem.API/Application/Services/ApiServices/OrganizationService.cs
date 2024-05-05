@@ -33,11 +33,11 @@ namespace Application.Services.ApiServices
         {
             try
             {
-                if(await _context.Organizations
-                    .AnyAsync(o => o.OwnerId.Equals(userId) && 
+                if (await _context.Organizations
+                    .AnyAsync(o => o.OwnerId.Equals(userId) &&
                         o.Name.Equals(request.Name)))
-                     return new CreateOrganizationServiceResponse(
-                          CreateOrganizationServiceResponseStatus.OrganizationExists);
+                    return new CreateOrganizationServiceResponse(
+                         CreateOrganizationServiceResponseStatus.OrganizationExists);
 
                 var user = await _context.Users
                     .Include(u => u.Organizations)
@@ -96,7 +96,7 @@ namespace Application.Services.ApiServices
                         [OrganizationEmployeesRoles.Member,
                             OrganizationEmployeesRoles.Admin]);
 
-                if(authResult.Equals(AuthorizationResponse.Deny))
+                if (authResult.Equals(AuthorizationResponse.Deny))
                     return new UpdateOrganizationServiceResponse(
                          UpdateOrganizationServiceResponseStatus.AccessDenied);
 
@@ -202,9 +202,54 @@ namespace Application.Services.ApiServices
             {
                 _logger.LogError("GetSubscribedOrganizationService {Message}", ex.Message);
 
-
                 return new GetSubscribedOrganizationsServiceResponse(
                      GetSubscribedOrganizationsServiceResponseStatus.InternalError);
+            }
+        }
+
+        public async Task<RemoveOrganizationServiceResponse> RemoveOrganization(RemoveOrganizationRequest request, string userId)
+        {
+            try
+            {
+                var org = _context.Organizations.Include(o =>
+                    o.Projects).ThenInclude(p => p.ProjectMembers)
+                        .Where(o => o.Id.ToString()
+                            .Equals(request.OrganizationId)).FirstOrDefault();
+
+                if (org == null)
+                    return new RemoveOrganizationServiceResponse(
+                         RemoveOrganizationServiceResponseStatus.OrganizationNotExists);
+
+                var authResult = await _authService
+                    .AuthorizeByOrganizationId(org.Id, userId,
+                        [OrganizationEmployeesRoles.Member,
+                         OrganizationEmployeesRoles.Admin]);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
+                    return new RemoveOrganizationServiceResponse(
+                        RemoveOrganizationServiceResponseStatus.AccessDenied);
+
+                foreach (var p in org.Projects)
+                {
+                    var members = await _context.ProjectMembers
+                        .Where(pm => pm.ProjectId.Equals(p.Id)).ToListAsync();
+
+                    _context.ProjectMembers.RemoveRange(members);
+                }
+
+                _context.Organizations.Remove(org);
+
+                await _context.SaveChangesAsync();
+
+                return new RemoveOrganizationServiceResponse(
+                     RemoveOrganizationServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("RemoveOrganizationService {Message}", ex.Message);
+
+                return new RemoveOrganizationServiceResponse(
+                     RemoveOrganizationServiceResponseStatus.InternalError);
             }
         }
     }
