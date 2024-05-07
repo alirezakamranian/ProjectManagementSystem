@@ -138,6 +138,8 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddTransient<IProjectTaskListService, ProjectTaskListService>();
             //ProjectTaskService
             services.AddTransient<IProjectTaskService, ProjectTaskService>();
+            //StorageService
+            services.AddTransient<IStorageService, StorageService>();
 
             /*InternalServices*/
 

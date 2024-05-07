@@ -10,7 +10,7 @@ namespace Domain.Services.InternalServices
 {
     public interface IStorageService
     {
-        public Task<UploadFileServiceResponse> Upload(UploadFileRequest request);
+        public Task<UploadFileServiceResponse> Upload(UploadFileRequest request,string userId);
         public Task<GetFileUrlServiceResponse> GetUrl(GetFileUrlRequest request);
     }
 }
