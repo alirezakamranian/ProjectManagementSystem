@@ -1,7 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
-using Application.Services.ApiServices;
 using Domain.Models.InternalSerives.Storage.Request;
 using Domain.Models.ServiceResponses.Storage;
 using Domain.Services.InternalServices;
@@ -13,16 +12,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Services.InternalServices
+namespace Application.Services.ApiServices
 {
-    internal class StorageService(IConfiguration configuration,
-        ILogger<StorageService> logger) : IStorageService
+    public class StorageService(IConfiguration configuration,
+       ILogger<StorageService> logger) : IStorageService
     {
         private static IAmazonS3 _s3Client;
         private readonly IConfiguration _configuration = configuration;
         private readonly ILogger<StorageService> _logger = logger;
 
-        public async Task<UploadFileServiceResponse> Upload(UploadFileRequest request)
+        public async Task<UploadFileServiceResponse> Upload(UploadFileRequest request, string userId)
         {
             try
             {
@@ -54,17 +53,16 @@ namespace Application.Services.InternalServices
                 }
 
                 return new UploadFileServiceResponse(
-                     UploadFileServiceResponseStatus.Success);
+                     Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.Success);
             }
             catch (Exception ex)
             {
                 _logger.LogError("UploadFileService : {Message}", ex.Message);
 
                 return new UploadFileServiceResponse(
-                     UploadFileServiceResponseStatus.InternalError);
+                     Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.InternalError);
             }
         }
-
 
         public async Task<GetFileUrlServiceResponse> GetUrl(GetFileUrlRequest request)
         {
@@ -93,7 +91,7 @@ namespace Application.Services.InternalServices
                     .GetPreSignedURLAsync(getRequest);
 
                 return new GetFileUrlServiceResponse(
-                     GetFileUrlServiceResponseStatus.Success)
+                     Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.Success)
                 {
                     Url = response
                 };
@@ -103,7 +101,7 @@ namespace Application.Services.InternalServices
                 _logger.LogError("GetFileUrlService : {Message}", ex.Message);
 
                 return new GetFileUrlServiceResponse(
-                     GetFileUrlServiceResponseStatus.InternalError);
+                     Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.InternalError);
             }
         }
     }
