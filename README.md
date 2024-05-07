@@ -1,9 +1,8 @@
 🔸🔷Project Management System With Asp.Net Core 8🔷🔸
 
-               ◾ ◼ ⬛   completed:7️⃣0️⃣%  ⬛ ◼ ◾
+               ◾ ◼ ⬛   completed:9️⃣0️⃣%  ⬛ ◼ ◾
 
 🔹🔷
-
 
 Technologies used in this project:
 
@@ -18,5 +17,7 @@ Technologies used in this project:
 •🔸Restfull Services ✅
 
 •🔸Serilog Logging ✅
+
+•🔸AmazonS3 storage ✅
 
 🔷🔹
