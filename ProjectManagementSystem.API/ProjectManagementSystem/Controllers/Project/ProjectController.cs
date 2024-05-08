@@ -8,15 +8,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
 using Domain.Models.Dtos.Project;
+using Domain.Services.InternalServices;
 
 namespace ProjectManagementSystem.Controllers.Project
 {
     [Route("organization/project")]
     [ApiController]
-    public class ProjectController(IProjectService projectService) : ControllerBase
+    public class ProjectController(IProjectService projectService,
+        IStorageService storageService) : ControllerBase
     {
         private readonly IProjectService _projectService = projectService;
-
+        private readonly IStorageService _storageService = storageService;
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string id)
@@ -89,6 +91,7 @@ namespace ProjectManagementSystem.Controllers.Project
                     Name = serviceResponse.Project.Name,
                     Description = serviceResponse.Project.Description,
                     Status = serviceResponse.Project.Status,
+                    AvatarLink=serviceResponse.AvatarUrl,
                     ProjectTaskLists = taskLists,
                     Members =members
                 }

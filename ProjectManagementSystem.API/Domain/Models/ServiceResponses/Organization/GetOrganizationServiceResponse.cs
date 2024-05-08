@@ -13,6 +13,7 @@ namespace Domain.Models.ServiceResponses.Organization
     public class GetOrganizationServiceResponse(string status) : ServiceResponseBase(status)
     {
         public string Name { get; set; }
+        public string AvatarUrl { get; set; }
         public List<Entities.Project.Project> Projects { get; set; }
         public List<Domain.Entities.HumanResource.OrganizationEmployee> Employees { get; set; }
     }

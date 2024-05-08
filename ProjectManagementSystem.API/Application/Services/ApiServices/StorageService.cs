@@ -6,11 +6,6 @@ using Domain.Models.ServiceResponses.Storage;
 using Domain.Services.InternalServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.ApiServices
 {
@@ -79,6 +74,7 @@ namespace Application.Services.ApiServices
                 _s3Client = new AmazonS3Client
                     (awsCredentials, config);
 
+                var info = new S3FileInfo
                 var getRequest = new GetPreSignedUrlRequest()
                 {
                     BucketName = "projectmanagementsystem",

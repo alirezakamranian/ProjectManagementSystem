@@ -39,7 +39,7 @@ namespace ProjectManagementSystem.Controllers.User
                     Id = serviceResponse.User.Id,
                     Email = serviceResponse.User.Email,
                     FullName = serviceResponse.User.FullName,
-                    Avatar = null
+                    AvatarUrl = serviceResponse.AvatarUrl
                 }
             });
         }
