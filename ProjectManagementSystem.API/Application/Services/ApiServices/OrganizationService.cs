@@ -23,11 +23,13 @@ namespace Application.Services.ApiServices
 {
     public class OrganizationService(DataContext context,
         ILogger<AuthenticationService> logger,
-            IAuthorizationService authService) : IOrganizationService
+        IAuthorizationService authService,
+        IStorageService storageService) : IOrganizationService
     {
         private readonly DataContext _context = context;
         private readonly ILogger<AuthenticationService> _logger = logger;
         private readonly IAuthorizationService _authService = authService;
+        private readonly IStorageService _storageService = storageService;
 
         public async Task<CreateOrganizationServiceResponse> CreateOrganization(CreateOrganizationRequest request, string userId)
         {
@@ -100,7 +102,7 @@ namespace Application.Services.ApiServices
                     return new UpdateOrganizationServiceResponse(
                          UpdateOrganizationServiceResponseStatus.AccessDenied);
 
-                    org.Name = request.NewName;
+                org.Name = request.NewName;
 
                 await _context.SaveChangesAsync();
 
@@ -136,10 +138,17 @@ namespace Application.Services.ApiServices
                     return new GetOrganizationServiceResponse(
                          GetOrganizationServiceResponseStatus.AccessDenied);
 
+                var avatarUrl = await _storageService.GetUrl(new()
+                {
+                    FileKey = request.OrganizationId,
+                    LeaseTime = 24
+                });
+
                 return new GetOrganizationServiceResponse(
                      GetOrganizationServiceResponseStatus.Success)
                 {
                     Name = org.Name,
+                    AvatarUrl = avatarUrl.Url,
                     Projects = org.Projects,
                     Employees = org.OrganizationEmployees
                 };

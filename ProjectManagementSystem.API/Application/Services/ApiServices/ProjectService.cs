@@ -20,12 +20,14 @@ namespace Application.Services.ApiServices
 {
     public class ProjectService(DataContext context,
         ILogger<ProjectService> logger,
-            IAuthorizationService authService) : IProjectService
+        IAuthorizationService authService,
+        IStorageService storageService) : IProjectService
     {
 
         private readonly DataContext _context = context;
         private readonly ILogger<ProjectService> _logger = logger;
         private readonly IAuthorizationService _authService = authService;
+        private readonly IStorageService _storageService = storageService;
 
         public async Task<CreateProjectServiceResponse> CreateProject(CreateProjectRequest request, string userId)
         {
@@ -160,10 +162,17 @@ namespace Application.Services.ApiServices
                     return new GetProjectServiceResponse(
                          GetProjectServiceResponseStatus.AccessDenied);
 
+                var avatarUrl = await _storageService.GetUrl(new()
+                {
+                    FileKey = project.Id.ToString(),
+                    LeaseTime = 24
+                });
+
                 return new GetProjectServiceResponse(
                      GetProjectServiceResponseStatus.Success)
                 {
-                    Project = project
+                    Project = project,
+                    AvatarUrl=avatarUrl.Url
                 };
             }
             catch (Exception ex)

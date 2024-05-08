@@ -11,6 +11,7 @@ namespace Domain.Models.ServiceResponses.Project
     public class GetProjectServiceResponse(string status) : ServiceResponseBase(status)
     {
         public Domain.Entities.Project.Project Project { get; set; }
+        public string AvatarUrl { get; set; }
     }
     public class GetProjectServiceResponseStatus : ServiceResponseStatusBase
     {

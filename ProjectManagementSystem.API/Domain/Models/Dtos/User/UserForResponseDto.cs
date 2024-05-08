@@ -14,7 +14,7 @@ namespace Domain.Models.Dtos.User
 
         public string FullName { get; set; }
 
-        public string Avatar { get; set; }
+        public string AvatarUrl { get; set; }
         public string Name { get; set; }
     }
 }

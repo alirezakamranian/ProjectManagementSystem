@@ -13,8 +13,9 @@ namespace Domain.Models.ServiceResponses.User
 {
     public class GetUserDetailsServiceResponse(string status) : ServiceResponseBase(status)
     {
-        public int NotificationsCount { get; set; }
         public ApplicationUser User { get; set; }
+        public string AvatarUrl { get; set; }
+        public int NotificationsCount { get; set; }
     }
     public class GetUserDetailsServiceResponseStatus : ServiceResponseStatusBase
     {
