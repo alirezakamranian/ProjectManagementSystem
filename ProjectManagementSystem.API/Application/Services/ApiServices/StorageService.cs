@@ -74,7 +74,22 @@ namespace Application.Services.ApiServices
                 _s3Client = new AmazonS3Client
                     (awsCredentials, config);
 
-                var info = new S3FileInfo
+                var riquest = new ListObjectsV2Request()
+                {
+                    BucketName = "projectmanagementsystem",
+                    Prefix = request.FileKey
+                };
+
+                var existResponse = await _s3Client
+                    .ListObjectsV2Async(riquest);
+
+                if (!(existResponse.S3Objects.Count > 0))
+                return new GetFileUrlServiceResponse(
+                    GetFileUrlServiceResponseStatus.Success)
+                {
+                    Url = string.Empty
+                };
+
                 var getRequest = new GetPreSignedUrlRequest()
                 {
                     BucketName = "projectmanagementsystem",
@@ -87,7 +102,7 @@ namespace Application.Services.ApiServices
                     .GetPreSignedURLAsync(getRequest);
 
                 return new GetFileUrlServiceResponse(
-                     Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.Success)
+                     GetFileUrlServiceResponseStatus.Success)
                 {
                     Url = response
                 };
@@ -97,7 +112,7 @@ namespace Application.Services.ApiServices
                 _logger.LogError("GetFileUrlService : {Message}", ex.Message);
 
                 return new GetFileUrlServiceResponse(
-                     Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.InternalError);
+                     GetFileUrlServiceResponseStatus.InternalError);
             }
         }
     }

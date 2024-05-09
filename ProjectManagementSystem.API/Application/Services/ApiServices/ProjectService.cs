@@ -1,8 +1,10 @@
-﻿using Domain.Constants.AuthorizationResponses;
+﻿using Amazon.S3.Model;
+using Domain.Constants.AuthorizationResponses;
 using Domain.Constants.Roles.OrganiationEmployees;
 using Domain.Models.ApiModels.Project.Request;
 using Domain.Models.ServiceResponses.Project;
 using Domain.Models.ServiceResponses.ProjectTask;
+using Domain.Models.ServiceResponses.Storage;
 using Domain.Services.ApiServices;
 using Domain.Services.InternalServices;
 using Infrastructure.DataAccess;
@@ -162,7 +164,7 @@ namespace Application.Services.ApiServices
                     return new GetProjectServiceResponse(
                          GetProjectServiceResponseStatus.AccessDenied);
 
-                var avatarUrl = await _storageService.GetUrl(new()
+                var getUrlResponse = await _storageService.GetUrl(new()
                 {
                     FileKey = project.Id.ToString(),
                     LeaseTime = 24
@@ -172,7 +174,7 @@ namespace Application.Services.ApiServices
                      GetProjectServiceResponseStatus.Success)
                 {
                     Project = project,
-                    AvatarUrl=avatarUrl.Url
+                    AvatarUrl= getUrlResponse.Url
                 };
             }
             catch (Exception ex)
