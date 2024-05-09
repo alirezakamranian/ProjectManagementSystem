@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ServiceResponses.Storage
 {
-    public class GetFileUrlServiceResponse(string status):ServiceResponseBase(status)
+    public class GetFileUrlServiceResponse(string status) : ServiceResponseBase(status)
     {
         public string Url { get; set; }
     }
-    public class GetFileUrlServiceResponseStatus:ServiceResponseStatusBase
+    public class GetFileUrlServiceResponseStatus : ServiceResponseStatusBase
     {
     }
 }

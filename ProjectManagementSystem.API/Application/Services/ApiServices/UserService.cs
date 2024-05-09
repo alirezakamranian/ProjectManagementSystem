@@ -1,5 +1,6 @@
 ﻿using Domain.Models.ApiModels.User.Response;
 using Domain.Models.ApiModels.UserNotification.Response;
+using Domain.Models.ServiceResponses.Storage;
 using Domain.Models.ServiceResponses.User;
 using Domain.Services.ApiServices;
 using Domain.Services.InternalServices;
@@ -32,7 +33,7 @@ namespace Application.Services.ApiServices
                 var notificationsCount = await _context.Notifications
                     .AsNoTracking().Where(n => n.UserId.Equals(userId)).CountAsync();
 
-                var avatarUrl = await _storageService.GetUrl(new()
+                var getUrlResponse = await _storageService.GetUrl(new()
                 {
                     FileKey = user.Id,
                     LeaseTime = 24
@@ -43,7 +44,7 @@ namespace Application.Services.ApiServices
                 {
                     NotificationsCount = notificationsCount,
                     User = user,
-                    AvatarUrl = avatarUrl.Url
+                    AvatarUrl = getUrlResponse.Url
                 };
             }
             catch (Exception ex)
