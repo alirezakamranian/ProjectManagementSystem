@@ -9,6 +9,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ProjectManagementSystem.Controllers.Invitation
 {
+    /// <summary>
+    /// Provides OrganizationInvitationService using REST-ful services
+    /// </summary>
+    /// <param name="invitationService"></param>
     [Route("organization/employee/invite")]
     [ApiController]
     public class InvitationController(IOrganizationInvitationService invitationService) : ControllerBase

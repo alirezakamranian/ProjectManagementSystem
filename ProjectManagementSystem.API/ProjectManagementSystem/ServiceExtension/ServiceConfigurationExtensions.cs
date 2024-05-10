@@ -18,12 +18,20 @@ namespace ProjectManagementSystem.ServiceExtension
     public static class ServiceConfigurationExtensions
     {
         //Mvc
+        /// <summary>
+        /// Configures MVC pattern for presetation layer
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureMvc(this IServiceCollection services) =>
             services.AddControllers().AddJsonOptions(options =>
                 options.JsonSerializerOptions.Converters
                     .Add(new JsonStringEnumConverter()));
 
         //Logger
+        /// <summary>
+        /// Configures Serilog library for logging
+        /// </summary>
+        /// <param name="hostBuilder"></param>
         public static void ConfigureLogging(this IHostBuilder hostBuilder)
         {
             hostBuilder.UseSerilog((context, configuration) =>
@@ -31,12 +39,21 @@ namespace ProjectManagementSystem.ServiceExtension
         }
 
         //DbContext
+        /// <summary>
+        /// Configures DbContext (base of communication by EF ORM to DB)
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="builder"></param>
         public static void ConfigureDbContext(this IServiceCollection services, WebApplicationBuilder builder) =>
             services.AddDbContext<DataContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("PGSQL"),
                     o => o.MigrationsAssembly("ProjectManagementSystem")));
 
         //Swagger
+        /// <summary>
+        /// Configures Swagger fo openAPI documentation
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureSwagger(this IServiceCollection services)
         {
             services.AddEndpointsApiExplorer();
@@ -70,6 +87,10 @@ namespace ProjectManagementSystem.ServiceExtension
         }
 
         //Cors
+        /// <summary>
+        /// Configures Cors that allows another apps send request to this app 
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureCors(this IServiceCollection services)
         {
             services.AddCors(option =>
@@ -84,6 +105,11 @@ namespace ProjectManagementSystem.ServiceExtension
         }
 
         //AuthAndIdentity
+        /// <summary>
+        /// Configures Authentication services and security basics
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="builder"></param>
         public static void ConfigureAuth(this IServiceCollection services, WebApplicationBuilder builder)
         {
             // Identity
@@ -114,6 +140,10 @@ namespace ProjectManagementSystem.ServiceExtension
         }
 
         //ApiServices
+        /// <summary>
+        /// Configures all services written in Application layer
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureAppServices(this IServiceCollection services)
         {
             /*ApiServices*/

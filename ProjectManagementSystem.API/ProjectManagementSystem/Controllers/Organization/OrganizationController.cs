@@ -12,6 +12,10 @@ using Domain.Models.Dtos.Project;
 
 namespace ProjectManagementSystem.Controllers.Organization
 {
+    /// <summary>
+    /// Provides OrganizationService using REST-ful services
+    /// </summary>
+    /// <param name="organizationService"></param>
     [Route("organization")]
     [ApiController]
     public class OrganizationController(IOrganizationService organizationService) : ControllerBase

@@ -10,6 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ProjectManagementSystem.Controllers.Storage
 {
+    /// <summary>
+    /// Provides StorageService using REST-ful services
+    /// </summary>
+    /// <param name="storageService"></param>
     [Route("storage")]
     [ApiController]
     public class StorageController(IStorageService storageService) : ControllerBase

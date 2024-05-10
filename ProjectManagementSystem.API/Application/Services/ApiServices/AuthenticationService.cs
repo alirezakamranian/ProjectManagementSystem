@@ -32,6 +32,11 @@ namespace Application.Services.ApiServices
         private readonly ITokenGenerator _tokenGenerator = tokenGenerator;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
 
+        /// <summary>
+        /// Registers user by email,fullname and selected pass
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>SignUpServiceResponse</returns>
         public async Task<SignUpServiceResponse> SignUpUser(SignUpRequest request)
         {
             try
@@ -87,6 +92,11 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// SignIns user by email and pass
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>SignInServiceResponse</returns>
         public async Task<SignInServiceResponse> SignInUser(SignInRequest request)
         {
 
@@ -154,6 +164,11 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Refreshs token by given refreshToken in Sign-in proccess
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>RefreshTokenServiceResponse</returns>
         public async Task<RefreshTokenServiceResponse> RefreshToken(RefreshTokenRequest request)
         {
             try

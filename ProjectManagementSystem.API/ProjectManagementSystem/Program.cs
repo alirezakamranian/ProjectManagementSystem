@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 /*----------                                 -_-_-_-- Services Configuration --_-_-_-                                        ---------*/
 
+
 //Controllers
 builder.Services.ConfigureMvc();
 
@@ -30,7 +31,8 @@ builder.Services.ConfigureCors();
 //AppServices
 builder.Services.ConfigureAppServices();
 
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+///                              NOTE : defination of Services that configured above are exist in
+///                                          serviceExtension folder in current layer
 
 var app = builder.Build();
 

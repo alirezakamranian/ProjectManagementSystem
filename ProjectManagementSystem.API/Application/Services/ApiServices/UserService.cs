@@ -23,6 +23,11 @@ namespace Application.Services.ApiServices
         private readonly ILogger<UserService> _logger = logger;
         private readonly IStorageService _storageService = storageService;
 
+        /// <summary>
+        /// Used for gettig userDetails with Notifs count
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<GetUserDetailsServiceResponse> GetUserDetails(string userId)
         {
             try

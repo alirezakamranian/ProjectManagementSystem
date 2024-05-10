@@ -10,6 +10,10 @@ using Domain.Models.Dtos.Notification;
 
 namespace ProjectManagementSystem.Controllers.Notification
 {
+    /// <summary>
+    /// Provides UserNotificationService using REST-ful services
+    /// </summary>
+    /// <param name="notificationService"></param>
     [Route("user/notifications")]
     [ApiController]
     public class NotificationController(IUserNotificationService notificationService) : ControllerBase

@@ -22,13 +22,19 @@ using System.Diagnostics;
 namespace Application.Services.ApiServices
 {
     public class ProjectTaskListService(DataContext context,
-        ILogger<AuthenticationService> logger,
+        ILogger<ProjectTaskListService> logger,
         IAuthorizationService authService) : IProjectTaskListService
     {
         private readonly DataContext _context = context;
-        private readonly ILogger<AuthenticationService> _logger = logger;
+        private readonly ILogger<ProjectTaskListService> _logger = logger;
         private readonly IAuthorizationService _authService = authService;
 
+        /// <summary>
+        /// Changes TaskList priority
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>ChangeTaskListPriorityServiceResponse</returns>
         public async Task<ChangeTaskListPriorityServiceResponse> ChangeTaskListPriority(ChangeTaskListPriorityRequest request, string userId)
         {
             try
@@ -78,6 +84,12 @@ namespace Application.Services.ApiServices
 
         }
 
+        /// <summary>
+        /// Creates TaskList in project
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>ProjectTaskListServiceResponse</returns>
         public async Task<ProjectTaskListServiceResponse> CreateTaskList(CreateTaskListRequest request, string userId)
         {
             try
@@ -137,6 +149,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Removes TaskList from project
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>DeleteTaskListServiceResponse</returns>
         public async Task<DeleteTaskListServiceResponse> DeleteTaskList(DeleteTaskListRequest request, string userId)
         {
             try
@@ -177,6 +195,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Updates TaskList details
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>UpdateTaskListServiceResponse</returns>
         public async Task<UpdateTaskListServiceResponse> UpdateTaskList(UpdateTaskListRequest request, string userId)
         {
             try

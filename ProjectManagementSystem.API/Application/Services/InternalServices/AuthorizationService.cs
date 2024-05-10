@@ -23,6 +23,13 @@ namespace Application.Services.InternalServices
         private readonly DataContext _context = context;
         private readonly ILogger<AuthorizationService> _logger = logger;
 
+        /// <summary>
+        /// Authorizes user by user&org id
+        /// </summary>
+        /// <param name="orgId"></param>
+        /// <param name="userId"></param>
+        /// <param name="deniedRoles"></param>
+        /// <returns></returns>
         public async Task<AuthorizationResponse> AuthorizeByOrganizationId(Guid orgId, string userId, params OrganizationEmployeesRoles[] deniedRoles)
         {
             try
@@ -54,6 +61,13 @@ namespace Application.Services.InternalServices
             }
         }
 
+        /// <summary>
+        /// Authorizes user by user&project id
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="userId"></param>
+        /// <param name="deniedRoles"></param>
+        /// <returns></returns>
         public async Task<AuthorizationResponse> AuthorizeByProjectId(Guid projectId, string userId, params ProjectMemberRoles[] deniedRoles)
         {
             try

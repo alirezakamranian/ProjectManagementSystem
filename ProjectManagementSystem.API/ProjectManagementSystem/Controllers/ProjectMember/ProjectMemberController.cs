@@ -11,6 +11,10 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace ProjectManagementSystem.Controllers.ProjectMember
 {
+    /// <summary>
+    /// Provides ProjectMemberService using REST-ful services
+    /// </summary>
+    /// <param name="projectMemberService"></param>
     [Route("organization/project/member")]
     [ApiController]
     public class ProjectMemberController(IProjectMemberService projectMemberService) : ControllerBase

@@ -24,6 +24,12 @@ namespace Application.Services.ApiServices
         private readonly ILogger<AuthenticationService> _logger = logger;
         private readonly IAuthorizationService _authService = authService;
 
+        /// <summary>
+        /// Adds OrgEmployee to project
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>AddMemberServiceResponse</returns>
         public async Task<AddMemberServiceResponse> AddMember(AddMemberRequest request, string userId)
         {
             try
@@ -83,6 +89,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Removes OrgEmployee from project
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>RemoveProjectMemberServiceResponse</returns>
         public async Task<RemoveProjectMemberServiceResponse> RemoveMember(RemoveProjectMemberRequest request, string userId)
         {
             try
