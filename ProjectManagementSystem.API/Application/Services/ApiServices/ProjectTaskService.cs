@@ -18,12 +18,18 @@ namespace Application.Services.ApiServices
 {
     public class ProjectTaskService(DataContext context,
         ILogger<ProjectTaskService> logger,
-            IAuthorizationService authService) : IProjectTaskService
+        IAuthorizationService authService) : IProjectTaskService
     {
         private readonly DataContext _context = context;
         private readonly ILogger<ProjectTaskService> _logger = logger;
         private readonly IAuthorizationService _authService = authService;
 
+        /// <summary>
+        /// Changes Task priority
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>ChangeProjectTaskPriorityServiceResponse</returns>
         public async Task<ChangeProjectTaskPriorityServiceResponse> ChangePriority(ChangeProjectTaskPriorityRequest request, string userId)
         {
             try
@@ -74,6 +80,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Creates Task in TaskList
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>CreateProjectTaskServiceResponse</returns>
         public async Task<CreateProjectTaskServiceResponse> CreateTask(CreateProjectTaskRequest request, string userId)
         {
             try
@@ -135,6 +147,12 @@ namespace Application.Services.ApiServices
 
         }
 
+        /// <summary>
+        /// Deletes Task from TaskList
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>DeleteProjectTaskServiceResponse</returns>
         public async Task<DeleteProjectTaskServiceResponse> DeleteTask(DeleteProjectTaskRequest request, string userId)
         {
             try
@@ -177,6 +195,12 @@ namespace Application.Services.ApiServices
 
         }
 
+        /// <summary>
+        /// Used for getting Task details
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>GetProjectTaskServiceResponse</returns>
         public async Task<GetProjectTaskServiceResponse> GetTask(GetProjectTaskRequest request, string userId)
         {
             try
@@ -216,6 +240,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Updates Task details
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<UpdateProjectTaskServiceResponse> UpdateTask(UpdateProjectTaskRequest request, string userId)
         {
             try
@@ -257,6 +287,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Changes Task`s TaskList
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<ChangeProjectTasksTaskListServiceResponse> ChangeTaskList(ChangeProjectTasksTaskListRequest request, string userId)
         {
             try

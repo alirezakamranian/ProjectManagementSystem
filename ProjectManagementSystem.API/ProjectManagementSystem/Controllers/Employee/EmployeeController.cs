@@ -12,6 +12,10 @@ using Domain.Models.Dtos.Organization;
 
 namespace ProjectManagementSystem.Controllers.Employee
 {
+    /// <summary>
+    /// Provides OrganizationEmployeeService using REST-ful services
+    /// </summary>
+    /// <param name="employeeService"></param>
     [Route("organization/employee")]
     [ApiController]
     public class EmployeeController(IOrganizationEmployeeService employeeService) : ControllerBase

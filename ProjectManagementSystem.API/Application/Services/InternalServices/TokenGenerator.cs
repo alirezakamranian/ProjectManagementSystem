@@ -15,7 +15,12 @@ namespace Application.Services.InternalServices
     {
         private readonly IConfiguration _configuration = configuration;
 
-
+        /// <summary>
+        /// Generates token using AuthOptions in project configuration
+        /// </summary>
+        /// <param name="expireTime"></param>
+        /// <param name="authClaims"></param>
+        /// <returns></returns>
         public JwtSecurityToken GetToken(DateTime expireTime,IEnumerable<Claim> authClaims) 
         {
             var authSigningKey = new SymmetricSecurityKey(

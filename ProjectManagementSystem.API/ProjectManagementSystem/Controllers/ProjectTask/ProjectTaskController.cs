@@ -10,6 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ProjectManagementSystem.Controllers.ProjectTask
 {
+    /// <summary>
+    /// Provides ProjectTaskService using REST-ful services
+    /// </summary>
+    /// <param name="taskService"></param>
     [Route("/organization/project/tasklist/task")]
     [ApiController]
     public class ProjectTaskController(IProjectTaskService taskService) : ControllerBase

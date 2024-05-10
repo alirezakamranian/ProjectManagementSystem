@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ProjectManagementSystem.Controllers.User
 {
+    /// <summary>
+    /// Provides UserService using REST-ful services
+    /// </summary>
+    /// <param name="userservice"></param>
     [Route("user")]
     [ApiController]
     public class UserManagementController(IUserService userservice) : ControllerBase

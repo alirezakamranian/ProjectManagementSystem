@@ -21,14 +21,19 @@ namespace Application.Services.ApiServices
 {
     public class OrganizationInvitationService(DataContext context,
         IInvitationPendingManager pendingManager,
-            ILogger<AuthenticationService> logger,
+            ILogger<OrganizationInvitationService> logger,
                 IAuthorizationService authService) : IOrganizationInvitationService
     {
         private readonly DataContext _context = context;
-        private readonly ILogger<AuthenticationService> _logger = logger;
+        private readonly ILogger<OrganizationInvitationService> _logger = logger;
         private readonly IInvitationPendingManager _pendingManager = pendingManager;
         private readonly IAuthorizationService _authService = authService;
 
+        /// <summary> 
+        /// Searchs users across the project
+        /// </summary>
+        /// <param name="requst"></param>
+        /// <returns>SearchUserServiceResponse</returns>
         public async Task<SearchUserServiceResponse> SearchUser(SearchUserRequst requst)
         {
             try
@@ -52,6 +57,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Invites user to organization
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>InviteEmployeeServiceResponse</returns>
         public async Task<InviteEmployeeServiceResponse> InviteEmployee(InviteEmployeeRequest request, string userId)
         {
             try
@@ -111,6 +122,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Accepts income invitation
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>AcceptOrganizationInvitationServiceResponse</returns>
         public async Task<AcceptOrganizationInvitationServiceResponse> AcceptOrganizationInvitation(AcceptInvitationRequest request, string userId)
         {
             try
@@ -164,6 +181,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Rejects income invitation
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>RejectOrganizationInvitationServiceResponse</returns>
         public async Task<RejectOrganizationInvitationServiceResponse> RejectOrganizationInvitation(RejectInvitationRequest request, string userId)
         {
             try

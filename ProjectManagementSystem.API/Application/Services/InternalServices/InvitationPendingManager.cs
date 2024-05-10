@@ -15,6 +15,12 @@ namespace Application.Services.InternalServices
     {
         private readonly DataContext _context = context;
 
+        /// <summary>
+        /// Removes pending record from db and Adds user to organization 
+        /// </summary>
+        /// <param name="invitationId"></param>
+        /// <param name="userId"></param>
+        /// <returns>string<returns>
         public async Task<string> AcceptPending(string invitationId,string userId)
         {
             try
@@ -45,6 +51,12 @@ namespace Application.Services.InternalServices
 
         }
 
+        /// <summary>
+        /// Removes pending record
+        /// </summary>
+        /// <param name="invitationId"></param>
+        /// <param name="userId"></param>
+        /// <returns>string</returns>
         public async Task<string> RejectPending(string invitationId, string userId)
         {
             try

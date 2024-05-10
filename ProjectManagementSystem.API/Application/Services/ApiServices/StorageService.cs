@@ -16,6 +16,12 @@ namespace Application.Services.ApiServices
         private readonly IConfiguration _configuration = configuration;
         private readonly ILogger<StorageService> _logger = logger;
 
+        /// <summary>
+        /// Uploads file to storage
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>UploadFileServiceResponse</returns>
         public async Task<UploadFileServiceResponse> Upload(UploadFileRequest request, string userId)
         {
             try
@@ -59,6 +65,11 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Used for getting url of file on storage
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>GetFileUrlServiceResponse</returns>
         public async Task<GetFileUrlServiceResponse> GetUrl(GetFileUrlRequest request)
         {
             try

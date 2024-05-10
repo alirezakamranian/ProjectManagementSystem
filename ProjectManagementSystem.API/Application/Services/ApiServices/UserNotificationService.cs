@@ -19,6 +19,11 @@ namespace Application.Services.ApiServices
         private readonly DataContext _context = context;
         private readonly ILogger<UserNotificationService> _logger = logger;
 
+        /// <summary>
+        /// Used for getting all user notifications
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<GetNotificationsServiceResponse> GetUserNotifications(string userId)
         {
             try
@@ -41,6 +46,11 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Removes all user notifications exept Invitations
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<DeleteNotificationServiceResponse> DeleteAllUserNotifications(string userId)
         {
             try

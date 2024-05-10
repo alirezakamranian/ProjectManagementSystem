@@ -31,6 +31,12 @@ namespace Application.Services.ApiServices
         private readonly IAuthorizationService _authService = authService;
         private readonly IStorageService _storageService = storageService;
 
+        /// <summary>
+        /// Creates project in organization
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>CreateProjectServiceResponse</returns>
         public async Task<CreateProjectServiceResponse> CreateProject(CreateProjectRequest request, string userId)
         {
             try
@@ -96,6 +102,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Removes Project from organization
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<DeleteProjectServiceResponse> DeleteProject(DeleteProjectRequest request, string userId)
         {
             try
@@ -140,6 +152,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Used for get project with all TaskList,Task and members
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>GetProjectServiceResponse</returns>
         public async Task<GetProjectServiceResponse> GetProject(GetProjectRequest request, string userId)
         {
             try
@@ -186,6 +204,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Changes Leader of project
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>ChangeProjectLeaderServiceResponse</returns>
         public async Task<ChangeProjectLeaderServiceResponse> ChangeLeadr(ChangeProjectLeaderRequest request, string userId)
         {
             try

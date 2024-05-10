@@ -22,15 +22,21 @@ using Domain.Services.InternalServices;
 namespace Application.Services.ApiServices
 {
     public class OrganizationService(DataContext context,
-        ILogger<AuthenticationService> logger,
+        ILogger<OrganizationService> logger,
         IAuthorizationService authService,
         IStorageService storageService) : IOrganizationService
     {
         private readonly DataContext _context = context;
-        private readonly ILogger<AuthenticationService> _logger = logger;
+        private readonly ILogger<OrganizationService> _logger = logger;
         private readonly IAuthorizationService _authService = authService;
         private readonly IStorageService _storageService = storageService;
 
+        /// <summary>
+        /// Creates organization for user
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>CreateOrganizationServiceResponse</returns>
         public async Task<CreateOrganizationServiceResponse> CreateOrganization(CreateOrganizationRequest request, string userId)
         {
             try
@@ -79,6 +85,12 @@ namespace Application.Services.ApiServices
 
         }
 
+        /// <summary>
+        /// Updates Org details
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>UpdateOrganizationServiceResponse</returns>
         public async Task<UpdateOrganizationServiceResponse> UpdateOrganization(UpdateOrganizationRequest request, string userId)
         {
             try
@@ -118,6 +130,11 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Used for getting organization details with its projects
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>GetOrganizationServiceResponse</returns>
         public async Task<GetOrganizationServiceResponse> GetOrganization(GetOrganizationRequest request)
         {
             try
@@ -162,6 +179,11 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Used for getting all (that user is employee or owner of them) user organizations
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>GetSubscribedOrganizationsServiceResponse</returns>
         public async Task<GetSubscribedOrganizationsServiceResponse> GetSubscribedOrganizations(string userId)
         {
             try
@@ -215,6 +237,12 @@ namespace Application.Services.ApiServices
             }
         }
 
+        /// <summary>
+        /// Removes organization
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns>RemoveOrganizationServiceResponse</returns>
         public async Task<RemoveOrganizationServiceResponse> RemoveOrganization(RemoveOrganizationRequest request, string userId)
         {
             try

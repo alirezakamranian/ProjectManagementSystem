@@ -10,6 +10,10 @@ using Domain.Models.ApiModels.ProjectTask.Response;
 using Domain.Models.ApiModels.ProjectTaskList.Request;
 namespace ProjectManagementSystem.Controllers.ProjectTaskList
 {
+    /// <summary>
+    /// Provides ProjectTaskListService using REST-ful services
+    /// </summary>
+    /// <param name="taskListService"></param>
     [Route("organization/project/tasklist")]
     [ApiController]
     public class ProjectTaskListController(

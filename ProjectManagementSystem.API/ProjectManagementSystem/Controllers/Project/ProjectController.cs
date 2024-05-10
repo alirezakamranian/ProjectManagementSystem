@@ -12,6 +12,11 @@ using Domain.Services.InternalServices;
 
 namespace ProjectManagementSystem.Controllers.Project
 {
+    /// <summary>
+    /// Provides ProjectService using REST-ful services
+    /// </summary>
+    /// <param name="projectService"></param>
+    /// <param name="storageService"></param>
     [Route("organization/project")]
     [ApiController]
     public class ProjectController(IProjectService projectService,

@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Domain.Entities.Common;
 using Domain.Entities.HumanResource;
@@ -11,8 +6,18 @@ using Domain.Entities.Project;
 using Domain.Entities.Project.ProjectTask;
 namespace Infrastructure.DataAccess
 {
+    /// <summary>
+    /// This class (that drives EFCore's Dbcontext class) is base of all communications with database in this project
+    /// NOTE : In this project "IdentityDbContext" is used instead Dbcontext for adding some auth and security options
+    /// </summary>
+    /// <param name="options"></param>
     public class DataContext(DbContextOptions<DataContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
+        /// <summary>
+        /// Entities configuration (This entities also exists as a table in database)
+        /// NOTE:All of these entities are defined in Entities folder in Domain layer and all relationships are defined in entities themselves
+        /// </summary>
+        
         //HumanResource
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationEmployee> OrganizationEmployees { get; set; }
@@ -26,11 +31,6 @@ namespace Infrastructure.DataAccess
         //Common
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<InvitationPending> InvitationPendings { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.EnableSensitiveDataLogging();
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {           

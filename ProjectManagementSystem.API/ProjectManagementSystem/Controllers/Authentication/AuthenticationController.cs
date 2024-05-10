@@ -8,6 +8,10 @@ using Serilog;
 using Domain.Models.ApiModels.Auth.Request;
 namespace ProjectManagementSystem.Controllers.Authentication
 {
+    /// <summary>
+    /// Provides AuthenticationService using REST-ful services
+    /// </summary>
+    /// <param name="authenticationService"></param>
     [Route("user/auth")]
     [ApiController]
     public class AuthenticationController(IAuthenticationService authenticationService) : ControllerBase
