@@ -9,5 +9,6 @@ namespace Domain.Models.ApiModels.Organization.Response
     public class CreateOrganizationResponse
     {
         public string Message { get; set; }
+        public string Id { get; set; }
     }
 }

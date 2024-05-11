@@ -11,6 +11,9 @@ namespace Domain.Models.ApiModels.Auth.Response
     {
         public string Message { get; set; }
 
+
+        public string IsNewUser { get; set; }
+
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string AccessToken { get; set; }
 

@@ -107,6 +107,8 @@ namespace Application.Services.ApiServices
                 if (!(user == null) && await _userManager
                     .CheckPasswordAsync(user, request.Password))
                 {
+                    string isNewUser="No";
+
                     var userRoles = await _userManager
                         .GetRolesAsync(user);
 
@@ -131,6 +133,9 @@ namespace Application.Services.ApiServices
                     var oldRefreshToken = await _context.UserTokens
                         .FirstOrDefaultAsync(t => t.UserId.Equals(user.Id));
 
+                    if (oldRefreshToken == null)
+                        isNewUser = "Yes";
+
                     if (oldRefreshToken != null)
                         _context.Remove(oldRefreshToken);
 
@@ -148,7 +153,8 @@ namespace Application.Services.ApiServices
                          SignInServiceResponseStatus.Success)
                     {
                         Token = token,
-                        RefreshToken = refreshToken
+                        RefreshToken = refreshToken,
+                        IsNewUser = isNewUser
                     };
                 }
 

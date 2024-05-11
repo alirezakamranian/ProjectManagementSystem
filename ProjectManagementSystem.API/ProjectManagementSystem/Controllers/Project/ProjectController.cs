@@ -19,11 +19,10 @@ namespace ProjectManagementSystem.Controllers.Project
     /// <param name="storageService"></param>
     [Route("organization/project")]
     [ApiController]
-    public class ProjectController(IProjectService projectService,
-        IStorageService storageService) : ControllerBase
+    public class ProjectController(IProjectService projectService) : ControllerBase
     {
         private readonly IProjectService _projectService = projectService;
-        private readonly IStorageService _storageService = storageService;
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string id)
@@ -136,7 +135,8 @@ namespace ProjectManagementSystem.Controllers.Project
 
             return Ok(new CreateProjectResponse
             {
-                Message = serviceResponse.Status
+                Message = serviceResponse.Status,
+                Id = serviceResponse.ProjectId
             });
         }
 

@@ -13,6 +13,7 @@ namespace Domain.Models.ServiceResponses.Auth
 
         public string Token { get; set; }
         public string RefreshToken { get; set; }
+        public string IsNewUser { get; set; }
     }
     public class SignInServiceResponseStatus : ServiceResponseStatusBase
     {
