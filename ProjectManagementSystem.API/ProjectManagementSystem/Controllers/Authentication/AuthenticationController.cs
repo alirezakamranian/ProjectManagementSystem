@@ -82,6 +82,7 @@ namespace ProjectManagementSystem.Controllers.Authentication
             return Ok(new SignInResponse
             {
                 Message = serviceResponse.Status,
+                IsNewUser = serviceResponse.IsNewUser,
                 AccessToken = serviceResponse.Token,
                 RefreshToken = serviceResponse.RefreshToken
             });

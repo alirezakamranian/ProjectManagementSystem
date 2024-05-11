@@ -49,7 +49,8 @@ namespace ProjectManagementSystem.Controllers.Organization
 
             return Ok(new CreateOrganizationResponse
             {
-                Message = serviceResponse.Status
+                Message = serviceResponse.Status,
+                Id = serviceResponse.OrgId
             });
         }
 
@@ -157,7 +158,7 @@ namespace ProjectManagementSystem.Controllers.Organization
             {
                 Message = serviceResponse.Status,
                 Name = serviceResponse.Name,
-                AvatarUrl=serviceResponse.AvatarUrl,
+                AvatarUrl = serviceResponse.AvatarUrl,
                 Projects = projects,
                 Employees = employees
             });

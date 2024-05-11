@@ -9,6 +9,7 @@ namespace Domain.Models.ServiceResponses.Project
 {
     public class CreateProjectServiceResponse(string status) : ServiceResponseBase(status)
     {
+        public string ProjectId { get; set; }
     }
     public class CreateProjectServiceResponseStatus : ServiceResponseStatusBase
     {

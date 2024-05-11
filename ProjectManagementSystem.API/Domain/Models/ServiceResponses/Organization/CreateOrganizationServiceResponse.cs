@@ -9,7 +9,7 @@ namespace Domain.Models.ServiceResponses.Organization
 {
     public class CreateOrganizationServiceResponse(string status) : ServiceResponseBase(status)
     {
-
+        public string OrgId { get; set; }
     }
     public class CreateOrganizationServiceResponseStatus : ServiceResponseStatusBase
     {

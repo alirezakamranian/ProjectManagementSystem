@@ -91,7 +91,10 @@ namespace Application.Services.ApiServices
                 await _context.SaveChangesAsync();
 
                 return new CreateProjectServiceResponse(
-                     CreateProjectServiceResponseStatus.Success);
+                     CreateProjectServiceResponseStatus.Success)
+                {
+                    ProjectId=project.Id.ToString()
+                };
             }
             catch (Exception ex)
             {

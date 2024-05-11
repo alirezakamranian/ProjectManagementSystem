@@ -73,7 +73,10 @@ namespace Application.Services.ApiServices
                 await _context.SaveChangesAsync();
 
                 return new CreateOrganizationServiceResponse(
-                     CreateOrganizationServiceResponseStatus.Success);
+                     CreateOrganizationServiceResponseStatus.Success)
+                {
+                    OrgId= org.Id.ToString()
+                };
             }
             catch (Exception ex)
             {
