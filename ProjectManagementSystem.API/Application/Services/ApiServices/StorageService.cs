@@ -98,24 +98,14 @@ namespace Application.Services.ApiServices
                 return new GetFileUrlServiceResponse(
                     GetFileUrlServiceResponseStatus.Success)
                 {
-                    Url = string.Empty
+                    Url = null
                 };
 
-                var getRequest = new GetPreSignedUrlRequest()
-                {
-                    BucketName = "projectmanagementsystem",
-                    Key = request.FileKey,
-                    Expires = DateTime.Now
-                        .AddHours(request.LeaseTime)
-                };
-
-                var response = await _s3Client
-                    .GetPreSignedURLAsync(getRequest);
 
                 return new GetFileUrlServiceResponse(
                      GetFileUrlServiceResponseStatus.Success)
                 {
-                    Url = response
+                    Url = $"https://projectmanagementsystem.s3.ir-thr-at1.arvanstorage.ir/{request.FileKey}"
                 };
             }
             catch (Exception ex)

@@ -148,7 +148,7 @@ namespace Application.Services.ApiServices
         }
 
         /// <summary>
-        /// Deletes Task from TaskList
+        /// Removes Task from TaskList
         /// </summary>
         /// <param name="request"></param>
         /// <param name="userId"></param>
