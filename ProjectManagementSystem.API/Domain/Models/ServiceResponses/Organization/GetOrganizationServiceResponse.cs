@@ -1,5 +1,6 @@
 ﻿using Domain.Constants.Roles.OrganiationEmployees;
 using Domain.Entities.HumanResource;
+using Domain.Models.Dtos.Organization;
 using Domain.Models.ServiceResponses.Base;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,8 @@ namespace Domain.Models.ServiceResponses.Organization
     {
         public string Name { get; set; }
         public string AvatarUrl { get; set; }
-        public List<Entities.Project.Project> Projects { get; set; }
-        public List<Domain.Entities.HumanResource.OrganizationEmployee> Employees { get; set; }
+        public List<GetOrgProjectForResponseDto> Projects { get; set; }
+        public List<OrganizationEmployeeForResponseDto> Employees { get; set; }
     }
     public class GetOrganizationServiceResponseStatus : ServiceResponseStatusBase
     {

@@ -2,6 +2,7 @@
 using Domain.Constants.AuthorizationResponses;
 using Domain.Constants.Roles.OrganiationEmployees;
 using Domain.Models.ApiModels.Project.Request;
+using Domain.Models.Dtos.Project;
 using Domain.Models.ServiceResponses.Project;
 using Domain.Models.ServiceResponses.ProjectTask;
 using Domain.Models.ServiceResponses.Storage;
@@ -93,7 +94,7 @@ namespace Application.Services.ApiServices
                 return new CreateProjectServiceResponse(
                      CreateProjectServiceResponseStatus.Success)
                 {
-                    ProjectId=project.Id.ToString()
+                    ProjectId = project.Id.ToString()
                 };
             }
             catch (Exception ex)
@@ -190,11 +191,62 @@ namespace Application.Services.ApiServices
                     FileKey = project.Id.ToString()
                 });
 
+                List<ProjectTaskListForResponseDto> taskLists = [];
+
+                foreach (var tl in project.ProjectTaskLists)
+                {
+                    var tasks = new List<ProjectTaskForResponseDto>();
+
+                    foreach (var t in tl.ProjectTasks)
+                    {
+                        tasks.Add(new()
+                        {
+                            Id = t.Id.ToString(),
+                            Title = t.Title,
+                            Description = t.Description,
+                            Priority = t.Priority
+                        });
+                    }
+
+                    taskLists.Add(new()
+                    {
+                        Id = tl.Id.ToString(),
+                        Name = tl.Name,
+                        Priority = tl.Priority,
+                        Tasks = tasks
+                    });
+                }
+
+                List<ProjectMemberForResponseDto> members = [];
+
+                foreach (var m in project.ProjectMembers)
+                {
+                    var getMembersAvatarUrlResponse = await _storageService
+                        .GetUrl(new() { FileKey = m.OrganizationEmployee.User.Id });
+
+                    members.Add(new()
+                    {
+                        Id = m.Id.ToString(),
+                        Name = m.OrganizationEmployee.User.FullName,
+                        Role = m.Role,
+                        AvatarUrl = getMembersAvatarUrlResponse.Url
+                    });
+                }
+
                 return new GetProjectServiceResponse(
                      GetProjectServiceResponseStatus.Success)
                 {
-                    Project = project,
-                    AvatarUrl= getUrlResponse.Url
+                    Project = new()
+                    {
+                        Id = project.Id.ToString(),
+                        Name = project.Name,
+                        Description = project.Description,
+                        AvatarLink = getUrlResponse.Url,
+                        Status = project.Status,
+                        Members = members,
+                        ProjectTaskLists = taskLists
+                    },
+                    AvatarUrl = getUrlResponse.Url
                 };
             }
             catch (Exception ex)

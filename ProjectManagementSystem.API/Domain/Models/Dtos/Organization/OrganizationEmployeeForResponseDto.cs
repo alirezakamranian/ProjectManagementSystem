@@ -13,5 +13,6 @@ namespace Domain.Models.Dtos.Organization
         public OrganizationEmployeesRoles Role { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
+        public string AvatarUrl { get; set; }
     }
 }

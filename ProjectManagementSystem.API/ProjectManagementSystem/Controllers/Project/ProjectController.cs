@@ -48,57 +48,10 @@ namespace ProjectManagementSystem.Controllers.Project
                         Message = serviceResponse.Status
                     });
 
-            List<ProjectTaskListForResponseDto> taskLists = [];
-
-            foreach (var tl in serviceResponse.Project.ProjectTaskLists)
-            {
-                var tasks = new List<ProjectTaskForResponseDto>();
-
-                foreach (var t in tl.ProjectTasks)
-                {
-                    tasks.Add(new()
-                    {
-                        Id = t.Id.ToString(),
-                        Title = t.Title,
-                        Description = t.Description,
-                        Priority = t.Priority
-                    });
-                }
-
-                taskLists.Add(new()
-                {
-                    Id = tl.Id.ToString(),
-                    Name = tl.Name,
-                    Priority = tl.Priority,
-                    Tasks = tasks
-                });
-            }
-
-            List<ProjectMemberForResponseDto> members = [];
-
-            foreach (var m in serviceResponse.Project.ProjectMembers)
-            {
-                members.Add(new()
-                {
-                    Id = m.Id.ToString(),
-                    Name = m.OrganizationEmployee.User.FullName,
-                    Role = m.Role
-                });
-            }
-
             return Ok(new GetProjectResponse
             {
                 Message = serviceResponse.Status,
-                Project = new()
-                {
-                    Id = serviceResponse.Project.Id.ToString(),
-                    Name = serviceResponse.Project.Name,
-                    Description = serviceResponse.Project.Description,
-                    Status = serviceResponse.Project.Status,
-                    AvatarLink=serviceResponse.AvatarUrl,
-                    ProjectTaskLists = taskLists,
-                    Members =members
-                }
+                Project = serviceResponse.Project
             });
         }
 
