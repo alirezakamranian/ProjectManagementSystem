@@ -187,8 +187,7 @@ namespace Application.Services.ApiServices
 
                 var getUrlResponse = await _storageService.GetUrl(new()
                 {
-                    FileKey = project.Id.ToString(),
-                    LeaseTime = 24
+                    FileKey = project.Id.ToString()
                 });
 
                 return new GetProjectServiceResponse(

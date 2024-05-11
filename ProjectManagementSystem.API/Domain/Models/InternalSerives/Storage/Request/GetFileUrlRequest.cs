@@ -11,7 +11,5 @@ namespace Domain.Models.InternalSerives.Storage.Request
     {
         [Required]
         public string FileKey { get; set; }
-        [Required]
-        public int LeaseTime { get; set; }
     }
 }

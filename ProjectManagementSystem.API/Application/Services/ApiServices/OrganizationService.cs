@@ -160,8 +160,7 @@ namespace Application.Services.ApiServices
 
                 var avatarUrl = await _storageService.GetUrl(new()
                 {
-                    FileKey = request.OrganizationId,
-                    LeaseTime = 24
+                    FileKey = request.OrganizationId
                 });
 
                 return new GetOrganizationServiceResponse(

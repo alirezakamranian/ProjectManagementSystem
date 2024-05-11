@@ -40,8 +40,7 @@ namespace Application.Services.ApiServices
 
                 var getUrlResponse = await _storageService.GetUrl(new()
                 {
-                    FileKey = user.Id,
-                    LeaseTime = 24
+                    FileKey = user.Id
                 });
 
                 return new GetUserDetailsServiceResponse(
