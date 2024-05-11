@@ -128,39 +128,13 @@ namespace ProjectManagementSystem.Controllers.Organization
                             Message = serviceResponse.Status
                         });
 
-            List<GetOrgProjectForResponseDto> projects = [];
-
-            foreach (var p in serviceResponse.Projects)
-            {
-                projects.Add(new()
-                {
-                    Id = p.Id.ToString(),
-                    Name = p.Name,
-                    Description = p.Description,
-                    Status = p.Status,
-                });
-            }
-
-            List<OrganizationEmployeeForResponseDto> employees = [];
-
-            foreach (var e in serviceResponse.Employees)
-            {
-                employees.Add(new()
-                {
-                    Id = e.Id.ToString(),
-                    Email = e.User.Email,
-                    Role = e.Role,
-                    FullName = e.User.FullName
-                });
-            }
-
             return Ok(new GetOrganizationResponse
             {
                 Message = serviceResponse.Status,
                 Name = serviceResponse.Name,
                 AvatarUrl = serviceResponse.AvatarUrl,
-                Projects = projects,
-                Employees = employees
+                Projects = serviceResponse.Projects,
+                Employees = serviceResponse.Employees
             });
         }
 

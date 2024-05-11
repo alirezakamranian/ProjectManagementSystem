@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Project;
+using Domain.Models.Dtos.Project;
 using Domain.Models.ServiceResponses.Base;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Domain.Models.ServiceResponses.Project
 {
     public class GetProjectServiceResponse(string status) : ServiceResponseBase(status)
     {
-        public Domain.Entities.Project.Project Project { get; set; }
+        public ProjectForResponseDto Project { get; set; }
         public string AvatarUrl { get; set; }
     }
     public class GetProjectServiceResponseStatus : ServiceResponseStatusBase

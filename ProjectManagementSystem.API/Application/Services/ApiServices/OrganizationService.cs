@@ -75,7 +75,7 @@ namespace Application.Services.ApiServices
                 return new CreateOrganizationServiceResponse(
                      CreateOrganizationServiceResponseStatus.Success)
                 {
-                    OrgId= org.Id.ToString()
+                    OrgId = org.Id.ToString()
                 };
             }
             catch (Exception ex)
@@ -163,13 +163,43 @@ namespace Application.Services.ApiServices
                     FileKey = request.OrganizationId
                 });
 
+                List<GetOrgProjectForResponseDto> projects = [];
+
+                foreach (var p in org.Projects)
+                {
+                    projects.Add(new()
+                    {
+                        Id = p.Id.ToString(),
+                        Name = p.Name,
+                        Description = p.Description,
+                        Status = p.Status,
+                    });
+                }
+
+                List<OrganizationEmployeeForResponseDto> employees = [];
+
+                foreach (var e in org.OrganizationEmployees)
+                {
+                    var getUrlResponse = await _storageService.GetUrl(
+                        new() { FileKey = e.UserId });
+
+                    employees.Add(new()
+                    {
+                        Id = e.Id.ToString(),
+                        Email = e.User.Email,
+                        Role = e.Role,
+                        FullName = e.User.FullName,
+                        AvatarUrl = getUrlResponse.Url
+                    });
+                }
+
                 return new GetOrganizationServiceResponse(
                      GetOrganizationServiceResponseStatus.Success)
                 {
                     Name = org.Name,
                     AvatarUrl = avatarUrl.Url,
-                    Projects = org.Projects,
-                    Employees = org.OrganizationEmployees
+                    Projects = projects,
+                    Employees = employees
                 };
             }
             catch (Exception ex)
