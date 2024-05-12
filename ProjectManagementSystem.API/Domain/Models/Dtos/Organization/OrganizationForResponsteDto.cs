@@ -13,6 +13,7 @@ namespace Domain.Models.Dtos.Organization
         public string Id { get; set; }
         public string Name { get; set; }
         public string LeaderId { get; set; }
+        public string AvatarUrl { get; set; }
         public List<MinimumValueProjectDto> Projects { get; set; }
     }
 }

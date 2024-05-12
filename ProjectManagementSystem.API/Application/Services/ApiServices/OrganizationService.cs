@@ -167,12 +167,16 @@ namespace Application.Services.ApiServices
 
                 foreach (var p in org.Projects)
                 {
+                    var getUrlResponse = await _storageService.GetUrl(
+                       new() { FileKey = p.Id.ToString() });
+
                     projects.Add(new()
                     {
                         Id = p.Id.ToString(),
                         Name = p.Name,
                         Description = p.Description,
                         Status = p.Status,
+                        AvatarUrl = getUrlResponse.Url
                     });
                 }
 
@@ -229,17 +233,24 @@ namespace Application.Services.ApiServices
                 {
                     var org = await _context.Organizations
                         .Include(o => o.Projects).AsNoTracking()
-                            .Where(o => o.Id.Equals(e.OrganizationId))
-                                .FirstOrDefaultAsync();
+                             .Where(o => o.Id.Equals(e.OrganizationId))
+                                 .FirstOrDefaultAsync();
+
+                    var avatarUrl = await _storageService.GetUrl(
+                       new() { FileKey = org.Id.ToString() });
 
                     List<MinimumValueProjectDto> projects = [];
 
                     foreach (var p in org.Projects)
                     {
+                        var getUrlResponse = await _storageService.GetUrl(
+                            new() { FileKey = p.Id.ToString() });
+
                         projects.Add(new()
                         {
                             Id = p.Id.ToString(),
                             Name = p.Name,
+                            AvatarUrl = getUrlResponse.Url
                         });
                     }
 
@@ -248,7 +259,8 @@ namespace Application.Services.ApiServices
                         Id = org.Id.ToString(),
                         Name = org.Name,
                         Projects = projects,
-                        LeaderId = org.OwnerId
+                        LeaderId = org.OwnerId,
+                        AvatarUrl = avatarUrl.Url
                     });
                 }
 

@@ -15,5 +15,6 @@ namespace Domain.Models.Dtos.Organization
         public string Description { get; set; }
 
         public string Status { get; set; }
+        public string AvatarUrl { get; set; }
     }
 }
