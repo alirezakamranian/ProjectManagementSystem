@@ -168,7 +168,8 @@ namespace Application.Services.ApiServices
                          DeleteTaskListServiceResponseStatus.TaskListNotExists);
 
                 var project = _context.Projects
-                    .AsNoTracking().Include(p => p.ProjectMembers)
+                    .Include(p=>p.ProjectTaskLists)
+                        .Include(p => p.ProjectMembers)
                         .FirstOrDefault(p => p.Id.Equals(taskList.ProjectId));
 
                 var authResult = await _authService
@@ -181,6 +182,11 @@ namespace Application.Services.ApiServices
 
                 _context.ProjectTaskLists.Remove(taskList);
 
+                foreach (var tl in project.ProjectTaskLists)
+                {
+                    if (tl.Priority > taskList.Priority)
+                        --tl.Priority;
+                }
                 await _context.SaveChangesAsync();
 
                 return new DeleteTaskListServiceResponse(
