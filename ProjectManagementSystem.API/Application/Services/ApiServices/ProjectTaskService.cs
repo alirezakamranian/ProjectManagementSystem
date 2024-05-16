@@ -164,7 +164,7 @@ namespace Application.Services.ApiServices
                     return new DeleteProjectTaskServiceResponse(
                          DeleteProjectTaskServiceResponseStatus.TaskNotExists);
 
-                var taskList = await _context.ProjectTaskLists.AsNoTracking()
+                var taskList = await _context.ProjectTaskLists
                     .Include(tl => tl.ProjectTasks)
                         .FirstOrDefaultAsync(tl => tl.Id
                              .Equals(task.ProjectTaskListId));
@@ -178,6 +178,12 @@ namespace Application.Services.ApiServices
                          DeleteProjectTaskServiceResponseStatus.AccessDenied);
 
                 _context.ProjectTasks.Remove(task);
+
+                foreach (var t in taskList.ProjectTasks)
+                {
+                    if (t.Priority > task.Priority)
+                        --t.Priority;
+                }
 
                 await _context.SaveChangesAsync();
 
