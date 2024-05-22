@@ -68,8 +68,8 @@ namespace Application.Services.ApiServices
             try
             {
                 var authResult = await _authService
-                    .AuthorizeByOrganizationId(Guid.Parse(request.OrganizationId), userId,
-                        [OrganizationEmployeesRoles.Member]);
+                    .AuthorizeByOrganizationId(Guid.Parse(request.OrganizationId),
+                        userId, [OrganizationEmployeesRoles.Member]);
 
                 if (authResult.Equals(AuthorizationResponse.Deny))
                     return new InviteEmployeeServiceResponse(
@@ -88,6 +88,29 @@ namespace Application.Services.ApiServices
                     return new InviteEmployeeServiceResponse(
                          InviteEmployeeServiceResponseStatus.UserNotExists);
 
+                if (await _context.OrganizationEmployees
+                    .AnyAsync(e => e.OrganizationId.ToString()
+                        .Equals(request.OrganizationId) && 
+                            e.UserId.Equals(targetUser.Id)))
+                    return new InviteEmployeeServiceResponse(
+                         InviteEmployeeServiceResponseStatus.UserIsAlredyEmployeeOfThisOrganization);
+
+                var existInvites = targetUser.Notifications
+                    .Where(n => n.Issuer.Equals(issuerUser.Email)).ToList();
+
+                if (existInvites != null)
+                {
+                    foreach (var n in existInvites)
+                    {
+                        if (await _context.InvitationPendings
+                            .AnyAsync(p => p.NotificationId.Equals(
+                                n.Id) && p.OrganizationId.ToString()
+                                    .Equals(request.OrganizationId)))
+                            return new InviteEmployeeServiceResponse(
+                                 InviteEmployeeServiceResponseStatus.UserAlredyInvited);
+                    }
+                }
+
                 targetUser.Notifications.Add(new Notification
                 {
                     Type = NotificationTypes.Invite,
@@ -100,7 +123,8 @@ namespace Application.Services.ApiServices
 
                 var notification = await _context.Notifications
                     .AsNoTracking().FirstOrDefaultAsync(n =>
-                        n.UserId.Equals(targetUser.Id));
+                        n.UserId.Equals(targetUser.Id) &&
+                            n.Issuer.Equals(issuerUser.Email));
 
                 _context.InvitationPendings.Add(new InvitationPending
                 {
