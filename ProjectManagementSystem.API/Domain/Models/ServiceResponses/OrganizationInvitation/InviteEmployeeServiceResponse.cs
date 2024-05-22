@@ -15,5 +15,8 @@ namespace Domain.Models.ServiceResponses.OrganizationInvitation
     {
         public const string UserNotExists = "UserNotExists";
         public const string AccessDenied = "AccessDenied";
+        public const string UserAlredyInvited = "UserAlredyInvited";
+        public const string UserIsAlredyEmployeeOfThisOrganization = "UserIsAlredyEmployeeOfThisOrganization";
+
     }
 }
