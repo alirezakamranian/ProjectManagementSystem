@@ -143,7 +143,7 @@ namespace Application.Services.ApiServices
             try
             {
                 var org = await _context.Organizations.Include(o => o.Projects)
-                    .Include(o => o.OrganizationEmployees)
+                    .ThenInclude(p => p.ProjectMembers)
                         .Include(o => o.OrganizationEmployees)
                             .ThenInclude(e => e.User).AsNoTracking()
                                 .FirstOrDefaultAsync(o => o.Id.ToString()
@@ -163,6 +163,9 @@ namespace Application.Services.ApiServices
                     FileKey = request.OrganizationId
                 });
 
+                var employee = org.OrganizationEmployees
+                    .FirstOrDefault(e => e.UserId.Equals(request.UserId));
+
                 List<GetOrgProjectForResponseDto> projects = [];
 
                 foreach (var p in org.Projects)
@@ -170,14 +173,17 @@ namespace Application.Services.ApiServices
                     var getUrlResponse = await _storageService.GetUrl(
                        new() { FileKey = p.Id.ToString() });
 
-                    projects.Add(new()
-                    {
-                        Id = p.Id.ToString(),
-                        Name = p.Name,
-                        Description = p.Description,
-                        Status = p.Status,
-                        AvatarUrl = getUrlResponse.Url
-                    });
+                    if (p.ProjectMembers.Any(pm => pm.OrganizationEmployeeId
+                        .Equals(employee.Id) || employee.Role
+                            .Equals(OrganizationEmployeesRoles.Leader)))
+                        projects.Add(new()
+                        {
+                            Id = p.Id.ToString(),
+                            Name = p.Name,
+                            Description = p.Description,
+                            Status = p.Status,
+                            AvatarUrl = getUrlResponse.Url
+                        });
                 }
 
                 List<OrganizationEmployeeForResponseDto> employees = [];
@@ -232,12 +238,16 @@ namespace Application.Services.ApiServices
                 foreach (var e in memberOf)
                 {
                     var org = await _context.Organizations
-                        .Include(o => o.Projects).AsNoTracking()
-                             .Where(o => o.Id.Equals(e.OrganizationId))
-                                 .FirstOrDefaultAsync();
+                        .Include(o => o.Projects).ThenInclude(p => p.ProjectMembers)
+                            .Include(o => o.OrganizationEmployees)
+                                .AsNoTracking().Where(o => o.Id.Equals(
+                                    e.OrganizationId)).FirstOrDefaultAsync();
 
                     var avatarUrl = await _storageService.GetUrl(
                        new() { FileKey = org.Id.ToString() });
+
+                    var employee = org.OrganizationEmployees
+                        .FirstOrDefault(e => e.UserId.Equals(userId));
 
                     List<MinimumValueProjectDto> projects = [];
 
@@ -246,12 +256,15 @@ namespace Application.Services.ApiServices
                         var getUrlResponse = await _storageService.GetUrl(
                             new() { FileKey = p.Id.ToString() });
 
-                        projects.Add(new()
-                        {
-                            Id = p.Id.ToString(),
-                            Name = p.Name,
-                            AvatarUrl = getUrlResponse.Url
-                        });
+                        if (p.ProjectMembers.Any(pm => pm.OrganizationEmployeeId
+                            .Equals(employee.Id) || employee.Role
+                                .Equals(OrganizationEmployeesRoles.Leader)))
+                            projects.Add(new()
+                            {
+                                Id = p.Id.ToString(),
+                                Name = p.Name,
+                                AvatarUrl = getUrlResponse.Url
+                            });
                     }
 
                     userOrgs.Add(new OrganizationForResponsteDto()
