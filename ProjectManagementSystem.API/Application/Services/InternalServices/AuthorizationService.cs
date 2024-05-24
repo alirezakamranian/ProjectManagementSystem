@@ -73,14 +73,14 @@ namespace Application.Services.InternalServices
             try
             {
                 var project = _context.Projects
-               .Include(p => p.ProjectMembers)
-                   .AsNoTracking().FirstOrDefault(p =>
-                       p.Id.Equals(projectId));
+                    .Include(p => p.ProjectMembers)
+                        .AsNoTracking().FirstOrDefault(p =>
+                            p.Id.Equals(projectId));
 
                 var org = await _context.Organizations.AsNoTracking()
-                       .Include(o => o.OrganizationEmployees)
-                           .FirstOrDefaultAsync(o => o.Id
-                               .Equals(project.OrganizationId));
+                    .Include(o => o.OrganizationEmployees)
+                        .FirstOrDefaultAsync(o => o.Id
+                            .Equals(project.OrganizationId));
 
                 var employee = org.OrganizationEmployees
                     .FirstOrDefault(e => e.UserId.Equals(userId));
@@ -91,7 +91,9 @@ namespace Application.Services.InternalServices
                 var isProjectMember = project.ProjectMembers.Any(m =>
                     m.OrganizationEmployeeId.Equals(employee.Id));
 
-                if (!isProjectMember)
+
+                if (!isProjectMember && employee.Role !=
+                    OrganizationEmployeesRoles.Leader)
                     return AuthorizationResponse.Deny;
 
                 if (deniedRoles.Length.Equals(0))
@@ -100,8 +102,10 @@ namespace Application.Services.InternalServices
                 foreach (var r in deniedRoles)
                 {
                     if (project.ProjectMembers
-                        .Where(m=>m.OrganizationEmployeeId
-                            .Equals(employee.Id)).Any(m=> m.Role.Equals(r)))
+                        .Where(m => m.OrganizationEmployeeId
+                            .Equals(employee.Id)).Any(m => m.Role
+                                .Equals(r)) && employee.Role != 
+                                    OrganizationEmployeesRoles.Leader)
                         return AuthorizationResponse.Deny;
                 }
 
