@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using Domain.Models.ApiModels.OrganizationEmployee.response;
 
 namespace ProjectManagementSystem.Controllers.ProjectMember
 {
@@ -78,7 +79,7 @@ namespace ProjectManagementSystem.Controllers.ProjectMember
 
             if (serviceResponse.Status.Equals(RemoveProjectMemberServiceResponseStatus.ProjectNotExists) ||
                serviceResponse.Status.Equals(RemoveProjectMemberServiceResponseStatus.MemberNotExists) ||
-               serviceResponse.Status.Equals(RemoveProjectMemberServiceResponseStatus.AccessDenied)||
+               serviceResponse.Status.Equals(RemoveProjectMemberServiceResponseStatus.AccessDenied) ||
                serviceResponse.Status.Equals(RemoveProjectMemberServiceResponseStatus.LeaderCanNotRemoved))
                 return StatusCode(StatusCodes.Status400BadRequest,
                         new RemoveProjectMemberResponse
@@ -94,6 +95,39 @@ namespace ProjectManagementSystem.Controllers.ProjectMember
                         });
 
             return Ok(new RemoveProjectMemberResponse
+            {
+                Message = serviceResponse.Status
+            });
+        }
+
+        [Authorize]
+        [HttpPatch]
+        public async Task<IActionResult> ChangeRole(ChangeProjectMemberRoleRequest request)
+        {
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _projectMemberService
+                .ChangeMemberRole(request, userId);
+
+            if (serviceResponse.Status.Equals(ChangeProjectMemberRoleServiceResponseStatus.ProjectNotExists) ||
+                serviceResponse.Status.Equals(ChangeProjectMemberRoleServiceResponseStatus.MemberNotExists)||
+                serviceResponse.Status.Equals(ChangeProjectMemberRoleServiceResponseStatus.AccessDenied)||
+                serviceResponse.Status.Equals(ChangeProjectMemberRoleServiceResponseStatus.LeaderRoleCanNotChanged))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new ChangeEmployeeRoleResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            if (serviceResponse.Status.Equals(ChangeProjectMemberRoleServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new ChangeEmployeeRoleResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new ChangeEmployeeRoleResponse
             {
                 Message = serviceResponse.Status
             });

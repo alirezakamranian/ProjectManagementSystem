@@ -90,6 +90,63 @@ namespace Application.Services.ApiServices
         }
 
         /// <summary>
+        /// Changes Member role
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<ChangeProjectMemberRoleServiceResponse> ChangeMemberRole(ChangeProjectMemberRoleRequest request, string userId)
+        {
+            try
+            {
+                if(request.NewRole.Equals(ProjectMemberRoles.Leader))
+                    return new ChangeProjectMemberRoleServiceResponse(
+                         ChangeProjectMemberRoleServiceResponseStatus.LeaderRoleCanNotChanged);
+
+                var project = await _context.Projects
+                    .AsNoTracking().FirstOrDefaultAsync(
+                        p => p.Id.ToString().Equals(request.ProjectId));
+
+                if (project == null)
+                    return new ChangeProjectMemberRoleServiceResponse(
+                         ChangeProjectMemberRoleServiceResponseStatus.ProjectNotExists);
+
+                var authResult = await _authService
+                    .AuthorizeByProjectId(project.Id, userId,
+                         [ProjectMemberRoles.Member,
+                      ProjectMemberRoles.Admin]);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
+                    return new ChangeProjectMemberRoleServiceResponse(
+                         ChangeProjectMemberRoleServiceResponseStatus.AccessDenied);
+
+                var member = await _context.ProjectMembers
+                    .FirstOrDefaultAsync(m => m.Id.ToString()
+                        .Equals(request.MemberId));
+
+                if (member == null)
+                    return new ChangeProjectMemberRoleServiceResponse(
+                         ChangeProjectMemberRoleServiceResponseStatus.MemberNotExists);
+
+                member.Role = request.NewRole;
+
+                await _context.SaveChangesAsync();
+
+                return new ChangeProjectMemberRoleServiceResponse(
+                     ChangeProjectMemberRoleServiceResponseStatus.Success);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("ChangeProjectMemberRoleService : {Message}", ex.Message);
+
+                return new ChangeProjectMemberRoleServiceResponse(
+                     ChangeProjectMemberRoleServiceResponseStatus.InternalError);
+            }
+        }
+
+        /// <summary>
         /// Removes OrgEmployee from project
         /// </summary>
         /// <param name="request"></param>

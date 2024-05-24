@@ -12,5 +12,6 @@ namespace Domain.Services.ApiServices
     {
         public Task<AddMemberServiceResponse> AddMember(AddMemberRequest request, string userId);
         public Task<RemoveProjectMemberServiceResponse> RemoveMember(RemoveProjectMemberRequest request, string userId);
+        public Task<ChangeProjectMemberRoleServiceResponse> ChangeMemberRole(ChangeProjectMemberRoleRequest request, string userId);
     }
 }
