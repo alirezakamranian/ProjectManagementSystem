@@ -44,10 +44,23 @@ namespace ProjectManagementSystem.ServiceExtension
         /// </summary>
         /// <param name="services"></param>
         /// <param name="builder"></param>
-        public static void ConfigureDbContext(this IServiceCollection services, WebApplicationBuilder builder) =>
-            services.AddDbContext<DataContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("PGSQL"),
-                    o => o.MigrationsAssembly("ProjectManagementSystem")));
+        public static void ConfigureDbContext(this IServiceCollection services, WebApplicationBuilder builder)
+        {
+            if (builder.Configuration["DataBase"] == "CloudDb")
+            {
+                services.AddDbContext<DataContext>(options =>
+                     options.UseNpgsql(builder.Configuration.GetConnectionString("PGSQL"),
+                         o => o.MigrationsAssembly("ProjectManagementSystem")));
+            }
+
+            if (builder.Configuration["DataBase"] == "LocalDb")
+            {
+                services.AddDbContext<DataContext>(options =>
+                    options.UseSqlServer(builder.Configuration
+                        .GetConnectionString("SqlServer"), o => o
+                            .MigrationsAssembly("ProjectManagementSystem")));
+            }
+        }
 
         //Swagger
         /// <summary>
@@ -175,7 +188,7 @@ namespace ProjectManagementSystem.ServiceExtension
 
             //TokenGeneratorw
             services.AddTransient<ITokenGenerator, TokenGenerator>();
-            //InvitationService
+            //InvitationPendingService
             services.AddTransient<IInvitationPendingManager, InvitationPendingManager>();
             //AuthorizationService
             services.AddTransient<IAuthorizationService, AuthorizationService>();
