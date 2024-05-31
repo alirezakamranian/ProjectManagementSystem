@@ -10,6 +10,7 @@ namespace Domain.Models.Dtos.Organization
     public class OrganizationEmployeeForResponseDto
     {
         public string Id { get; set; }
+        public string UserId { get; set; }
         public OrganizationEmployeesRoles Role { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
