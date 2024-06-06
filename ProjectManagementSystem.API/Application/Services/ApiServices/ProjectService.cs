@@ -227,6 +227,7 @@ namespace Application.Services.ApiServices
                     members.Add(new()
                     {
                         Id = m.Id.ToString(),
+                        UserId = m.OrganizationEmployee.User.Id,
                         Name = m.OrganizationEmployee.User.FullName,
                         Role = m.Role,
                         AvatarUrl = getMembersAvatarUrlResponse.Url

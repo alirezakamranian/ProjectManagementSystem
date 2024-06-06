@@ -197,6 +197,7 @@ namespace Application.Services.ApiServices
                     {
                         Id = e.Id.ToString(),
                         Email = e.User.Email,
+                        UserId = e.UserId,
                         Role = e.Role,
                         FullName = e.User.FullName,
                         AvatarUrl = getUrlResponse.Url
