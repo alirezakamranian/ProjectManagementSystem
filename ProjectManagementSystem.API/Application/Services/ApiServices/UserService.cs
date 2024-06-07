@@ -1,4 +1,5 @@
-﻿using Domain.Models.ApiModels.User.Response;
+﻿using Domain.Models.ApiModels.User.Request;
+using Domain.Models.ApiModels.User.Response;
 using Domain.Models.ApiModels.UserNotification.Response;
 using Domain.Models.ServiceResponses.Storage;
 using Domain.Models.ServiceResponses.User;
@@ -57,6 +58,38 @@ namespace Application.Services.ApiServices
 
                 return new GetUserDetailsServiceResponse(
                      GetUserDetailsServiceResponseStatus.InternalError);
+            }
+        }
+
+        public async Task<UpdateUserProfileServiceResponse> UpdateUserProfile(UpdateUserProfileRequest request, string userId)
+        {
+            try
+            {
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Id
+                        .Equals(request.UserId));
+
+                if (user == null)
+                    return new UpdateUserProfileServiceResponse(
+                         UpdateUserProfileServiceResponseStatus.UserNotExists);
+
+                if (user.Id != userId)
+                    return new UpdateUserProfileServiceResponse(
+                         UpdateUserProfileServiceResponseStatus.AccessDenied);
+
+                user.FullName = request.FullName;
+
+                await _context.SaveChangesAsync();
+
+                return new UpdateUserProfileServiceResponse(
+                     UpdateUserProfileServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("UpdateUserProfileService : {Message}", ex.Message);
+
+                return new UpdateUserProfileServiceResponse(
+                   UpdateUserProfileServiceResponseStatus.InternalError);
             }
         }
     }

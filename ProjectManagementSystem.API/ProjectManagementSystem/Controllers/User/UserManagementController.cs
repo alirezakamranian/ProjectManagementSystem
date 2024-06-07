@@ -1,4 +1,5 @@
 ﻿using Domain.Models.ApiModels.Organization.Response;
+using Domain.Models.ApiModels.User.Request;
 using Domain.Models.ApiModels.User.Response;
 using Domain.Models.Dtos.User;
 using Domain.Models.ServiceResponses.User;
@@ -25,7 +26,8 @@ namespace ProjectManagementSystem.Controllers.User
             var userId = HttpContext.User.Claims
                 .FirstOrDefault(c => c.Type.Equals("Id")).Value;
 
-            var serviceResponse = await _userService.GetUserDetails(userId);
+            var serviceResponse = await _userService
+                .GetUserDetails(userId);
 
             if (serviceResponse.Status == GetUserDetailsServiceResponseStatus.InternalError)
                 return StatusCode(StatusCodes.Status400BadRequest,
@@ -46,6 +48,37 @@ namespace ProjectManagementSystem.Controllers.User
                     AvatarUrl = serviceResponse.AvatarUrl
                 }
             });
+        }
+
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> UpdateUserProfile(UpdateUserProfileRequest request)
+        {
+            var userId = HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _userService
+                .UpdateUserProfile(request, userId);
+
+            if (serviceResponse.Status == UpdateUserProfileServiceResponseStatus.AccessDenied||
+                serviceResponse.Status == UpdateUserProfileServiceResponseStatus.UserNotExists)
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new UpdateUserProfileResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            if (serviceResponse.Status == UpdateUserProfileServiceResponseStatus.InternalError)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new UpdateUserProfileResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new UpdateUserProfileResponse
+            {
+                Message = serviceResponse.Status
+            });                    
         }
     }
 }
