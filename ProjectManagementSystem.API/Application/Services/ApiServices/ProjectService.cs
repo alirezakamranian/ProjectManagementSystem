@@ -172,8 +172,9 @@ namespace Application.Services.ApiServices
                             .ThenInclude(e => e.User)
                                 .Include(p => p.ProjectTaskLists)
                                     .ThenInclude(tl => tl.ProjectTasks)
-                                        .AsNoTracking().FirstOrDefaultAsync
-                                            (p => p.Id.ToString().Equals(request.ProjectId));
+                                        .ThenInclude(t=>t.Assignment)
+                                            .AsNoTracking().FirstOrDefaultAsync
+                                                (p => p.Id.ToString().Equals(request.ProjectId));
 
                 if (project == null)
                     return new GetProjectServiceResponse(
@@ -199,13 +200,23 @@ namespace Application.Services.ApiServices
 
                     foreach (var t in tl.ProjectTasks)
                     {
-                        tasks.Add(new()
+                        var task = new ProjectTaskForResponseDto()
                         {
                             Id = t.Id.ToString(),
                             Title = t.Title,
                             Description = t.Description,
-                            Priority = t.Priority
-                        });
+                            Priority = t.Priority,
+                        };
+
+                        if (t.Assignment != null)
+                            task.Assignment = new()
+                            {
+                                Id = t.Assignment.Id.ToString(),
+                                MemberId = t.Assignment.ProjectMemberId.ToString(),
+                                Description = t.Assignment.Description
+                            };
+
+                        tasks.Add(task);
                     }
 
                     taskLists.Add(new()

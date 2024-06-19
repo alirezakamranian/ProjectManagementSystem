@@ -27,5 +27,7 @@ namespace Domain.Entities.Project.ProjectTask
         [ForeignKey(nameof(ProjectTaskListId))]
         public ProjectTaskList ProjectTaskList { get; set; }
 
+        //AssignmentRel
+        public TaskAssignment Assignment { get; set; }
     }
 }
