@@ -3,6 +3,7 @@ using System;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ProjectManagementSystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240619093928_add-Assignment")]
+    partial class addAssignment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -307,15 +310,9 @@ namespace ProjectManagementSystem.Migrations
                     b.Property<Guid>("ProjectMemberId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ProjectTaskId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectMemberId")
-                        .IsUnique();
-
-                    b.HasIndex("ProjectTaskId")
                         .IsUnique();
 
                     b.ToTable("TaskAssignment");
@@ -548,15 +545,7 @@ namespace ProjectManagementSystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Project.ProjectTask.ProjectTask", "projectTask")
-                        .WithOne("Assignment")
-                        .HasForeignKey("Domain.Entities.Project.ProjectTask.TaskAssignment", "ProjectTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Member");
-
-                    b.Navigation("projectTask");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -641,11 +630,6 @@ namespace ProjectManagementSystem.Migrations
                     b.Navigation("ProjectMembers");
 
                     b.Navigation("ProjectTaskLists");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Project.ProjectTask.ProjectTask", b =>
-                {
-                    b.Navigation("Assignment");
                 });
 
             modelBuilder.Entity("Domain.Entities.Project.ProjectTask.ProjectTaskList", b =>

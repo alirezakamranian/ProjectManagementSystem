@@ -30,5 +30,8 @@ namespace Domain.Entities.HumanResource
 
         [ForeignKey("OrganizationEmployeeId")]
         public OrganizationEmployee OrganizationEmployee { get; set; }
+
+        //AssignmentRel
+        public TaskAssignment TaskAssignment { get; set; }
     }
 }
