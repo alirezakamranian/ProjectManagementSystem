@@ -11,5 +11,6 @@ namespace Domain.Services.ApiServices
     public interface ITaskAssignmentService
     {
         public Task<AssignTaskServiceResponse> AssignTask(AssignTaskRequest request,string userId);
+        public Task<RemoveTaskAssignmentServiceResponse> RemoveAssignment(RemoveAssignmentRequest request,string userId);
     }
 }
