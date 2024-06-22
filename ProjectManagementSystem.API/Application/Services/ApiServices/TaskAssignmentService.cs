@@ -76,5 +76,48 @@ namespace Application.Services.ApiServices
                      AssignTaskServiceResponseStatus.InternalError);
             }
         }
+
+        public async Task<RemoveTaskAssignmentServiceResponse> RemoveAssignment(RemoveAssignmentRequest request, string userId)
+        {
+            try
+            {
+                var task = await _context.ProjectTasks.Include(t => t.Assignment)
+                    .FirstOrDefaultAsync(t => t.Id.ToString()
+                        .Equals(request.TaskId));
+
+                if (task == null)
+                    return new RemoveTaskAssignmentServiceResponse(
+                         RemoveTaskAssignmentServiceResponseStatus.TaskNotExists);
+
+                if (task.Assignment == null)
+                    return new RemoveTaskAssignmentServiceResponse(
+                         RemoveTaskAssignmentServiceResponseStatus.AssignmentNotExists);
+
+                var taskList = await _context.ProjectTaskLists
+                    .AsNoTracking().FirstOrDefaultAsync(tl => tl.Id
+                        .Equals(task.ProjectTaskListId));
+
+                var authResult = await _authService.AuthorizeByProjectId(
+                    taskList.ProjectId, userId, [ProjectMemberRoles.Member]);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
+                    return new RemoveTaskAssignmentServiceResponse(
+                         RemoveTaskAssignmentServiceResponseStatus.AccessDenied);
+
+                _context.Remove(task.Assignment);
+
+                await _context.SaveChangesAsync();
+
+                return new RemoveTaskAssignmentServiceResponse(
+                     RemoveTaskAssignmentServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("RemoveAssignmentService : {Message}", ex.Message);
+
+                return new RemoveTaskAssignmentServiceResponse(
+                     RemoveTaskAssignmentServiceResponseStatus.InternalError);
+            }
+        }
     }
 }

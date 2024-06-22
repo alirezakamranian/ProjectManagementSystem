@@ -1,4 +1,5 @@
-﻿using Domain.Models.ApiModels.Organization.Response;
+﻿using Azure.Core;
+using Domain.Models.ApiModels.Organization.Response;
 using Domain.Models.ApiModels.TaskAssignment.Request;
 using Domain.Models.ApiModels.TaskAssignment.Response;
 using Domain.Models.ServiceResponses.Organization;
@@ -44,6 +45,37 @@ namespace ProjectManagementSystem.Controllers.TaskAssignment
                         });
 
             return Ok(new AssignTaskResponse
+            {
+                Message = serviceResponse.Status
+            });
+        }
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> Remove([FromQuery] string taskId)
+        {
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _assignmentService
+                .RemoveAssignment(new() {TaskId = taskId }, userId);
+
+            if (serviceResponse.Status.Equals(RemoveTaskAssignmentServiceResponseStatus.AccessDenied) ||
+               serviceResponse.Status.Equals(RemoveTaskAssignmentServiceResponseStatus.TaskNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                        new RemoveAssignmentResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            if (serviceResponse.Status.Equals(RemoveTaskAssignmentServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new RemoveAssignmentResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new RemoveAssignmentResponse
             {
                 Message = serviceResponse.Status
             });
