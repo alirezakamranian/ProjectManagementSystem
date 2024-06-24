@@ -124,7 +124,8 @@ namespace Application.Services.ApiServices
                 var notification = await _context.Notifications
                     .AsNoTracking().FirstOrDefaultAsync(n =>
                         n.UserId.Equals(targetUser.Id) &&
-                            n.Issuer.Equals(issuerUser.Email));
+                            n.Issuer.Equals(issuerUser.Email)&&
+                                n.Type.Equals(NotificationTypes.Invite));
 
                 _context.InvitationPendings.Add(new InvitationPending
                 {

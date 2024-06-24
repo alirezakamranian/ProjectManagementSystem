@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ProjectManagementSystem.Controllers.TaskAssignment
 {
-    [Route("api/TaskAssignment")]
+    [Route("TaskAssignment")]
     [ApiController]
     public class TaskAssignmentController(ITaskAssignmentService assignmentService) : ControllerBase
     {
