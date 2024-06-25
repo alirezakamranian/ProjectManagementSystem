@@ -17,7 +17,7 @@ namespace Infrastructure.DataAccess
         /// Entities configuration (This entities also exists as a table in database)
         /// NOTE:All of these entities are defined in Entities folder in Domain layer and all relationships are defined in entities themselves
         /// </summary>
-        
+
         //HumanResource
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationEmployee> OrganizationEmployees { get; set; }
@@ -27,18 +27,26 @@ namespace Infrastructure.DataAccess
         public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectTaskList> ProjectTaskLists { get; set; }
         public DbSet<ProjectTask> ProjectTasks { get; set; }
-       
+        public DbSet<TaskAssignment> TaskAssignments { get; set; }
+
         //Common
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<InvitationPending> InvitationPendings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {           
+        {
             modelBuilder.Entity<Project>()
-                .HasMany(o => o.ProjectMembers)             
-                  .WithOne(pm => pm.Project)                 
+                .HasMany(o => o.ProjectMembers)
+                  .WithOne(pm => pm.Project)
                     .HasForeignKey(pm => pm.ProjectId)
                        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProjectMember>()
+                .HasMany(m => m.TaskAssignments)
+                    .WithOne(a => a.Member)
+                        .HasForeignKey(a => a.ProjectMemberId)
+                            .OnDelete(DeleteBehavior.Restrict);
+
 
             base.OnModelCreating(modelBuilder);
         }

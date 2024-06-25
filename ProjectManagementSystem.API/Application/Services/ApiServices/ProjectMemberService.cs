@@ -157,10 +157,11 @@ namespace Application.Services.ApiServices
             try
             {
                 var project = await _context.Projects
-                .Include(p => p.ProjectMembers).AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.Id
-                        .ToString().Equals(request.ProjectId));
-
+                    .Include(p => p.ProjectMembers)
+                        .ThenInclude(pm => pm.TaskAssignments)  
+                            .AsNoTracking().FirstOrDefaultAsync(p =>
+                                p.Id.ToString().Equals(request.ProjectId));
+                    
                 if (project == null)
                     return new RemoveProjectMemberServiceResponse(
                          RemoveProjectMemberServiceResponseStatus.ProjectNotExists);
@@ -186,13 +187,14 @@ namespace Application.Services.ApiServices
                     return new RemoveProjectMemberServiceResponse(
                          RemoveProjectMemberServiceResponseStatus.LeaderCanNotRemoved);
 
+                _context.TaskAssignments.RemoveRange(member.TaskAssignments);
+
                 _context.ProjectMembers.Remove(member);
 
                 await _context.SaveChangesAsync();
 
                 return new RemoveProjectMemberServiceResponse(
                      RemoveProjectMemberServiceResponseStatus.Success);
-
             }
             catch (Exception ex)
             {
