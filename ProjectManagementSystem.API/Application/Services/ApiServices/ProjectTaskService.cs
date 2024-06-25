@@ -21,7 +21,7 @@ namespace Application.Services.ApiServices
         IAuthorizationService authService) : IProjectTaskService
     {
         private readonly DataContext _context = context;
-        private readonly ILogger<ProjectTaskService> _logger = logger;
+        private readonly ILogger _logger = logger;
         private readonly IAuthorizationService _authService = authService;
 
         /// <summary>

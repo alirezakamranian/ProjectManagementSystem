@@ -224,7 +224,7 @@ namespace Application.Services.ApiServices
                         Id = tl.Id.ToString(),
                         Name = tl.Name,
                         Priority = tl.Priority,
-                        Tasks = tasks.OrderBy(t => t.Priority).ToList()
+                        Tasks = [.. tasks.OrderBy(t => t.Priority)]
                     });
                 }
 
@@ -256,7 +256,7 @@ namespace Application.Services.ApiServices
                         AvatarLink = getUrlResponse.Url,
                         Status = project.Status,
                         Members = members,
-                        ProjectTaskLists = taskLists.OrderBy(tl => tl.Priority).ToList()
+                        ProjectTaskLists = [.. taskLists.OrderBy(tl => tl.Priority)]
                     },
                     AvatarUrl = getUrlResponse.Url
                 };

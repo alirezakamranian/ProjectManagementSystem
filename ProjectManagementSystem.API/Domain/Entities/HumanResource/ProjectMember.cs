@@ -32,6 +32,6 @@ namespace Domain.Entities.HumanResource
         public OrganizationEmployee OrganizationEmployee { get; set; }
 
         //AssignmentRel
-        public TaskAssignment TaskAssignment { get; set; }
+        public List<TaskAssignment> TaskAssignments { get; set; }
     }
 }
