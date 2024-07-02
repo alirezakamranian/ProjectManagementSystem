@@ -4,18 +4,21 @@ using Amazon.S3.Transfer;
 using Domain.Models.InternalSerives.Storage.Request;
 using Domain.Models.ServiceResponses.Storage;
 using Domain.Services.InternalServices;
+using Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Services.ApiServices
 {
     public class StorageService(IConfiguration configuration,
-       ILogger<StorageService> logger) : IStorageService
+       ILogger<StorageService> logger,
+       DataContext context) : IStorageService
     {
         private static IAmazonS3 _s3Client;
         private readonly IConfiguration _configuration = configuration;
         private readonly ILogger<StorageService> _logger = logger;
-
+        private readonly DataContext _context = context;
         /// <summary>
         /// Uploads file to storage
         /// </summary>
@@ -53,6 +56,14 @@ namespace Application.Services.ApiServices
                     await fileTransferUtility.UploadAsync(uploadRequest);
                 }
 
+                _context.StorageItemsUrls.Add(new()
+                {
+                    TargetEntityId = request.Key.ToString(),
+                    Url = $"https://projectmanagementsystem.s3.ir-thr-at1.arvanstorage.ir/{request.Key}"
+                });
+
+                await _context.SaveChangesAsync();
+
                 return new UploadFileServiceResponse(
                      Domain.Models.ServiceResponses.Base.ServiceResponseStatusBase.Success);
             }
@@ -74,38 +85,22 @@ namespace Application.Services.ApiServices
         {
             try
             {
-                var awsCredentials = new Amazon.Runtime
-                   .BasicAWSCredentials(
-                   _configuration["AwsS3:AccessKey"],
-                   _configuration["AwsS3:SecretKey"]);
+                var ItemFileUrl = await _context.StorageItemsUrls
+                    .FirstOrDefaultAsync(s => s.TargetEntityId
+                        .Equals(request.FileKey));
 
-                var config = new AmazonS3Config
-                { ServiceURL = _configuration["AwsS3:UrlAdress"] };
-
-                _s3Client = new AmazonS3Client
-                    (awsCredentials, config);
-
-                var riquest = new ListObjectsV2Request()
-                {
-                    BucketName = "projectmanagementsystem",
-                    Prefix = request.FileKey
-                };
-
-                var existResponse = await _s3Client
-                    .ListObjectsV2Async(riquest);
-
-                if (!(existResponse.S3Objects.Count > 0))
-                return new GetFileUrlServiceResponse(
-                    GetFileUrlServiceResponseStatus.Success)
-                {
-                    Url = null
-                };
+                if (ItemFileUrl == null)
+                    return new GetFileUrlServiceResponse(
+                         GetFileUrlServiceResponseStatus.Success)
+                    {
+                        Url = null
+                    };
 
 
                 return new GetFileUrlServiceResponse(
                      GetFileUrlServiceResponseStatus.Success)
                 {
-                    Url = $"https://projectmanagementsystem.s3.ir-thr-at1.arvanstorage.ir/{request.FileKey}"
+                    Url = ItemFileUrl.Url
                 };
             }
             catch (Exception ex)
