@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ProjectManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,6 +63,19 @@ namespace ProjectManagementSystem.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_InvitationPendings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StorageItemsUrls",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Url = table.Column<string>(type: "text", nullable: false),
+                    TargetEntityId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StorageItemsUrls", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -242,12 +255,10 @@ namespace ProjectManagementSystem.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "character varying(700)", maxLength: 700, nullable: true),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DeadLine = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: true),
                     LeaderId = table.Column<string>(type: "text", nullable: true),
-                    OrganizationId = table.Column<Guid>(type: "uuid", nullable: false)
+                    OrganizationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Creationlevel = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -323,6 +334,32 @@ namespace ProjectManagementSystem.Migrations
                         name: "FK_ProjectTasks_ProjectTaskLists_ProjectTaskListId",
                         column: x => x.ProjectTaskListId,
                         principalTable: "ProjectTaskLists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaskAssignments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    ProjectMemberId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProjectTaskId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskAssignments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TaskAssignments_ProjectMembers_ProjectMemberId",
+                        column: x => x.ProjectMemberId,
+                        principalTable: "ProjectMembers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TaskAssignments_ProjectTasks_ProjectTaskId",
+                        column: x => x.ProjectTaskId,
+                        principalTable: "ProjectTasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -408,6 +445,17 @@ namespace ProjectManagementSystem.Migrations
                 name: "IX_ProjectTasks_ProjectTaskListId",
                 table: "ProjectTasks",
                 column: "ProjectTaskListId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAssignments_ProjectMemberId",
+                table: "TaskAssignments",
+                column: "ProjectMemberId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAssignments_ProjectTaskId",
+                table: "TaskAssignments",
+                column: "ProjectTaskId",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -435,13 +483,19 @@ namespace ProjectManagementSystem.Migrations
                 name: "Notifications");
 
             migrationBuilder.DropTable(
+                name: "StorageItemsUrls");
+
+            migrationBuilder.DropTable(
+                name: "TaskAssignments");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
                 name: "ProjectMembers");
 
             migrationBuilder.DropTable(
                 name: "ProjectTasks");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "OrganizationEmployees");

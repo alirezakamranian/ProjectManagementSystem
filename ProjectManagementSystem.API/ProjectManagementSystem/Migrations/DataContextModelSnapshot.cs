@@ -71,6 +71,25 @@ namespace ProjectManagementSystem.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Common.StorageItemUrl", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TargetEntityId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StorageItemsUrls");
+                });
+
             modelBuilder.Entity("Domain.Entities.HumanResource.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")

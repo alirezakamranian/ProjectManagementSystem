@@ -255,7 +255,7 @@ namespace Application.Services.ApiServices
                     foreach (var p in org.Projects)
                     {
                         var getUrlResponse = await _storageService.GetUrl(
-                            new() { FileKey = p.Id.ToString() });
+                              new() { FileKey = p.Id.ToString() });
 
                         if (p.ProjectMembers.Any(pm => pm.OrganizationEmployeeId
                             .Equals(employee.Id) || employee.Role
@@ -265,7 +265,7 @@ namespace Application.Services.ApiServices
                                 Id = p.Id.ToString(),
                                 Name = p.Name,
                                 AvatarUrl = getUrlResponse.Url
-                            });
+                            });  
                     }
 
                     userOrgs.Add(new OrganizationForResponsteDto()
@@ -274,7 +274,7 @@ namespace Application.Services.ApiServices
                         Name = org.Name,
                         Projects = projects,
                         LeaderId = org.OwnerId,
-                        AvatarUrl = avatarUrl.Url
+                        AvatarUrl =avatarUrl.Url
                     });
                 }
 
