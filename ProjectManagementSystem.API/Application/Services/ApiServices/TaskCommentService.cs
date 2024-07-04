@@ -1,0 +1,86 @@
+﻿using Domain.Constants.AuthorizationResponses;
+using Domain.Constants.Roles.OrganiationEmployees;
+using Domain.Models.ApiModels.TaskComment.Request;
+using Domain.Models.ServiceResponses.Project;
+using Domain.Models.ServiceResponses.TaskComment;
+using Domain.Services.ApiServices;
+using Domain.Services.InternalServices;
+using Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Application.Services.ApiServices
+{
+    public class TaskCommentService(DataContext context,
+        ILogger<ProjectTaskService> logger,
+        IAuthorizationService authService) : ITaskCommentService
+    {
+        private readonly DataContext _context = context;
+        private readonly ILogger _logger = logger;
+        private readonly IAuthorizationService _authService = authService;
+
+        public async Task<AddTaskCommentServiceResponse> AddComment(AddTaskCommentRequest request, string userId)
+        {
+            try
+            {
+                var task = await _context.ProjectTasks
+                    .FirstOrDefaultAsync(t => t.Id.ToString()
+                        .Equals(request.TaskId));
+
+                if (task == null)
+                    return new AddTaskCommentServiceResponse(
+                         AddTaskCommentServiceResponseStatus.TaskNotExists);
+
+                await _context.Entry(task).Reference(t => t.ProjectTaskList).LoadAsync();
+
+                var authResult = await _authService.AuthorizeByProjectId(
+                    task.ProjectTaskList.ProjectId, userId, [ProjectMemberRoles.Member]);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
+                    return new AddTaskCommentServiceResponse(
+                         AddTaskCommentServiceResponseStatus.AccessDenied);
+
+                var project = await _context.Projects
+                   .Select(p => new { p.OrganizationId, p.Id })
+                       .FirstOrDefaultAsync(p => p.Id.Equals(
+                           task.ProjectTaskList.ProjectId));
+
+                var employee = await _context.OrganizationEmployees
+                    .Select(e => new { e.OrganizationId, e.Id })
+                        .FirstOrDefaultAsync(e => e.OrganizationId
+                            .Equals(project.OrganizationId));
+
+                var member = await _context.ProjectMembers
+                    .Select(pm => new { pm.Id, pm.OrganizationEmployeeId, pm.ProjectId})
+                        .FirstOrDefaultAsync(pm => pm.OrganizationEmployeeId
+                            .Equals(employee.Id) && pm.ProjectId.Equals(project.Id));
+
+                await _context.Entry(task).Collection(t => t.Comments).LoadAsync();
+
+                task.Comments.Add(new()
+                {
+                    Text = request.Text,
+                    MemberId = member.Id,
+                    TaskId = task.Id
+                });
+
+                await _context.SaveChangesAsync();
+
+                return new AddTaskCommentServiceResponse(
+                     AddTaskCommentServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("AddTaskCommentService : {Message}", ex.Message);
+
+                return new AddTaskCommentServiceResponse(
+                     AddTaskCommentServiceResponseStatus.InternalError);
+            }
+        }
+    }
+}

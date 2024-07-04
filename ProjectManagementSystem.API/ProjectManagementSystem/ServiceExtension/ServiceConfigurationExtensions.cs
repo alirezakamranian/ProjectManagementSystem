@@ -185,6 +185,8 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddTransient<ITaskAssignmentService, TaskAssignmentService>();
             //StorageService
             services.AddTransient<IStorageService, StorageService>();
+            //TaskCommentService
+            services.AddTransient<ITaskCommentService, TaskCommentService>();
 
             /*InternalServices*/
 

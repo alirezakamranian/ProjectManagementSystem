@@ -28,6 +28,7 @@ namespace Infrastructure.DataAccess
         public DbSet<ProjectTaskList> ProjectTaskLists { get; set; }
         public DbSet<ProjectTask> ProjectTasks { get; set; }
         public DbSet<TaskAssignment> TaskAssignments { get; set; }
+        public DbSet<TaskComment> TaskComments { get; set; }
 
         //Common
         public DbSet<Notification> Notifications { get; set; }
