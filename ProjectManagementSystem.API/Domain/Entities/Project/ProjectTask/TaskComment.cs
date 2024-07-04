@@ -9,19 +9,21 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.Project.ProjectTask
 {
-    public class TaskAssignment
+    public class TaskComment
     {
         [Key]
         public Guid Id { get; set; }
+        public string Text { get; set; }
 
-        public string Description { get; set; }
-
-        public Guid ProjectMemberId { get; set; }
-        [ForeignKey(nameof(ProjectMemberId))]
+        //ProjectMemberRel
+        public Guid MemberId { get; set; }
+        [ForeignKey(nameof(MemberId))]
         public ProjectMember Member { get; set; }
 
-        public Guid ProjectTaskId { get; set; }
-        [ForeignKey(nameof(ProjectTaskId))]
-        public ProjectTask ProjectTask { get; set; }
+        //ProjectTaskRel
+        public Guid TaskId { get; set; }
+        [ForeignKey(nameof (TaskId))]
+        public ProjectTask Task { get; set; }
+
     }
 }

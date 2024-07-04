@@ -29,5 +29,8 @@ namespace Domain.Entities.Project.ProjectTask
 
         //AssignmentRel
         public TaskAssignment Assignment { get; set; }
+
+        //TaskCommentRel
+        public List<TaskComment> Comments { get; set; }
     }
 }

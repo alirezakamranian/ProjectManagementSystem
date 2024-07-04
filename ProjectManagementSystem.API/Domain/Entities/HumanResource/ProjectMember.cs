@@ -33,5 +33,8 @@ namespace Domain.Entities.HumanResource
 
         //AssignmentRel
         public List<TaskAssignment> TaskAssignments { get; set; }
+
+        //TaskCommentRel
+        public List<TaskComment> Comments { get; set; }
     }
 }
