@@ -47,5 +47,37 @@ namespace ProjectManagementSystem.Controllers.TaskComment
                 Message = serviceResponse.Status
             });
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetComments([FromQuery] string taskId)
+        {
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse =await _taskCommentService
+                .GetTaskComments(new() {TaskId=taskId},userId);
+
+            if (serviceResponse.Status.Equals(GetTaskCommentServiceResponseStatus.AccessDenied) ||
+               serviceResponse.Status.Equals(GetTaskCommentServiceResponseStatus.TaskNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                       new GetTaskCommentsResponse
+                       {
+                           Message = serviceResponse.Status
+                       });
+
+            if (serviceResponse.Status.Equals(GetTaskCommentServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new GetTaskCommentsResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new GetTaskCommentsResponse
+            {
+                Message = serviceResponse.Status,
+                Comments = serviceResponse.Comments
+            });
+        }
     }
 }

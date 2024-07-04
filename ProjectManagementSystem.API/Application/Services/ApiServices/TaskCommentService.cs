@@ -1,6 +1,7 @@
 ﻿using Domain.Constants.AuthorizationResponses;
 using Domain.Constants.Roles.OrganiationEmployees;
 using Domain.Models.ApiModels.TaskComment.Request;
+using Domain.Models.Dtos.Task;
 using Domain.Models.ServiceResponses.Project;
 using Domain.Models.ServiceResponses.TaskComment;
 using Domain.Services.ApiServices;
@@ -36,10 +37,12 @@ namespace Application.Services.ApiServices
                     return new AddTaskCommentServiceResponse(
                          AddTaskCommentServiceResponseStatus.TaskNotExists);
 
-                await _context.Entry(task).Reference(t => t.ProjectTaskList).LoadAsync();
+                await _context.Entry(task).Reference(
+                    t => t.ProjectTaskList).LoadAsync();
 
-                var authResult = await _authService.AuthorizeByProjectId(
-                    task.ProjectTaskList.ProjectId, userId, [ProjectMemberRoles.Member]);
+                var authResult = await _authService
+                    .AuthorizeByProjectId(task.ProjectTaskList.ProjectId,
+                        userId, [ProjectMemberRoles.Member]);
 
                 if (authResult.Equals(AuthorizationResponse.Deny))
                     return new AddTaskCommentServiceResponse(
@@ -56,11 +59,12 @@ namespace Application.Services.ApiServices
                             .Equals(project.OrganizationId));
 
                 var member = await _context.ProjectMembers
-                    .Select(pm => new { pm.Id, pm.OrganizationEmployeeId, pm.ProjectId})
+                    .Select(pm => new { pm.Id, pm.OrganizationEmployeeId, pm.ProjectId })
                         .FirstOrDefaultAsync(pm => pm.OrganizationEmployeeId
                             .Equals(employee.Id) && pm.ProjectId.Equals(project.Id));
 
-                await _context.Entry(task).Collection(t => t.Comments).LoadAsync();
+                await _context.Entry(task).Collection(
+                    t => t.Comments).LoadAsync();
 
                 task.Comments.Add(new()
                 {
@@ -81,6 +85,47 @@ namespace Application.Services.ApiServices
                 return new AddTaskCommentServiceResponse(
                      AddTaskCommentServiceResponseStatus.InternalError);
             }
+        }
+
+        public async Task<GetTaskCommentServiceResponse> GetTaskComments(GetTaskCommentsRequest request, string userId)
+        {
+            var task = await _context.ProjectTasks
+                    .FirstOrDefaultAsync(t => t.Id.ToString()
+                        .Equals(request.TaskId));
+
+            if (task == null)
+                return new GetTaskCommentServiceResponse(
+                     GetTaskCommentServiceResponseStatus.TaskNotExists);
+
+            await _context.Entry(task).Reference(t => t.ProjectTaskList).LoadAsync();
+
+            var authResult = await _authService.AuthorizeByProjectId(
+                task.ProjectTaskList.ProjectId, userId);
+
+            if (authResult.Equals(AuthorizationResponse.Deny))
+                return new GetTaskCommentServiceResponse(
+                     GetTaskCommentServiceResponseStatus.AccessDenied);
+
+            await _context.Entry(task).Collection(
+                 t => t.Comments).LoadAsync();
+
+            List<TaskCommentForResponseDto> comments = [];
+
+            foreach (var c in task.Comments)
+            {
+                comments.Add(new()
+                {
+                    MemberId = c.MemberId.ToString(),
+                    TaskId = c.TaskId.ToString(),
+                    Text = c.Text
+                });
+            }
+
+            return new GetTaskCommentServiceResponse(
+                 GetTaskCommentServiceResponseStatus.Success)
+            {
+                Comments = comments
+            };
         }
     }
 }
