@@ -11,5 +11,6 @@ namespace Domain.Services.ApiServices
     public interface ITaskCommentService
     {
         public Task<AddTaskCommentServiceResponse> AddComment(AddTaskCommentRequest request, string userId);
+        public Task<GetTaskCommentServiceResponse> GetTaskComments(GetTaskCommentsRequest request, string userId);
     }
 }
