@@ -12,5 +12,6 @@ namespace Domain.Services.ApiServices
     {
         public Task<AddTaskCommentServiceResponse> AddComment(AddTaskCommentRequest request, string userId);
         public Task<GetTaskCommentServiceResponse> GetTaskComments(GetTaskCommentsRequest request, string userId);
+        public Task<RemoveTaskCommentServiceResponse> RemoveTaskComment(RemoveTaskCommentRequest request, string userId);
     }
 }

@@ -89,43 +89,96 @@ namespace Application.Services.ApiServices
 
         public async Task<GetTaskCommentServiceResponse> GetTaskComments(GetTaskCommentsRequest request, string userId)
         {
-            var task = await _context.ProjectTasks
-                    .FirstOrDefaultAsync(t => t.Id.ToString()
-                        .Equals(request.TaskId));
-
-            if (task == null)
-                return new GetTaskCommentServiceResponse(
-                     GetTaskCommentServiceResponseStatus.TaskNotExists);
-
-            await _context.Entry(task).Reference(t => t.ProjectTaskList).LoadAsync();
-
-            var authResult = await _authService.AuthorizeByProjectId(
-                task.ProjectTaskList.ProjectId, userId);
-
-            if (authResult.Equals(AuthorizationResponse.Deny))
-                return new GetTaskCommentServiceResponse(
-                     GetTaskCommentServiceResponseStatus.AccessDenied);
-
-            await _context.Entry(task).Collection(
-                 t => t.Comments).LoadAsync();
-
-            List<TaskCommentForResponseDto> comments = [];
-
-            foreach (var c in task.Comments)
+            try
             {
-                comments.Add(new()
+                var task = await _context.ProjectTasks
+                  .FirstOrDefaultAsync(t => t.Id.ToString()
+                      .Equals(request.TaskId));
+
+                if (task == null)
+                    return new GetTaskCommentServiceResponse(
+                         GetTaskCommentServiceResponseStatus.TaskNotExists);
+
+                await _context.Entry(task).Reference(t => t.ProjectTaskList).LoadAsync();
+
+                var authResult = await _authService.AuthorizeByProjectId(
+                    task.ProjectTaskList.ProjectId, userId);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
+                    return new GetTaskCommentServiceResponse(
+                         GetTaskCommentServiceResponseStatus.AccessDenied);
+
+                await _context.Entry(task).Collection(
+                     t => t.Comments).LoadAsync();
+
+                List<TaskCommentForResponseDto> comments = [];
+
+                foreach (var c in task.Comments)
                 {
-                    MemberId = c.MemberId.ToString(),
-                    TaskId = c.TaskId.ToString(),
-                    Text = c.Text
-                });
-            }
+                    comments.Add(new()
+                    {
+                        MemberId = c.MemberId.ToString(),
+                        TaskId = c.TaskId.ToString(),
+                        Text = c.Text,
+                        Id=c.Id.ToString()
+                    });
+                }
 
-            return new GetTaskCommentServiceResponse(
-                 GetTaskCommentServiceResponseStatus.Success)
+                return new GetTaskCommentServiceResponse(
+                     GetTaskCommentServiceResponseStatus.Success)
+                {
+                    Comments = comments
+                };
+            }
+            catch (Exception ex)
             {
-                Comments = comments
-            };
+                _logger.LogError("GetTaskCommentService : {Message}", ex.Message);
+
+                return new GetTaskCommentServiceResponse(
+                     GetTaskCommentServiceResponseStatus.InternalError);
+            }
+        }
+
+        public async Task<RemoveTaskCommentServiceResponse> RemoveTaskComment(RemoveTaskCommentRequest request, string userId)
+        {
+            try
+            {
+                var comment = await _context.TaskComments
+                    .FirstOrDefaultAsync(c => c.Id.ToString()
+                        .Equals(request.CommentId));
+
+                if (comment == null)
+                    return new RemoveTaskCommentServiceResponse(
+                         RemoveTaskCommentServiceResponseStatus.CommentNotExists);
+
+                var task = await _context.ProjectTasks
+                    .FirstOrDefaultAsync(t => t.Id
+                        .Equals(comment.TaskId));
+
+                await _context.Entry(task).Reference(
+                    t => t.ProjectTaskList).LoadAsync();
+
+                var authResult = await _authService.AuthorizeByProjectId(
+                    task.ProjectTaskList.ProjectId, userId);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
+                    return new RemoveTaskCommentServiceResponse(
+                         RemoveTaskCommentServiceResponseStatus.AccessDenied);
+
+                _context.TaskComments.Remove(comment);
+
+                await _context.SaveChangesAsync();
+
+                return new RemoveTaskCommentServiceResponse(
+                     RemoveTaskCommentServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("RemoveTaskCommentService : {Message}", ex.Message);
+
+                return new RemoveTaskCommentServiceResponse(
+                     RemoveTaskCommentServiceResponseStatus.InternalError);
+            }
         }
     }
 }

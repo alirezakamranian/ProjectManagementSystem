@@ -8,6 +8,7 @@ namespace Domain.Models.Dtos.Task
 {
     public class TaskCommentForResponseDto
     {
+        public string Id { get; set; }
         public string TaskId { get; set; }
         public string MemberId { get; set; }
         public string Text { get; set; }

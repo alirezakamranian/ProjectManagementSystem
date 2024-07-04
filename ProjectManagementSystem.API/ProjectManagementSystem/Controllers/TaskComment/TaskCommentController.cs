@@ -8,6 +8,7 @@ using Domain.Services.ApiServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ProjectManagementSystem.Controllers.TaskComment
 {
@@ -77,6 +78,37 @@ namespace ProjectManagementSystem.Controllers.TaskComment
             {
                 Message = serviceResponse.Status,
                 Comments = serviceResponse.Comments
+            });
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> RemoveComment(RemoveTaskCommentRequest request)
+        {
+            var userId = HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _taskCommentService
+                .RemoveTaskComment(request,userId);
+
+            if (serviceResponse.Status.Equals(RemoveTaskCommentServiceResponseStatus.AccessDenied) ||
+               serviceResponse.Status.Equals(RemoveTaskCommentServiceResponseStatus.CommentNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                       new RemoveTaskCommentResponse
+                       {
+                           Message = serviceResponse.Status
+                       });
+
+            if (serviceResponse.Status.Equals(RemoveTaskCommentServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new RemoveTaskCommentResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new RemoveTaskCommentResponse
+            {
+                Message = serviceResponse.Status
             });
         }
     }
