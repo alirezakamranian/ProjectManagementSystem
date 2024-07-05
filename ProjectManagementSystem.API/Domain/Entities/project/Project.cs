@@ -37,6 +37,9 @@ namespace Domain.Entities.Project
         //ProjMemberRel
         public List<ProjectMember> ProjectMembers { get; set; }
 
+        //LableRel
+        public List<TaskLable> Lables { get; set; }
+
         public string Creationlevel { get; set; }
     }
 }
