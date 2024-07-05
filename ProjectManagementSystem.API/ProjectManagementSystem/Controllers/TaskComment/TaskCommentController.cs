@@ -92,7 +92,7 @@ namespace ProjectManagementSystem.Controllers.TaskComment
                 .RemoveTaskComment(request,userId);
 
             if (serviceResponse.Status.Equals(RemoveTaskCommentServiceResponseStatus.AccessDenied) ||
-               serviceResponse.Status.Equals(RemoveTaskCommentServiceResponseStatus.CommentNotExists))
+                serviceResponse.Status.Equals(RemoveTaskCommentServiceResponseStatus.CommentNotExists))
                 return StatusCode(StatusCodes.Status400BadRequest,
                        new RemoveTaskCommentResponse
                        {
@@ -107,6 +107,37 @@ namespace ProjectManagementSystem.Controllers.TaskComment
                         });
 
             return Ok(new RemoveTaskCommentResponse
+            {
+                Message = serviceResponse.Status
+            });
+        }
+
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> UpdateComment(UpdateTaskCommentRequest request)
+        {
+            var userId = HttpContext.User.Claims
+              .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _taskCommentService
+                .UpdateTaskComment(request, userId);
+
+            if (serviceResponse.Status.Equals(UpdateTaskCommentServiceResponseStatus.AccessDenied) ||
+               serviceResponse.Status.Equals(UpdateTaskCommentServiceResponseStatus.CommentNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                       new UpdateTaskCommentResponse
+                       {
+                           Message = serviceResponse.Status
+                       });
+
+            if (serviceResponse.Status.Equals(UpdateTaskCommentServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new UpdateTaskCommentResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new UpdateTaskCommentResponse
             {
                 Message = serviceResponse.Status
             });
