@@ -172,9 +172,14 @@ namespace Application.Services.ApiServices
                             .ThenInclude(e => e.User)
                                 .Include(p => p.ProjectTaskLists)
                                     .ThenInclude(tl => tl.ProjectTasks)
-                                        .ThenInclude(t=>t.Assignment)
-                                            .AsNoTracking().FirstOrDefaultAsync
-                                                (p => p.Id.ToString().Equals(request.ProjectId));
+                                        .ThenInclude(t => t.LabelAttachment)
+                                            .ThenInclude(la => la.Label)
+                                                .Include(p => p.ProjectTaskLists)
+                                                    .ThenInclude(tl => tl.ProjectTasks)
+                                                        .ThenInclude(t => t.Assignment)
+                                                            .AsNoTracking().AsSplitQuery()
+                                                                .FirstOrDefaultAsync(p => p.Id
+                                                                    .ToString().Equals(request.ProjectId));
 
                 if (project == null)
                     return new GetProjectServiceResponse(
@@ -186,6 +191,7 @@ namespace Application.Services.ApiServices
                 if (authResult.Equals(AuthorizationResponse.Deny))
                     return new GetProjectServiceResponse(
                          GetProjectServiceResponseStatus.AccessDenied);
+
 
                 var getUrlResponse = await _storageService.GetUrl(new()
                 {
@@ -214,6 +220,13 @@ namespace Application.Services.ApiServices
                                 Id = t.Assignment.Id.ToString(),
                                 MemberId = t.Assignment.ProjectMemberId.ToString(),
                                 Description = t.Assignment.Description
+                            };
+
+                        if (t.LabelAttachment != null)
+                            task.Label = new()
+                            {
+                                Title=t.LabelAttachment.Label.Title,
+                                ColorCode = t.LabelAttachment.Label.Color
                             };
 
                         tasks.Add(task);

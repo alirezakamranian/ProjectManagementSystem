@@ -21,5 +21,8 @@ namespace Domain.Entities.Project.ProjectTask
         public Guid ProjectId { get; set; }
         [ForeignKey(nameof(ProjectId))]
         public Project Project { get; set; }
+
+        //TaskLabelAttachmentRel
+        public List<TaskLabelAttachment> LabelAttachments { get; set; }
     }
 }
