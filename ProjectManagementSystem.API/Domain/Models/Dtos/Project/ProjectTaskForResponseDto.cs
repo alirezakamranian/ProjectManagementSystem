@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Project.ProjectTask;
+using Domain.Models.Dtos.Task;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,6 @@ namespace Domain.Models.Dtos.Project
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public TaskAssignmentForResponseDto Assignment { get; set; }
+        public TaskLabelForResponseDto Label { get; set; }
     }
 }

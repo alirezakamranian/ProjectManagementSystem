@@ -189,9 +189,11 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddTransient<ITaskCommentService, TaskCommentService>();
             //TaskLabelManagementService
             services.AddTransient<ITaskLableManagementService, TaskLableManagementService>();
+            //TaskLabelAttachment
+            services.AddTransient<ITaskLabelAttachmentService, TaskLabelAttachmentService>();
 
             /*InternalServices*/
-
+            
             //TokenGeneratorw
             services.AddTransient<ITokenGenerator, TokenGenerator>();
             //InvitationPendingService

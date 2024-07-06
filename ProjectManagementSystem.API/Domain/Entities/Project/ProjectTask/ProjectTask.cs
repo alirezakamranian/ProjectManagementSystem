@@ -33,5 +33,7 @@ namespace Domain.Entities.Project.ProjectTask
         //TaskCommentRel
         public List<TaskComment> Comments { get; set; }
 
+        //TaskLabelRel
+        public TaskLabelAttachment LabelAttachment { get; set; }
     }
 }
