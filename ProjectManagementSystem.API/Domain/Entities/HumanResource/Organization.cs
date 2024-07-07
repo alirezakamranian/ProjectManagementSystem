@@ -17,6 +17,7 @@ namespace Domain.Entities.HumanResource
         [Required]
         public string Name { get; set; }
 
+        public string Description { get; set; }
 
         //ProjectRel
         public List<Project.Project> Projects { get; set; }
