@@ -12,7 +12,7 @@ namespace Domain.Models.ApiModels.Organization.Request
         [Required]
         public string OrganizationId { get; set; }
         [Required]
-        [MinLength(3)]
         public string NewName { get; set; }
+        public string NewDescription { get; set; }
     }
 }

@@ -14,6 +14,7 @@ namespace Domain.Models.ServiceResponses.Organization
     public class GetOrganizationServiceResponse(string status) : ServiceResponseBase(status)
     {
         public string Name { get; set; }
+        public string Description { get; set; }
         public string AvatarUrl { get; set; }
         public List<GetOrgProjectForResponseDto> Projects { get; set; }
         public List<OrganizationEmployeeForResponseDto> Employees { get; set; }

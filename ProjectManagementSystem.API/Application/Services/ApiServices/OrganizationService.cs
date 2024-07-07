@@ -54,7 +54,8 @@ namespace Application.Services.ApiServices
 
                 user.Organizations.Add(new Organization
                 {
-                    Name = request.Name
+                    Name = request.Name,
+                    Description = request.Description
                 });
 
                 await _context.SaveChangesAsync();
@@ -118,6 +119,7 @@ namespace Application.Services.ApiServices
                          UpdateOrganizationServiceResponseStatus.AccessDenied);
 
                 org.Name = request.NewName;
+                org.Description = request.NewDescription;
 
                 await _context.SaveChangesAsync();
 
@@ -208,6 +210,7 @@ namespace Application.Services.ApiServices
                      GetOrganizationServiceResponseStatus.Success)
                 {
                     Name = org.Name,
+                    Description = org.Description,
                     AvatarUrl = avatarUrl.Url,
                     Projects = projects,
                     Employees = employees

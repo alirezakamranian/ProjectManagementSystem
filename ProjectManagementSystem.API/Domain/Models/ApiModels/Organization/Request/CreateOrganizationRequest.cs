@@ -10,7 +10,8 @@ namespace Domain.Models.ApiModels.Organization.Request
     public class CreateOrganizationRequest
     {
         [Required]
-        [MinLength(3)]
         public string Name { get; set; }
+
+        public string Description { get; set; }
     }
 }

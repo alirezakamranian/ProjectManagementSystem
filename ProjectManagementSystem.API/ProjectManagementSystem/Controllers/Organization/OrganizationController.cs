@@ -132,6 +132,7 @@ namespace ProjectManagementSystem.Controllers.Organization
             {
                 Message = serviceResponse.Status,
                 Name = serviceResponse.Name,
+                Description = serviceResponse.Description,
                 AvatarUrl = serviceResponse.AvatarUrl,
                 Projects = serviceResponse.Projects,
                 Employees = serviceResponse.Employees
