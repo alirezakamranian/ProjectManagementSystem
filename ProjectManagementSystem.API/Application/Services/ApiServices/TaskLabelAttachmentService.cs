@@ -72,5 +72,47 @@ namespace Application.Services.ApiServices
                      AttachTaskLabelServiceResponseStatus.InternalError);
             }
         }
+
+        public async Task<RemoveTaskLabelAttachmentServiceResponse> RemoveTaskLabelAttachment(RemoveTaskLabelAttachmentRequest request, string userId)
+        {
+            try
+            {
+                var task = await _context.ProjectTasks
+                    .FirstOrDefaultAsync(t => t.Id.ToString()
+                        .Equals(request.TaskId));
+
+                if (task == null)
+                    return new RemoveTaskLabelAttachmentServiceResponse(
+                         RemoveTaskLabelAttachmentServiceResponseStatus.TaskNotExists);
+
+                var taskList = await _context.ProjectTaskLists
+                    .AsNoTracking().FirstOrDefaultAsync(tl => tl.Id
+                        .Equals(task.ProjectTaskListId));
+
+                var authResult = await _authService.AuthorizeByProjectId(
+                    taskList.ProjectId, userId, [ProjectMemberRoles.Member]);
+
+                if (authResult.Equals(AuthorizationResponse.Deny))
+                    return new RemoveTaskLabelAttachmentServiceResponse(
+                         RemoveTaskLabelAttachmentServiceResponseStatus.AccessDenied);
+
+                await _context.Entry(task).Reference(
+                    t => t.LabelAttachment).LoadAsync();
+
+                _context.TaskLabelAttachments.Remove(task.LabelAttachment);
+
+                await _context.SaveChangesAsync();
+
+                return new RemoveTaskLabelAttachmentServiceResponse(
+                     RemoveTaskLabelAttachmentServiceResponseStatus.Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("RemoveTaskLabelAttachmentService : {Message}", ex.Message);
+
+                return new RemoveTaskLabelAttachmentServiceResponse(
+                     RemoveTaskLabelAttachmentServiceResponseStatus.InternalError);
+            }
+        }
     }
 }
