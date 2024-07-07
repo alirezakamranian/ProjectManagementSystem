@@ -30,6 +30,7 @@ namespace Infrastructure.DataAccess
         public DbSet<TaskAssignment> TaskAssignments { get; set; }
         public DbSet<TaskComment> TaskComments { get; set; }
         public DbSet<TaskLable> TaskLables { get; set; }
+        public DbSet<TaskLabelAttachment> TaskLabelAttachments { get; set; }
 
         //Common
         public DbSet<Notification> Notifications { get; set; }

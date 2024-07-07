@@ -11,5 +11,6 @@ namespace Domain.Services.ApiServices
     public interface ITaskLabelAttachmentService
     {
         public Task<AttachTaskLabelServiceResponse> AttachTaskLabel(AttachTaskLabelRequest request, string userId);
+        public Task<RemoveTaskLabelAttachmentServiceResponse> RemoveTaskLabelAttachment(RemoveTaskLabelAttachmentRequest request,string userId);
     }
 }

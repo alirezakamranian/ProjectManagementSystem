@@ -28,8 +28,8 @@ namespace ProjectManagementSystem.Controllers.TaskLabelAttachment
                 .AttachTaskLabel(request, userId);
 
             if (serviceResponse.Status.Equals(AttachTaskLabelServiceResponseStatus.AccessDenied) ||
-               serviceResponse.Status.Equals(AttachTaskLabelServiceResponseStatus.TaskNotExists)||
-               serviceResponse.Status.Equals(AttachTaskLabelServiceResponseStatus.LabelNotExists)||
+               serviceResponse.Status.Equals(AttachTaskLabelServiceResponseStatus.TaskNotExists) ||
+               serviceResponse.Status.Equals(AttachTaskLabelServiceResponseStatus.LabelNotExists) ||
                serviceResponse.Status.Equals(AttachTaskLabelServiceResponseStatus.TaskAlredyHasLabel))
                 return StatusCode(StatusCodes.Status400BadRequest,
                        new AttachTaskLabelResponse
@@ -45,6 +45,37 @@ namespace ProjectManagementSystem.Controllers.TaskLabelAttachment
                         });
 
             return Ok(new AttachTaskLabelResponse
+            {
+                Message = serviceResponse.Status
+            });
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> RemoveLabel(RemoveTaskLabelAttachmentRequest request)
+        {
+            var userId = HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type.Equals("Id")).Value;
+
+            var serviceResponse = await _taskLabelAttachmentService
+                .RemoveTaskLabelAttachment(request, userId);
+
+            if (serviceResponse.Status.Equals(RemoveTaskLabelAttachmentServiceResponseStatus.AccessDenied) ||
+               serviceResponse.Status.Equals(RemoveTaskLabelAttachmentServiceResponseStatus.TaskNotExists))
+                return StatusCode(StatusCodes.Status400BadRequest,
+                       new RemoveTaskLabelAttachmentResponse
+                       {
+                           Message = serviceResponse.Status
+                       });
+
+            if (serviceResponse.Status.Equals(RemoveTaskLabelAttachmentServiceResponseStatus.InternalError))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new RemoveTaskLabelAttachmentResponse
+                        {
+                            Message = serviceResponse.Status
+                        });
+
+            return Ok(new RemoveTaskLabelAttachmentResponse
             {
                 Message = serviceResponse.Status
             });
