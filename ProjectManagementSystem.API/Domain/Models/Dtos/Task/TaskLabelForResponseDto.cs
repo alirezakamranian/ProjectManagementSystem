@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.Dtos.Task
 {
-    public class TaskLabelAttachmentForResponseDto
+    public class TaskLabelForResponseDto
     {
+        public string Id { get; set; }
         public string Title { get; set; }
         public string ColorCode { get; set; }
     }
