@@ -12,5 +12,6 @@ namespace Domain.Models.Dtos.Task
         public string TaskId { get; set; }
         public string MemberId { get; set; }
         public string Text { get; set; }
+        public string CreateTime { get; set; }
     }
 }

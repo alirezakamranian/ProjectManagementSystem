@@ -70,7 +70,8 @@ namespace Application.Services.ApiServices
                 {
                     Text = request.Text,
                     MemberId = member.Id,
-                    TaskId = task.Id
+                    TaskId = task.Id,
+                    CreateTime = DateTime.UtcNow
                 });
 
                 await _context.SaveChangesAsync();
@@ -120,7 +121,8 @@ namespace Application.Services.ApiServices
                         MemberId = c.MemberId.ToString(),
                         TaskId = c.TaskId.ToString(),
                         Text = c.Text,
-                        Id = c.Id.ToString()
+                        Id = c.Id.ToString(),
+                        CreateTime = c.CreateTime.ToString()
                     });
                 }
 
