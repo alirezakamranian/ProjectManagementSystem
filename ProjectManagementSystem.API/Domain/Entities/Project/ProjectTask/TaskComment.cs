@@ -14,6 +14,7 @@ namespace Domain.Entities.Project.ProjectTask
         [Key]
         public Guid Id { get; set; }
         public string Text { get; set; }
+        public DateTime CreateTime { get; set; }
 
         //ProjectMemberRel
         public Guid MemberId { get; set; }
