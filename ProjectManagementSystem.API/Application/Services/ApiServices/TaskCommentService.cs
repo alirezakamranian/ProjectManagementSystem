@@ -68,7 +68,7 @@ namespace Application.Services.ApiServices
 
                 task.Comments.Add(new()
                 {
-                    Text = request.Text,
+                    Text = request.Content,
                     MemberId = member.Id,
                     TaskId = task.Id,
                     CreateTime = DateTime.UtcNow
@@ -209,7 +209,7 @@ namespace Application.Services.ApiServices
                     return new UpdateTaskCommentServiceResponse(
                         UpdateTaskCommentServiceResponseStatus.AccessDenied);
 
-                comment.Text = request.NewText;
+                comment.Text = request.NewContent;
 
                 await _context.SaveChangesAsync();
 
