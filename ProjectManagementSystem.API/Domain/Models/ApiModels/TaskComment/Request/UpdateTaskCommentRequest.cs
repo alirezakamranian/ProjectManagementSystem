@@ -11,6 +11,7 @@ namespace Domain.Models.ApiModels.TaskComment.Request
     {
         [Required]
         public string CommentId { get; set; }
-        public string NewText { get; set; }
+        [Required]
+        public string NewContent { get; set; }
     }
 }
