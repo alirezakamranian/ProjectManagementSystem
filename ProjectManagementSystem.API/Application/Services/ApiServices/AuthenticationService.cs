@@ -107,20 +107,13 @@ namespace Application.Services.ApiServices
                 if (!(user == null) && await _userManager
                     .CheckPasswordAsync(user, request.Password))
                 {
-                    string isNewUser="No";
-
-                    var userRoles = await _userManager
-                        .GetRolesAsync(user);
+                    string isNewUser = "No";
 
                     var authClaims = new List<Claim>
                     {
-                        new("Id", user.Id)
+                        new("Id", user.Id),
+                        new(ClaimTypes.NameIdentifier,user.Id)
                     };
-
-                    foreach (var userRole in userRoles)
-                    {
-                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                    }
 
                     var token = new JwtSecurityTokenHandler()
                          .WriteToken(_tokenGenerator
@@ -191,7 +184,8 @@ namespace Application.Services.ApiServices
 
                     var authClaims = new List<Claim>
                     {
-                         new("Id", user.Id)
+                         new("Id", user.Id),
+                         new(ClaimTypes.NameIdentifier,user.Id)
                     };
 
                     foreach (var userRole in userRoles)

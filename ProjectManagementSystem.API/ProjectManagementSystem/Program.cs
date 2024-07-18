@@ -1,5 +1,7 @@
 
 using Infrastructure.DataAccess;
+using Infrastructure.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using ProjectManagementSystem.ServiceExtension;
 using Serilog;
 
@@ -31,6 +33,9 @@ builder.Services.ConfigureCors();
 //AppServices
 builder.Services.ConfigureAppServices();
 
+//SignalR
+builder.Services.AddSignalR();
+
 ///                              NOTE : defination of Services that configured above are exist in
 ///                                          serviceExtension folder in current layer
 
@@ -44,12 +49,14 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseCors("reactApp");
+app.UseCors("Allow");
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotifHub>("/notifhub");
 
 app.Run();
