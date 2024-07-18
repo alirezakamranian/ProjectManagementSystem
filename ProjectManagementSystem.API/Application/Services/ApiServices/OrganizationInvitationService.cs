@@ -22,13 +22,14 @@ namespace Application.Services.ApiServices
     public class OrganizationInvitationService(DataContext context,
         IInvitationPendingManager pendingManager,
             ILogger<OrganizationInvitationService> logger,
-                IAuthorizationService authService) : IOrganizationInvitationService
+                IAuthorizationService authService,
+                    IRealTimeNotificationService realTimeNotificationService) : IOrganizationInvitationService
     {
         private readonly DataContext _context = context;
         private readonly ILogger<OrganizationInvitationService> _logger = logger;
         private readonly IInvitationPendingManager _pendingManager = pendingManager;
         private readonly IAuthorizationService _authService = authService;
-
+        private readonly IRealTimeNotificationService _realTimeNotificationService = realTimeNotificationService;
         /// <summary> 
         /// Searchs users across the project
         /// </summary>
@@ -90,7 +91,7 @@ namespace Application.Services.ApiServices
 
                 if (await _context.OrganizationEmployees
                     .AnyAsync(e => e.OrganizationId.ToString()
-                        .Equals(request.OrganizationId) && 
+                        .Equals(request.OrganizationId) &&
                             e.UserId.Equals(targetUser.Id)))
                     return new InviteEmployeeServiceResponse(
                          InviteEmployeeServiceResponseStatus.UserIsAlredyEmployeeOfThisOrganization);
@@ -124,7 +125,7 @@ namespace Application.Services.ApiServices
                 var notification = await _context.Notifications
                     .AsNoTracking().FirstOrDefaultAsync(n =>
                         n.UserId.Equals(targetUser.Id) &&
-                            n.Issuer.Equals(issuerUser.Email)&&
+                            n.Issuer.Equals(issuerUser.Email) &&
                                 n.Type.Equals(NotificationTypes.Invite));
 
                 _context.InvitationPendings.Add(new InvitationPending
@@ -134,6 +135,15 @@ namespace Application.Services.ApiServices
                 });
 
                 await _context.SaveChangesAsync();
+
+                await _realTimeNotificationService.SendNotification(new()
+                {
+                    Id = notification.Id.ToString(),
+                    Title = notification.Title,
+                    Issuer = notification.Issuer,
+                    Description = notification.Description,
+                    Type = notification.Type,
+                },targetUser.Id.ToString());
 
                 return new InviteEmployeeServiceResponse(
                      InviteEmployeeServiceResponseStatus.Success);
@@ -193,6 +203,14 @@ namespace Application.Services.ApiServices
                 });
 
                 await _context.SaveChangesAsync();
+
+                await _realTimeNotificationService.SendNotification(new()
+                {
+                    Type = NotificationTypes.Notice,
+                    Title = "InvitationAccepted!",
+                    Description = $"YourInvitationToUser [{user.Email}] accepted!",
+                    Issuer = user.Email
+                }, issuer.Id);
 
                 return new AcceptOrganizationInvitationServiceResponse(
                      AcceptOrganizationInvitationServiceResponseStatus.Success);

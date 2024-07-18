@@ -93,7 +93,7 @@ namespace ProjectManagementSystem.ServiceExtension
                                  Id="Bearer"
                              }
                         },
-                        new string[]{}
+                        Array.Empty<string>()
                      }
                 });
             });
@@ -108,7 +108,7 @@ namespace ProjectManagementSystem.ServiceExtension
         {
             services.AddCors(option =>
             {
-                option.AddPolicy("reactApp", builder =>
+                option.AddPolicy("Allow", builder =>
                 {
                     builder.AllowAnyOrigin()
                     .AllowAnyHeader()
@@ -148,6 +148,26 @@ namespace ProjectManagementSystem.ServiceExtension
                     ValidIssuer = builder.Configuration["AuthOptions:IssuerAudience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
                        .GetBytes(builder.Configuration["AuthOptions:Key"]))
+                };
+
+                options.Authority = "Authority URL";
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/notifhub")))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
         }
@@ -200,6 +220,8 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddTransient<IInvitationPendingManager, InvitationPendingManager>();
             //AuthorizationService
             services.AddTransient<IAuthorizationService, AuthorizationService>();
+            //RealTimeNotificationService
+            services.AddTransient<IRealTimeNotificationService, RealTimeNotificationService>();
         }
     }
 }
