@@ -271,6 +271,22 @@ namespace Application.Services.ApiServices
 
                 await _context.SaveChangesAsync();
 
+                await _context.Entry(issuer)
+                    .Collection(i => i.Notifications).LoadAsync();
+
+                var issuerNotif = issuer.Notifications
+                    .FirstOrDefault(n => n.Issuer.Equals(user.Email) &&
+                        n.Type.Equals(NotificationTypes.Notice));
+
+                await _realTimeNotificationService.SendNotification(new()
+                {
+                    Id = issuerNotif.Id.ToString(),
+                    Title = "InvitationRejected!",
+                    Description = $"YourInvitationToUser [{user.Email}] Rejected!",
+                    Issuer = user.Email,
+                    Type = NotificationTypes.Notice,
+                }, issuer.Id.ToString());
+
                 return new RejectOrganizationInvitationServiceResponse(
                      RejectOrganizationInvitationServiceResponseStatus.Success);
             }
