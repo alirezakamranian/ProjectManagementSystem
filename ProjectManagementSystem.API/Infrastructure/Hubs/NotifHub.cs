@@ -18,7 +18,7 @@ namespace Infrastructure.Hubs
                 .FirstOrDefault(c => c.Type.Equals(
                     ClaimTypes.NameIdentifier))?.Value;
 
-            Console.WriteLine($"New User connected - Id :{userId}");
+            Console.WriteLine($"New User connected (NotifHub) - Id :{userId}");
 
             return base.OnConnectedAsync();
         }

@@ -58,5 +58,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<NotifHub>("/notifhub");
+app.MapHub<TaskHub>("/taskhub");
 
 app.Run();
