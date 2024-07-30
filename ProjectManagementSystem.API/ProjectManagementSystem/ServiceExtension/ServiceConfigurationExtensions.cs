@@ -222,6 +222,8 @@ namespace ProjectManagementSystem.ServiceExtension
             services.AddTransient<IAuthorizationService, AuthorizationService>();
             //RealTimeNotificationService
             services.AddTransient<IRealTimeNotificationService, RealTimeNotificationService>();
+            //RealTimeTaskService
+            services.AddTransient<IRealTimeTaskService, RealTimeTaskService>();
         }
     }
 }

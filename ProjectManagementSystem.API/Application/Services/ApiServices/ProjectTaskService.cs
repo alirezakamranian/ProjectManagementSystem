@@ -18,11 +18,13 @@ namespace Application.Services.ApiServices
 {
     public class ProjectTaskService(DataContext context,
         ILogger<ProjectTaskService> logger,
-        IAuthorizationService authService) : IProjectTaskService
+        IAuthorizationService authService,
+        IRealTimeTaskService realTimeTaskService) : IProjectTaskService
     {
         private readonly DataContext _context = context;
         private readonly ILogger _logger = logger;
         private readonly IAuthorizationService _authService = authService;
+        private readonly IRealTimeTaskService _realTimeTaskService = realTimeTaskService;
 
         /// <summary>
         /// Changes Task priority
@@ -355,6 +357,15 @@ namespace Application.Services.ApiServices
                 task.Priority = request.TargetPriority;
 
                 await _context.SaveChangesAsync();
+
+                await _realTimeTaskService
+                    .SendChangeTaskList(new()
+                {
+                    TaskId=task.Id.ToString(),
+                    TargetTaskListId = targetTaskList.Id.ToString(),
+                    TargetPriority=request.TargetPriority
+
+                },taskList.ProjectId.ToString());
 
                 return new ChangeProjectTasksTaskListServiceResponse(
                      ChangeProjectTasksTaskListServiceResponseStatus.Success);

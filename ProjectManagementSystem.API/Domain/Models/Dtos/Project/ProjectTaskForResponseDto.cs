@@ -19,7 +19,6 @@ namespace Domain.Models.Dtos.Project
 
         public int Priority { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public TaskAssignmentForResponseDto Assignment { get; set; }
         public TaskLabelForResponseDto Label { get; set; }
     }
