@@ -126,6 +126,14 @@ namespace Application.Services.ApiServices
                         .Equals(taskList.Id) && t.Priority == lastPriority)
                             .Select(t => t.Id).FirstOrDefaultAsync();
 
+                await _realTimeTaskService.SendCreate(new()
+                {
+                    Id = id.ToString(),
+                    Title = request.Name,
+                    Description = request.Description,
+                    Priority = lastPriority
+                },taskList.ProjectId.ToString());
+
                 return new CreateProjectTaskServiceResponse(
                      CreateProjectTaskServiceResponseStatus.Success)
                 {
