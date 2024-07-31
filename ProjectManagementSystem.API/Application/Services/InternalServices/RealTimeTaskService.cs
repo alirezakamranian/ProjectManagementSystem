@@ -22,9 +22,10 @@ namespace Application.Services.InternalServices
                 .SendAsync("ReciveChangeTaskListUpdate",message);
         }
 
-        public Task SendCreate(MinimumValueProjectTaskDto task, string projectId)
+        public async Task SendCreate(MinimumValueProjectTaskDto task, string projectId)
         {
-            throw new NotImplementedException();
+            await _hub.Clients.Group(projectId)
+               .SendAsync("ReciveCreateTaskUpdate", task);
         }
 
         public Task SendDelete(string taskId, string projectId)
